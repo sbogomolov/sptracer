@@ -1,45 +1,53 @@
+#include <exception>
 #include "App.h"
+#include "Exception.h"
 #include "Log.h"
 
-namespace sptracer
+App::App(std::string fileName, int width, int height)
 {
-	HINSTANCE App::_hInstance = nullptr;
+	auto title =
+#ifdef _WIN64
+	"SPTracer (64-bit)";
+#else
+	"SPTracer (32-bit)";
+#endif
 
-	App::App()
+	sptracer::Log::Trace("Application created");
+
+	try
 	{
-		Log::Trace("Application created");
-		_window = std::make_unique<Window>(500, 500, _title, _hInstance);
+		window_ = std::make_unique<Window>(width, height, title);
+		tracer_ = std::make_unique<sptracer::SPTracer>(fileName);
+	}
+	catch (sptracer::Exception e)
+	{
+		MessageBoxA(window_->hwnd(), e.what(), "Error", MB_ICONERROR | MB_OK);
+		return;
 	}
 
-	void App::Init(HINSTANCE hInstance)
+	initialized_ = true;
+}
+
+int App::Run()
+{
+	if (!initialized_)
 	{
-		_hInstance = hInstance;
+		auto s = "Trying to run not initialized application";
+		sptracer::Log::Error(s);
+		throw std::exception(s);
 	}
 
-	App& App::GetInstance()
+	MSG msg;
+	while (GetMessage(&msg, nullptr, 0, 0) > 0)
 	{
-		static App app;
-		return app;
+		TranslateMessage(&msg);
+		DispatchMessage(&msg);
 	}
 
-	int App::Run()
-	{
-		Log::Info("SPTracer started");
+	return (int)msg.wParam;
+}
 
-		MSG msg;
-		while (GetMessage(&msg, nullptr, 0, 0) > 0)
-		{
-			TranslateMessage(&msg);
-			DispatchMessage(&msg);
-		}
-
-		Log::Info("SPTracer closed");
-
-		return (int)msg.wParam;
-	}
-
-	App::~App()
-	{
-		Log::Trace("Application destroyed");
-	}
+App::~App()
+{
+	sptracer::Log::Trace("Application destroyed");
 }

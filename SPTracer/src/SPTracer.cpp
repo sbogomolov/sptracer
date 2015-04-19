@@ -1,12 +1,16 @@
-#include <windows.h>
-#include "App.h"
+#include "Model/MDLAModel.h"
+#include "SPTracer.h"
 
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
-	LPSTR lpCmdLine, int nCmdShow)
-{
-	// init the application
-	sptracer::App::Init(hInstance);
+namespace sptracer {
 
-	// run the application
-	return sptracer::App::GetInstance().Run();
+	SPTracer::SPTracer(std::string fileName)
+	{
+		// create model from file
+		model_ = std::make_unique<MDLAModel>(fileName);
+	}
+
+	SPTracer::~SPTracer()
+	{
+	}
+
 }

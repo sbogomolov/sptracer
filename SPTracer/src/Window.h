@@ -1,25 +1,23 @@
-#ifndef SPT_WINDOW_H
-#define SPT_WINDOW_H
+#ifndef WINDOW_H
+#define WINDOW_H
 
 #include <string>
 #include <windows.h>
 
-namespace sptracer
+class Window
 {
+public:
+	Window(int width, int height, std::string title);
+	virtual ~Window();
+	
+	inline const HWND hwnd() const { return hwnd_; };
 
-	class Window
-	{
-	public:
-		Window(int width, int height, std::string title, HINSTANCE hInstance);
-		virtual ~Window();
+private:
+	HWND hwnd_;
 
-	private:
-		HWND _hwnd;
-
-		static std::string NewWindowClassName();
-		static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
-	};
-
-}
+	static std::string NewWindowClassName();
+	static LRESULT CALLBACK StaticWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
+	LRESULT WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
+};
 
 #endif

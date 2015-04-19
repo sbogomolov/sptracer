@@ -32,13 +32,14 @@ namespace sptracer {
 		};
 
 		static const char FileName[];
-		static Level _minLogLevel;
-		static State _state;
+		static State state_;
 
 		Log();
+		virtual ~Log();
 		static void Init();
 		static std::string FormatTime();
 		static std::string FormatLevel(Level logLevel);
+		static std::string FormatMessage(std::string msg, unsigned int prefixLen);
 		static void Write(Level logLevel, std::string msg);
 	};
 

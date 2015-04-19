@@ -1,37 +1,24 @@
-#ifndef SPT_APP_H
-#define SPT_APP_H
+#ifndef APP_H
+#define APP_H
 
 #include <memory>
 #include <windows.h>
+#include "SPTracer.h"
 #include "Window.h"
 
-namespace sptracer
+class App
 {
+public:
+	App(std::string fileName, int width, int height);
+	virtual ~App();
+	int Run();
 
-	class App
-	{
-	public:
-		static void Init(HINSTANCE hInstance);
-		static App& GetInstance();
-		int Run();
+	inline bool initialized() const { return initialized_; };
 
-	protected:
-		virtual ~App();
-
-	private:
-		std::string _title =
-#ifdef _WIN64
-			"SPTracer (64-bit)";
-#else
-			"SPTracer (32-bit)";
-#endif
-
-		static HINSTANCE _hInstance;
-		std::unique_ptr<Window> _window;
-
-		App();
-	};
-
-}
+private:
+	bool initialized_ = false;
+	std::unique_ptr<sptracer::SPTracer> tracer_;
+	std::unique_ptr<Window> window_;
+};
 
 #endif
