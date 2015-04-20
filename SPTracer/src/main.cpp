@@ -25,7 +25,7 @@ int main(int argc, char **argv)
 	App app(fileName, 500, 500);
 	
 	// check that application is initialized
-	if (!app.initialized())
+	if (!app.IsInitialized())
 	{
 		return 1;
 	}

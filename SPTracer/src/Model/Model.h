@@ -14,7 +14,7 @@ namespace SPTracer
 	public:
 		virtual inline ~Model() { };
 
-		inline const Camera& camera() const { return camera_; };
+		inline const Camera& GetCamera() const { return camera_; };
 
 	protected:
 		Camera camera_;

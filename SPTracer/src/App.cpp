@@ -19,7 +19,7 @@ App::App(std::string fileName, int width, int height)
 	}
 	catch (SPTracer::Exception e)
 	{
-		MessageBoxA(window_->hwnd(), e.what(), "Error", MB_ICONERROR | MB_OK);
+		MessageBoxA(window_->GetHwnd(), e.what(), "Error", MB_ICONERROR | MB_OK);
 		return;
 	}
 
