@@ -12,14 +12,12 @@ App::App(std::string fileName, int width, int height)
 	"SPTracer (32-bit)";
 #endif
 
-	sptracer::Log::Trace("Application created");
-
 	try
 	{
 		window_ = std::make_unique<Window>(width, height, title);
-		tracer_ = std::make_unique<sptracer::SPTracer>(fileName);
+		tracer_ = std::make_unique<SPTracer::SPTracer>(fileName);
 	}
-	catch (sptracer::Exception e)
+	catch (SPTracer::Exception e)
 	{
 		MessageBoxA(window_->hwnd(), e.what(), "Error", MB_ICONERROR | MB_OK);
 		return;
@@ -28,12 +26,16 @@ App::App(std::string fileName, int width, int height)
 	initialized_ = true;
 }
 
+App::~App()
+{
+}
+
 int App::Run()
 {
 	if (!initialized_)
 	{
 		auto s = "Trying to run not initialized application";
-		sptracer::Log::Error(s);
+		SPTracer::Log::Error(s);
 		throw std::exception(s);
 	}
 
@@ -45,9 +47,4 @@ int App::Run()
 	}
 
 	return (int)msg.wParam;
-}
-
-App::~App()
-{
-	sptracer::Log::Trace("Application destroyed");
 }

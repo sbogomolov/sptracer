@@ -3,7 +3,7 @@
 
 #include <exception>
 
-namespace sptracer
+namespace SPTracer
 {
 
 	class Exception : public std::exception

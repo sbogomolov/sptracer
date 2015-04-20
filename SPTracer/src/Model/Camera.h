@@ -3,7 +3,7 @@
 
 #include "Vec3.h"
 
-namespace sptracer
+namespace SPTracer
 {
 
 	struct Camera

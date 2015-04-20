@@ -5,7 +5,7 @@
 #include <vector>
 #include "Log.h"
 
-namespace sptracer {
+namespace SPTracer {
 
 	// log file name
 	const char Log::FileName[] = "sptracer.log";

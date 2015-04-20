@@ -2,11 +2,11 @@
 #include <fstream>
 #include <sstream>
 #include <vector>
-#include "MDLAModel.h"
 #include "../Exception.h"
 #include "../Log.h"
+#include "MDLAModel.h"
 
-namespace sptracer
+namespace SPTracer
 {
 
 	MDLAModel::MDLAModel(std::string fileName)
@@ -29,10 +29,6 @@ namespace sptracer
 
 		// parse tokens
 		ParseTokens(tokens);
-	}
-
-	MDLAModel::~MDLAModel()
-	{
 	}
 
 	std::vector<std::string> MDLAModel::GetTokens(std::string text)
@@ -99,7 +95,7 @@ namespace sptracer
 			case '\"':
 				// string token started or ended
 				inStrToken = !inStrToken;
-				
+
 				// NOTE: fall through to default to start new token
 
 			default:
@@ -122,53 +118,29 @@ namespace sptracer
 		return tokens;
 	}
 
-	void MDLAModel::ParseTokens(const TokensList& tokens)
-	{
-		auto it = tokens.begin();
-		
-		// check file type
-		if (*it != "mdlflA20")
-		{
-			auto s = "MDLAModel: Wrong file type";
-			Log::Error(s);
-			throw Exception(s);
-		}
-
-		auto end = tokens.end();
-		while (it != end)
-		{
-			it++;
-			const auto& token = *it;
-			
-			if (token == "cmr")
-			{
-				// camera keyword
-				ParseCamera(it, end);
-			}
-			else
-			{
-				// unknown keyword
-				std::string s = "MDLAModel: Unknown keyword: " + token;
-				Log::Error(s);
-				throw Exception(s.c_str());
-			}
-		}
-	}
-
-	void MDLAModel::CheckEnd(TokensList::const_iterator& it, TokensList::const_iterator& end)
+	void MDLAModel::CheckToken(TokensList::const_iterator& it, TokensList::const_iterator& end)
 	{
 		// check if there is a token
 		if (it == end)
 		{
-			auto s = "MDLAModel: No more tokens, expected end";
+			auto s = "MDLAModel: Unexpected end of file, no more tokens";
 			Log::Error(s);
 			throw Exception(s);
 		}
+	}
 
-		const auto& token = *it;
-		if (token != "end")
+	bool MDLAModel::IsEndToken(TokensList::const_iterator& it, TokensList::const_iterator& end)
+	{
+		// check if there is a token
+		CheckToken(it, end);
+		return *it == "end";
+	}
+
+	void MDLAModel::MustBeEndToken(TokensList::const_iterator& it, TokensList::const_iterator& end)
+	{
+		if (!IsEndToken(it, end))
 		{
-			std::string s = "MDLAModel: Bad token, expected end, got: " + token;
+			std::string s = "MDLAModel: Bad token, expected end, got: " + *it;
 			Log::Error(s);
 			throw Exception(s.c_str());
 		}
@@ -177,12 +149,7 @@ namespace sptracer
 	std::string MDLAModel::GetString(TokensList::const_iterator& it, TokensList::const_iterator& end)
 	{
 		// check if there is a token
-		if (it == end)
-		{
-			auto s = "MDLAModel: No more tokens, expected string";
-			Log::Error(s);
-			throw Exception(s);
-		}
+		CheckToken(it, end);
 
 		const auto& token = *it;
 		auto len = token.length();
@@ -201,12 +168,7 @@ namespace sptracer
 	double MDLAModel::GetDouble(TokensList::const_iterator& it, TokensList::const_iterator& end)
 	{
 		// check if there is a token
-		if (it == end)
-		{
-			auto s = "MDLAModel: No more tokens, expected double";
-			Log::Error(s);
-			throw Exception(s);
-		}
+		CheckToken(it, end);
 
 		const auto& token = *it;
 		try
@@ -222,10 +184,48 @@ namespace sptracer
 		}
 	}
 
+	void MDLAModel::ParseTokens(const TokensList& tokens)
+	{
+		auto it = tokens.begin();
+
+		// check file type
+		if (*it != "mdlflA20")
+		{
+			auto s = "MDLAModel: Wrong file type";
+			Log::Error(s);
+			throw Exception(s);
+		}
+
+		auto end = tokens.end();
+		while (it != end)
+		{
+			it++;
+			const std::string& token = *it;
+
+			if (token == "cmr")
+			{
+				// camera
+				ParseCamera(it, end);
+			}
+			else if (token == "nmdMtrl")
+			{
+				// material
+				ParseMaterial(it, end);
+			}
+			else
+			{
+				// unknown keyword
+				std::string s = "MDLAModel: Unknown keyword: " + token;
+				Log::Error(s);
+				throw Exception(s.c_str());
+			}
+		}
+	}
+
 	void MDLAModel::ParseCamera(TokensList::const_iterator& it, TokensList::const_iterator& end)
 	{
 		camera_.name = GetString(++it, end);	// camera name
-		
+
 		camera_.p.x = GetDouble(++it, end);		// center of projection x
 		camera_.p.y = GetDouble(++it, end);		// center of projection y
 		camera_.p.z = GetDouble(++it, end);		// center of projection z
@@ -245,6 +245,110 @@ namespace sptracer
 		camera_.icy = GetDouble(++it, end);		// image center y
 		camera_.t = GetDouble(++it, end);		// time of exposure
 
-		CheckEnd(++it, end);					// check end token
+		MustBeEndToken(++it, end);				// check end token
 	}
+
+	void MDLAModel::ParseMaterial(TokensList::const_iterator& it, TokensList::const_iterator& end)
+	{
+		// material name
+		std::string name = GetString(++it, end);
+
+		// parse material of some type
+		auto material = ParseMaterialType(++it, end);
+
+		// check end token
+		MustBeEndToken(++it, end);
+
+		// add material to model
+		this->materials_[name] = std::shared_ptr<Material>(std::move(material));
+	}
+
+	std::unique_ptr<Material> MDLAModel::ParseMaterialType(TokensList::const_iterator& it, TokensList::const_iterator& end)
+	{
+		// material type
+		CheckToken(it, end);
+		const std::string& type = *it;
+
+		std::unique_ptr<Material> material;
+		if (type == "lmbrtn")
+		{
+			// Lambertian meterial
+			material = ParseLambertianMaterial(it, end);
+		}
+		else if (type == "pLmnr")
+		{
+			// Phong luminaire material
+			material = ParsePhongLuminaireMaterial(it, end);
+		}
+		else
+		{
+			// unknown material type
+			std::string s = "MDLAModel: Unknown material type: " + type;
+			Log::Error(s);
+			throw Exception(s.c_str());
+		}
+
+		return material;
+	}
+
+	std::unique_ptr<LambertianMaterial> MDLAModel::ParseLambertianMaterial(TokensList::const_iterator& it, TokensList::const_iterator& end)
+	{
+		// parse color
+		auto color = ParseColorType(++it, end);
+		MustBeEndToken(++it, end);
+		return std::make_unique<LambertianMaterial>(std::move(color));
+	}
+
+	std::unique_ptr<PhongLuminaireMaterial> MDLAModel::ParsePhongLuminaireMaterial(TokensList::const_iterator& it, TokensList::const_iterator& end)
+	{
+		// parse reflective material
+		auto reflectiveMaterial = ParseMaterialType(++it, end);
+
+		// parse radiant exitance
+		auto radiantExitance = ParseColorType(++it, end);
+
+		// parse Phong exponent
+		double phongExponent = 1.0;
+
+		MustBeEndToken(++it, end);
+		return std::make_unique<PhongLuminaireMaterial>(std::move(reflectiveMaterial), std::move(radiantExitance), phongExponent);
+	}
+
+	std::unique_ptr<Color> MDLAModel::ParseColorType(TokensList::const_iterator& it, TokensList::const_iterator& end)
+	{
+		// color type
+		CheckToken(it, end);
+		const std::string& colorType = *it;
+
+		std::unique_ptr<Color> color;
+		if (colorType == "spctrl")
+		{
+			// spectral color
+			color = ParseSpectralColor(it, end);
+		}
+		else
+		{
+			// unknown color type
+			std::string s = "MDLAModel: Unknown color type: " + colorType;
+			Log::Error(s);
+			throw Exception(s.c_str());
+		}
+
+		return color;
+	}
+
+	std::unique_ptr<SpectralColor> MDLAModel::ParseSpectralColor(TokensList::const_iterator& it, TokensList::const_iterator& end)
+	{
+		auto color = std::make_unique<SpectralColor>();
+		while (!IsEndToken(++it, end))
+		{
+			// add amplitude
+			double l = GetDouble(it, end);
+			double a = GetDouble(++it, end);
+			color->AddAmplitude(l, a);
+		}
+		
+		return color;
+	}
+	
 }

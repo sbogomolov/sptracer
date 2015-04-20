@@ -29,7 +29,7 @@ Window::Window(int width, int height, std::string title)
 
 	if (!RegisterClassEx(&wc))
 	{
-		sptracer::Log::Info("Could not register window class");
+		SPTracer::Log::Error("Could not register window class");
 		throw std::exception("Could not register window class");
 	}
 
@@ -45,20 +45,17 @@ Window::Window(int width, int height, std::string title)
 
 	if (hwnd_ == nullptr)
 	{
-		sptracer::Log::Error("Could not create window");
+		SPTracer::Log::Error("Could not create window");
 		throw std::exception("Could not create window");
 	}
 
 	// show window
 	ShowWindow(hwnd_, SW_SHOWNORMAL);
 	UpdateWindow(hwnd_);
-
-	sptracer::Log::Trace("Window created");
 }
 
 Window::~Window()
 {
-	sptracer::Log::Trace("Window destroyed");
 }
 
 std::string Window::NewWindowClassName()

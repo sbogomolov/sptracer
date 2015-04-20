@@ -3,7 +3,7 @@
 
 #include <string>
 
-namespace sptracer {
+namespace SPTracer {
 
 	class Log
 	{

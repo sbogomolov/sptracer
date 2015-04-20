@@ -5,7 +5,7 @@
 #include <string>
 #include "Model/Model.h"
 
-namespace sptracer
+namespace SPTracer
 {
 
 	class SPTracer

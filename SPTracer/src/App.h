@@ -17,7 +17,7 @@ public:
 
 private:
 	bool initialized_ = false;
-	std::unique_ptr<sptracer::SPTracer> tracer_;
+	std::unique_ptr<SPTracer::SPTracer> tracer_;
 	std::unique_ptr<Window> window_;
 };
 

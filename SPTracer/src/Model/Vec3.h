@@ -1,7 +1,7 @@
 #ifndef SPT_POINT_H
 #define SPT_POINT_H
 
-namespace sptracer
+namespace SPTracer
 {
 
 	struct Vec3

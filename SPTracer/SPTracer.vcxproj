@@ -157,6 +157,9 @@
   <ItemGroup>
     <ClCompile Include="src\App.cpp" />
     <ClCompile Include="src\Log.cpp" />
+    <ClCompile Include="src\Model\Color\SpectralColor.cpp" />
+    <ClCompile Include="src\Model\Material\LambertianMaterial.cpp" />
+    <ClCompile Include="src\Model\Material\PhongLuminaireMaterial.cpp" />
     <ClCompile Include="src\Model\MDLAModel.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\SPTracer.cpp" />
@@ -166,6 +169,11 @@
     <ClInclude Include="src\App.h" />
     <ClInclude Include="src\Log.h" />
     <ClInclude Include="src\Model\Camera.h" />
+    <ClInclude Include="src\Model\Color\Color.h" />
+    <ClInclude Include="src\Model\Color\SpectralColor.h" />
+    <ClInclude Include="src\Model\Material\LambertianMaterial.h" />
+    <ClInclude Include="src\Model\Material\Material.h" />
+    <ClInclude Include="src\Model\Material\PhongLuminaireMaterial.h" />
     <ClInclude Include="src\Model\MDLAModel.h" />
     <ClInclude Include="src\Model\Model.h" />
     <ClInclude Include="src\Model\Vec3.h" />

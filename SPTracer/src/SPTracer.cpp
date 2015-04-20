@@ -1,7 +1,7 @@
 #include "Model/MDLAModel.h"
 #include "SPTracer.h"
 
-namespace sptracer {
+namespace SPTracer {
 
 	SPTracer::SPTracer(std::string fileName)
 	{
