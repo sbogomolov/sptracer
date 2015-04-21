@@ -15,7 +15,7 @@ App::App(std::string fileName, int width, int height)
 	try
 	{
 		window_ = std::make_unique<Window>(width, height, title.c_str());
-		tracer_ = std::make_unique<SPTracer::SPTracer>(fileName);
+		tracer_ = std::make_unique<SPTracer::SPTracer>(fileName, 4);
 	}
 	catch (SPTracer::Exception e)
 	{

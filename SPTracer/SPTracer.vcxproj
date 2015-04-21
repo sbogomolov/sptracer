@@ -166,6 +166,8 @@
     <ClCompile Include="src\Model\Object\Object.cpp" />
     <ClCompile Include="src\Model\Object\PlanarMeshObject.cpp" />
     <ClCompile Include="src\SPTracer.cpp" />
+    <ClCompile Include="src\Task\TaskScheduler.cpp" />
+    <ClCompile Include="src\Task\TraceRayTask.cpp" />
     <ClCompile Include="src\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -183,6 +185,9 @@
     <ClInclude Include="src\Model\Object\Object.h" />
     <ClInclude Include="src\Model\Object\PlanarMeshObject.h" />
     <ClInclude Include="src\Ray.h" />
+    <ClInclude Include="src\Task\Task.h" />
+    <ClInclude Include="src\Task\TaskScheduler.h" />
+    <ClInclude Include="src\Task\TraceRayTask.h" />
     <ClInclude Include="src\Vec3.h" />
     <ClInclude Include="src\Exception.h" />
     <ClInclude Include="src\SPTracer.h" />

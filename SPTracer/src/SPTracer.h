@@ -4,6 +4,7 @@
 #include <memory>
 #include <string>
 #include "Model/Model.h"
+#include "Task/TaskScheduler.h"
 
 namespace SPTracer
 {
@@ -11,11 +12,14 @@ namespace SPTracer
 	class SPTracer
 	{
 	public:
-		SPTracer(std::string fileName);
+		SPTracer(std::string fileName, unsigned short numThreads);
 		virtual ~SPTracer();
+
+		const Model& GetModel() const;
 
 	private:
 		std::unique_ptr<Model> model_;
+		std::unique_ptr<TaskScheduler> taskScheduler_;
 	};
 
 }

@@ -39,7 +39,7 @@ namespace SPTracer {
 		static void Init();
 		static std::string FormatTime();
 		static std::string FormatLevel(Level logLevel);
-		static std::string FormatMessage(std::string msg, unsigned int prefixLen);
+		static std::string FormatMessage(std::string msg, size_t prefixLen);
 		static void Write(Level logLevel, std::string msg);
 	};
 

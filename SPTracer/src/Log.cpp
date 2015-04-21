@@ -78,7 +78,7 @@ namespace SPTracer {
 		}
 	}
 
-	std::string Log::FormatMessage(std::string msg, unsigned int prefixLen)
+	std::string Log::FormatMessage(std::string msg, size_t prefixLen)
 	{
 		// replace all "\r\n" with "\n"
 		std::string::size_type pos = 0;
