@@ -3,7 +3,7 @@
 
 #include <memory>
 #include <vector>
-#include "../Vec3.h"
+#include "../../Vec3.h"
 #include "../Material/Material.h"
 #include "Object.h"
 

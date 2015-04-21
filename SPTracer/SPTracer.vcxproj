@@ -182,7 +182,8 @@
     <ClInclude Include="src\Model\Model.h" />
     <ClInclude Include="src\Model\Object\Object.h" />
     <ClInclude Include="src\Model\Object\PlanarMeshObject.h" />
-    <ClInclude Include="src\Model\Vec3.h" />
+    <ClInclude Include="src\Ray.h" />
+    <ClInclude Include="src\Vec3.h" />
     <ClInclude Include="src\Exception.h" />
     <ClInclude Include="src\SPTracer.h" />
     <ClInclude Include="src\Window.h" />
