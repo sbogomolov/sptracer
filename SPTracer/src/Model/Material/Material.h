@@ -10,12 +10,12 @@ namespace SPTracer {
 	class Material
 	{
 	public:
-		virtual inline ~Material() { };
+		virtual ~Material() { };
 
 		virtual bool IsEmissive() const = 0;
 
 	protected:
-		inline Material() { };
+		Material() { };
 	};
 
 }

@@ -15,8 +15,23 @@ namespace SPTracer
 
 	void SpectralColor::AddAmplitude(double waveLength, double amplitude)
 	{
-		initialized_ = true;
 		amplitudes_.push_back(Amplitude{ waveLength, amplitude });
+	}
+
+	void SpectralColor::Init()
+	{
+		if (amplitudes_.size() == 0)
+		{
+			const char* s = "SpectralColor: Trying to get amplitude, but there are no amplitudes added";
+			Log::Error(s);
+			throw Exception(s);
+		}
+
+		// sort by wave length
+		std::sort(amplitudes_.begin(), amplitudes_.end(),
+			[](const SpectralColor::Amplitude& a, const SpectralColor::Amplitude& b) { return a.l < b.l; });
+
+		initialized_ = true;
 	}
 
 	double SpectralColor::GetAmplitude(double waveLength) const
@@ -24,13 +39,14 @@ namespace SPTracer
 		// check that color is initialized
 		if (!initialized_)
 		{
-			const char* s = "SpectralColor: Trying to get amplitude, but there are no amplitudes added";
+			const char* s = "SpectralColor: Trying to use not initialized spectral color";
 			Log::Error(s);
 			throw Exception(s);
 		}
 
 		// get upper bound
-		auto upper = std::upper_bound(amplitudes_.begin(), amplitudes_.end(), waveLength);
+		auto upper = std::upper_bound(amplitudes_.begin(), amplitudes_.end(), waveLength,
+			[](const double& a, const SpectralColor::Amplitude& b) { return a < b.l; });
 		
 		// check that we're not lower than the first wave legth
 		if (upper == amplitudes_.begin())
@@ -68,10 +84,5 @@ namespace SPTracer
 		return lowerAmp.a
 			+ ((waveLength - lowerAmp.l) / (upperAmp.l - lowerAmp.l)
 			* (upperAmp.a - lowerAmp.a));
-	}
-
-	bool operator< (const double& lhs, const SpectralColor::Amplitude& rhs)
-	{
-		return lhs < rhs.l;
 	}
 }

@@ -13,7 +13,7 @@ public:
 	virtual ~App();
 	int Run();
 
-	inline bool IsInitialized() const { return initialized_; };
+	bool IsInitialized() const;
 
 private:
 	bool initialized_ = false;

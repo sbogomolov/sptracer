@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include "Camera.h"
 #include "Material/Material.h"
+#include "Object/Object.h"
 
 namespace SPTracer
 {
@@ -12,15 +13,14 @@ namespace SPTracer
 	class Model
 	{
 	public:
-		virtual inline ~Model() { };
-
-		inline const Camera& GetCamera() const { return camera_; };
+		virtual ~Model() { };
 
 	protected:
 		Camera camera_;
 		std::unordered_map<std::string, std::shared_ptr<Material>> materials_;
+		std::vector<std::unique_ptr<Object>> objects_;
 
-		inline Model() { };
+		Model() { };
 	};
 
 }

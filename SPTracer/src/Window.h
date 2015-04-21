@@ -10,7 +10,7 @@ public:
 	Window(int width, int height, std::string title);
 	virtual ~Window();
 	
-	inline const HWND GetHwnd() const { return hwnd_; };
+	const HWND GetHwnd() const;
 
 private:
 	HWND hwnd_;

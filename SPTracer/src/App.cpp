@@ -5,16 +5,16 @@
 
 App::App(std::string fileName, int width, int height)
 {
-	auto title =
+	std::string title =
 #ifdef _WIN64
-	"SPTracer (64-bit)";
+		"SPTracer (64-bit) - [ " + fileName + " ]";
 #else
-	"SPTracer (32-bit)";
+		"SPTracer (32-bit) - [ " + fileName + " ]";
 #endif
 
 	try
 	{
-		window_ = std::make_unique<Window>(width, height, title);
+		window_ = std::make_unique<Window>(width, height, title.c_str());
 		tracer_ = std::make_unique<SPTracer::SPTracer>(fileName);
 	}
 	catch (SPTracer::Exception e)
@@ -47,4 +47,9 @@ int App::Run()
 	}
 
 	return (int)msg.wParam;
+}
+
+bool App::IsInitialized() const
+{
+	return initialized_;
 }

@@ -37,6 +37,7 @@ namespace SPTracer
 		int start = -1;
 		bool inStrToken = false;
 		bool inComment = false;
+		bool inAnnotation = false;
 
 		for (int i = 0; i < text.length(); i++)
 		{
@@ -46,7 +47,7 @@ namespace SPTracer
 				continue;
 			}
 
-			// check if we're inside a comment
+			// in comment
 			if (inComment)
 			{
 				// comment ended
@@ -55,30 +56,43 @@ namespace SPTracer
 					inComment = false;
 				}
 
-				// continue if inside a comment
 				continue;
 			}
 
-			// store token '['
-			if (text[i] == '[')
+			// in annotation
+			if (inAnnotation)
 			{
-				tokens.push_back(text.substr(i, 1));
+				// annotation ended
+				if (text[i] == ']')
+				{
+					inAnnotation = false;
+				}
+
+				continue;
+			}
+
+			// start comment
+			if (text[i] == '%' && !inAnnotation)
+			{
+				inComment = true;
+				// NOTE: switch case will store current token
+			}
+
+			// start annotation
+			if ((text[i] == '[') && !inComment)
+			{
+				inAnnotation = true;
+				// NOTE: switch case will store current token
 			}
 
 			switch (text[i])
 			{
-			case '%':
-				// start comment
-				inComment = true;
-
-				// NOTE: fall through to store token
-
 			case '\r':
 			case '\n':
 			case ' ':
 			case '\t':
+			case '%':
 			case '[':
-			case ']':
 				// continue if we're not inside a token
 				if (start == -1)
 				{
@@ -107,18 +121,12 @@ namespace SPTracer
 
 				break;
 			}
-
-			// store token ']'
-			if (text[i] == ']')
-			{
-				tokens.push_back(text.substr(i, 1));
-			}
 		}
 
 		return tokens;
 	}
 
-	void MDLAModel::CheckToken(TokensList::const_iterator& it, TokensList::const_iterator& end)
+	void MDLAModel::CheckToken(TokensIterator& it, TokensIterator& end)
 	{
 		// check if there is a token
 		if (it == end)
@@ -129,14 +137,14 @@ namespace SPTracer
 		}
 	}
 
-	bool MDLAModel::IsEndToken(TokensList::const_iterator& it, TokensList::const_iterator& end)
+	bool MDLAModel::IsEndToken(TokensIterator& it, TokensIterator& end)
 	{
 		// check if there is a token
 		CheckToken(it, end);
 		return *it == "end";
 	}
 
-	void MDLAModel::MustBeEndToken(TokensList::const_iterator& it, TokensList::const_iterator& end)
+	void MDLAModel::MustBeEndToken(TokensIterator& it, TokensIterator& end)
 	{
 		if (!IsEndToken(it, end))
 		{
@@ -146,7 +154,22 @@ namespace SPTracer
 		}
 	}
 
-	std::string MDLAModel::GetString(TokensList::const_iterator& it, TokensList::const_iterator& end)
+	void MDLAModel::CheckKeyword(TokensIterator& it, TokensIterator& end, std::string keyword)
+	{
+		// check if there is a token
+		CheckToken(it, end);
+
+		const std::string& type = *it;
+		if (type != keyword)
+		{
+			// wrong keyword
+			std::string s = "MDLAModel: Wrong keyword, expected: " + keyword + " got: " + type;
+			Log::Error(s);
+			throw Exception(s.c_str());
+		}
+	}
+
+	std::string MDLAModel::GetString(TokensIterator& it, TokensIterator& end)
 	{
 		// check if there is a token
 		CheckToken(it, end);
@@ -165,7 +188,7 @@ namespace SPTracer
 		return token.substr(1, len - 2);
 	}
 
-	double MDLAModel::GetDouble(TokensList::const_iterator& it, TokensList::const_iterator& end)
+	double MDLAModel::GetDouble(TokensIterator& it, TokensIterator& end)
 	{
 		// check if there is a token
 		CheckToken(it, end);
@@ -184,6 +207,25 @@ namespace SPTracer
 		}
 	}
 
+	unsigned long MDLAModel::GetInteger(TokensIterator& it, TokensIterator& end)
+	{
+		// check if there is a token
+		CheckToken(it, end);
+
+		const auto& token = *it;
+		try
+		{
+			// try to get integer token
+			return std::stoul(token);
+		}
+		catch (std::invalid_argument e)
+		{
+			std::string s = "MDLAModel: Bad token, expected integer, got: " + token;
+			Log::Error(s);
+			throw Exception(s.c_str());
+		}
+	}
+
 	void MDLAModel::ParseTokens(const TokensList& tokens)
 	{
 		auto it = tokens.begin();
@@ -197,9 +239,8 @@ namespace SPTracer
 		}
 
 		auto end = tokens.end();
-		while (it != end)
+		while (++it != end)
 		{
-			it++;
 			const std::string& token = *it;
 
 			if (token == "cmr")
@@ -212,6 +253,11 @@ namespace SPTracer
 				// material
 				ParseMaterial(it, end);
 			}
+			else if (token == "plnrMsh")
+			{
+				// planar mesh object
+				ParsePlanarMeshObject(it, end);
+			}
 			else
 			{
 				// unknown keyword
@@ -222,8 +268,11 @@ namespace SPTracer
 		}
 	}
 
-	void MDLAModel::ParseCamera(TokensList::const_iterator& it, TokensList::const_iterator& end)
+	void MDLAModel::ParseCamera(TokensIterator& it, TokensIterator& end)
 	{
+		// check keyword
+		CheckKeyword(it, end, "cmr");
+
 		camera_.name = GetString(++it, end);	// camera name
 
 		camera_.p.x = GetDouble(++it, end);		// center of projection x
@@ -248,8 +297,67 @@ namespace SPTracer
 		MustBeEndToken(++it, end);				// check end token
 	}
 
-	void MDLAModel::ParseMaterial(TokensList::const_iterator& it, TokensList::const_iterator& end)
+	std::unique_ptr<Color> MDLAModel::ParseColorType(TokensIterator& it, TokensIterator& end)
 	{
+		// color type
+		CheckToken(it, end);
+		const std::string& colorType = *it;
+
+		std::unique_ptr<Color> color;
+		if (colorType == "spctrl")
+		{
+			// spectral color
+			color = ParseSpectralColor(it, end);
+		}
+		else if (colorType == "sclr")
+		{
+			// scalar color
+			color = ParseScalarColor(it, end);
+		}
+		else
+		{
+			// unknown color type
+			std::string s = "MDLAModel: Unknown color type: " + colorType;
+			Log::Error(s);
+			throw Exception(s.c_str());
+		}
+
+		return color;
+	}
+
+	std::unique_ptr<SpectralColor> MDLAModel::ParseSpectralColor(TokensIterator& it, TokensIterator& end)
+	{
+		// check keyword
+		CheckKeyword(it, end, "spctrl");
+
+		auto color = std::make_unique<SpectralColor>();
+		while (!IsEndToken(++it, end))
+		{
+			// add amplitude
+			double l = GetDouble(it, end);
+			double a = GetDouble(++it, end);
+			color->AddAmplitude(l, a);
+		}
+
+		color->Init();
+		return color;
+	}
+
+	std::unique_ptr<ScalarColor> MDLAModel::ParseScalarColor(TokensIterator & it, TokensIterator & end)
+	{
+		// check keyword
+		CheckKeyword(it, end, "sclr");
+
+		double amplitude = GetDouble(++it, end);
+		MustBeEndToken(++it, end);
+		return std::make_unique<ScalarColor>(amplitude);
+	}
+
+	std::string MDLAModel::ParseMaterial(TokensIterator& it, TokensIterator& end)
+	{
+		// check keyword
+		CheckKeyword(it, end, "nmdMtrl");
+
 		// material name
 		std::string name = GetString(++it, end);
 
@@ -261,9 +369,11 @@ namespace SPTracer
 
 		// add material to model
 		this->materials_[name] = std::shared_ptr<Material>(std::move(material));
+
+		return name;
 	}
 
-	std::unique_ptr<Material> MDLAModel::ParseMaterialType(TokensList::const_iterator& it, TokensList::const_iterator& end)
+	std::unique_ptr<Material> MDLAModel::ParseMaterialType(TokensIterator& it, TokensIterator& end)
 	{
 		// material type
 		CheckToken(it, end);
@@ -291,16 +401,53 @@ namespace SPTracer
 		return material;
 	}
 
-	std::unique_ptr<LambertianMaterial> MDLAModel::ParseLambertianMaterial(TokensList::const_iterator& it, TokensList::const_iterator& end)
+	std::shared_ptr<Material> MDLAModel::ParseEmbeddedMaterial(TokensIterator& it, TokensIterator& end)
 	{
+		// material type
+		CheckToken(it, end);
+
+		// existing material
+		if (*it == "mtrlNm")
+		{
+			// get material name
+			std::string name = GetString(++it, end);
+
+			// get material
+			auto m = materials_.find(name);
+			
+			// check that material exists
+			if (m == materials_.end())
+			{
+				// material does not exist
+				std::string s = "MDLAModel: Material with name \"" + name + "\" does not exist";
+				Log::Error(s);
+				throw Exception(s.c_str());
+			}
+
+			MustBeEndToken(++it, end);
+			return (*m).second;
+		}
+
+		// new material
+		return std::shared_ptr<Material>(ParseMaterialType(it, end));
+	}
+
+	std::unique_ptr<LambertianMaterial> MDLAModel::ParseLambertianMaterial(TokensIterator& it, TokensIterator& end)
+	{
+		// check keyword
+		CheckKeyword(it, end, "lmbrtn");
+
 		// parse color
 		auto color = ParseColorType(++it, end);
 		MustBeEndToken(++it, end);
 		return std::make_unique<LambertianMaterial>(std::move(color));
 	}
 
-	std::unique_ptr<PhongLuminaireMaterial> MDLAModel::ParsePhongLuminaireMaterial(TokensList::const_iterator& it, TokensList::const_iterator& end)
+	std::unique_ptr<PhongLuminaireMaterial> MDLAModel::ParsePhongLuminaireMaterial(TokensIterator& it, TokensIterator& end)
 	{
+		// check keyword
+		CheckKeyword(it, end, "pLmnr");
+
 		// parse reflective material
 		auto reflectiveMaterial = ParseMaterialType(++it, end);
 
@@ -308,47 +455,131 @@ namespace SPTracer
 		auto radiantExitance = ParseColorType(++it, end);
 
 		// parse Phong exponent
-		double phongExponent = 1.0;
-
-		MustBeEndToken(++it, end);
-		return std::make_unique<PhongLuminaireMaterial>(std::move(reflectiveMaterial), std::move(radiantExitance), phongExponent);
-	}
-
-	std::unique_ptr<Color> MDLAModel::ParseColorType(TokensList::const_iterator& it, TokensList::const_iterator& end)
-	{
-		// color type
-		CheckToken(it, end);
-		const std::string& colorType = *it;
-
-		std::unique_ptr<Color> color;
-		if (colorType == "spctrl")
+		CheckToken(++it, end);
+		const std::string& token = *it;
+		if (token != "sclr")
 		{
-			// spectral color
-			color = ParseSpectralColor(it, end);
-		}
-		else
-		{
-			// unknown color type
-			std::string s = "MDLAModel: Unknown color type: " + colorType;
+			// wrong keywork
+			std::string s = "MDLAModel: Wrong keyword for Phong exponent, expected sclr, got " + token;
 			Log::Error(s);
 			throw Exception(s.c_str());
 		}
 
-		return color;
+		auto phongExponent = ParseScalarColor(it, end);
+
+		MustBeEndToken(++it, end);
+		return std::make_unique<PhongLuminaireMaterial>(
+			std::move(reflectiveMaterial), std::move(radiantExitance), phongExponent->GetAmplitude(0.0));
 	}
 
-	std::unique_ptr<SpectralColor> MDLAModel::ParseSpectralColor(TokensList::const_iterator& it, TokensList::const_iterator& end)
+	void MDLAModel::ParseVertexPositions(TokensIterator& it, TokensIterator& end, std::vector<Vec3>& vertices)
 	{
-		auto color = std::make_unique<SpectralColor>();
+		// check keyword
+		CheckKeyword(it, end, "vrtxPstn");
+
 		while (!IsEndToken(++it, end))
 		{
-			// add amplitude
-			double l = GetDouble(it, end);
-			double a = GetDouble(++it, end);
-			color->AddAmplitude(l, a);
+			vertices.push_back(Vec3{
+				GetDouble(it, end),		// x
+				GetDouble(++it, end),	// y
+				GetDouble(++it, end)	// z
+			});
 		}
-		
-		return color;
 	}
-	
+
+	void MDLAModel::ParsePolygon(TokensIterator& it, TokensIterator& end, std::vector<unsigned long>& vertices)
+	{
+		// check keyword
+		CheckKeyword(it, end, "plygn");
+
+		while (!IsEndToken(++it, end))
+		{
+			vertices.push_back(GetInteger(it, end));
+		}
+	}
+
+	void MDLAModel::ParseComplexPolygon(TokensIterator& it, TokensIterator& end,
+		std::vector<unsigned long>& outline, std::vector<std::vector<unsigned long>>& holes)
+	{
+		// check keyword
+		CheckKeyword(it, end, "cmplxPly");
+
+		// outline
+		ParsePolygon(++it, end, outline);
+
+		// holes
+		while (!IsEndToken(++it, end))
+		{
+			std::vector<unsigned long> hole;
+			ParsePolygon(it, end, hole);
+			holes.push_back(std::move(hole));
+		}
+	}
+
+	void MDLAModel::ParsePlanarMeshObject(TokensIterator& it, TokensIterator& end)
+	{
+		// check keyword
+		CheckKeyword(it, end, "plnrMsh");
+
+		// get name
+		std::string name = GetString(++it, end);
+
+		// get material
+		auto material = ParseEmbeddedMaterial(++it, end);
+		std::vector<Vec3> vertices;
+		std::vector<unsigned long> outline;
+		std::vector<std::vector<unsigned long>> holes;
+
+		while (!IsEndToken(++it, end))
+		{
+			const std::string& type = *it;
+			if (type == "vrtxPstn")
+			{
+				// get vertices
+				ParseVertexPositions(it, end, vertices);
+			}
+			else if (type == "plygn")
+			{
+				if (outline.size() > 0)
+				{
+					// duplicate outline polygon
+					const char* s = "MDLAModel: Duplicate polygon for planar mesh object";
+					Log::Error(s);
+					throw Exception(s);
+				}
+
+				// polygon
+				ParsePolygon(it, end, outline);
+			}
+			else if (type == "cmplxPly")
+			{
+				if (outline.size() > 0)
+				{
+					// duplicate outline polygon
+					const char* s = "MDLAModel: Duplicate polygon for planar mesh object";
+					Log::Error(s);
+					throw Exception(s);
+				}
+
+				// complex polygon
+				ParseComplexPolygon(it, end, outline, holes);
+			}
+			else
+			{
+				// unknown keyword
+				std::string s = "MDLAModel: Unknown keyword: " + type;
+				Log::Error(s);
+				throw Exception(s.c_str());
+			}
+		}
+
+		// add object
+		objects_.push_back(std::make_unique<PlanarMeshObject>(
+			std::move(name),
+			std::move(material),
+			std::move(vertices),
+			std::move(outline),
+			std::move(holes)));
+	}
+
 }

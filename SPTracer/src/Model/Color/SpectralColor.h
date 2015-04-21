@@ -19,6 +19,7 @@ namespace SPTracer
 		SpectralColor();
 
 		void AddAmplitude(double waveLength, double amplitude);
+		void Init();
 		double GetAmplitude(double waveLength) const override;
 
 	private:

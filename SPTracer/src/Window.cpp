@@ -35,10 +35,10 @@ Window::Window(int width, int height, std::string title)
 
 	// create window
 	hwnd_ = CreateWindowEx(
-		WS_EX_CLIENTEDGE,
+		WS_EX_APPWINDOW | WS_EX_WINDOWEDGE,
 		className.c_str(),
 		title.c_str(),
-		WS_OVERLAPPEDWINDOW,
+		WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX,
 		CW_USEDEFAULT, CW_USEDEFAULT, width, height,
 		nullptr, nullptr, hinstance,
 		static_cast<LPVOID>(this));
@@ -56,6 +56,11 @@ Window::Window(int width, int height, std::string title)
 
 Window::~Window()
 {
+}
+
+const HWND Window::GetHwnd() const
+{
+	return hwnd_;
 }
 
 std::string Window::NewWindowClassName()

@@ -7,12 +7,12 @@ namespace SPTracer
 	class Color
 	{
 	public:
-		virtual inline ~Color() { };
+		virtual ~Color() { };
 
 		virtual double GetAmplitude(double waveLength) const = 0;
 
 	protected:
-		inline Color() { };
+		Color() { };
 	};
 
 }
