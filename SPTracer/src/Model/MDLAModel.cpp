@@ -573,6 +573,27 @@ namespace SPTracer
 			}
 		}
 
+		// check outline
+		if (outline.size() < 3)
+		{
+			// duplicate outline polygon
+			const char* s = "MDLAModel: Not enough vertices in outline";
+			Log::Error(s);
+			throw Exception(s);
+		}
+
+		// check holes
+		for (const auto& hole : holes)
+		{
+			if (hole.size() < 3)
+			{
+				// duplicate outline polygon
+				const char* s = "MDLAModel: Not enough vertices in hole";
+				Log::Error(s);
+				throw Exception(s);
+			}
+		}
+
 		// add object
 		objects_.push_back(std::make_unique<PlanarMeshObject>(
 			std::move(name),

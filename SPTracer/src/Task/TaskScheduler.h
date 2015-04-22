@@ -16,7 +16,7 @@ namespace SPTracer
 		TaskScheduler(unsigned short numThreads);
 
 	private:
-		std::queue<Task> tasks_;
+		std::queue<std::unique_ptr<Task>> tasks_;
 		std::vector<std::thread> threads_;
 
 		void WorkerThread();

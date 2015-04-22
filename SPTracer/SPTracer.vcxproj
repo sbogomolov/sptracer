@@ -168,6 +168,7 @@
     <ClCompile Include="src\SPTracer.cpp" />
     <ClCompile Include="src\Task\TaskScheduler.cpp" />
     <ClCompile Include="src\Task\TraceRayTask.cpp" />
+    <ClCompile Include="src\Vec3.cpp" />
     <ClCompile Include="src\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -177,6 +178,7 @@
     <ClInclude Include="src\Model\Color\Color.h" />
     <ClInclude Include="src\Model\Color\ScalarColor.h" />
     <ClInclude Include="src\Model\Color\SpectralColor.h" />
+    <ClInclude Include="src\Intersection.h" />
     <ClInclude Include="src\Model\Material\LambertianMaterial.h" />
     <ClInclude Include="src\Model\Material\Material.h" />
     <ClInclude Include="src\Model\Material\PhongLuminaireMaterial.h" />
