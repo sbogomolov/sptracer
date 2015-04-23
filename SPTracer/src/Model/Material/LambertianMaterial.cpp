@@ -20,6 +20,10 @@ namespace SPTracer
 
 	bool LambertianMaterial::GetNewRay(const Ray& ray, const Intersection& intersection, Ray& newRay) const
 	{
+		// NOTE:
+		// BDRF is 1/pi * cos(theta), it will be used as PDF
+		// to prefer bright directions.
+
 		// new ray origin is intersection point
 		newRay.origin = intersection.point;
 
@@ -32,11 +36,11 @@ namespace SPTracer
 		double theta = M_PI_2 - rho;
 		newRay.direction = Vec3::FromPhiThetaNormal(phi, theta, intersection.normal);
 
-		// BDRF
-		double bdrf = diffuseReflactance_->GetAmplitude(ray.waveLength) / M_PI * std::cos(theta);
-
-		// weight is changed according to BDRF
-		newRay.weight = ray.weight * bdrf;
+		// Because the bright directions are preferred in 
+		// the choice of samples, we do not have to weight
+		// them again by applying the BDRF as a scaling
+		// factor to reflectance.
+		newRay.weight = ray.weight * diffuseReflactance_->GetAmplitude(ray.waveLength);
 
 		return false;
 	}
