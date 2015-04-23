@@ -15,6 +15,7 @@ namespace SPTracer
 		virtual ~Object();
 
 		virtual bool Intersect(const Ray& ray, Intersection& intersection) const = 0;
+		virtual bool GetNewRay(const Ray& ray, const Intersection& intersection, Ray& newRay) const;
 
 	protected:
 		static const double Eps;

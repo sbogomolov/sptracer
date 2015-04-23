@@ -19,4 +19,9 @@ namespace SPTracer
 		return true;
 	}
 
+	bool PhongLuminaireMaterial::GetNewRay(const Ray& ray, const Intersection& intersection, Ray& newRay) const
+	{
+		return reflectiveMaterial_->GetNewRay(ray, intersection, newRay);
+	}
+
 }

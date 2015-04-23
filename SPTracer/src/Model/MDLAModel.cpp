@@ -29,6 +29,14 @@ namespace SPTracer
 
 		// parse tokens
 		ParseTokens(tokens);
+
+		// check model
+		if (objects_.size() == 0)
+		{
+			const char* s = "MDLAModel: Model has no objects";
+			Log::Error(s);
+			throw Exception(s);
+		}
 	}
 
 	std::vector<std::string> MDLAModel::GetTokens(std::string text)
@@ -233,7 +241,7 @@ namespace SPTracer
 		// check file type
 		if (*it != "mdlflA20")
 		{
-			auto s = "MDLAModel: Wrong file type";
+			const char* s = "MDLAModel: Wrong file type";
 			Log::Error(s);
 			throw Exception(s);
 		}

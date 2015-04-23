@@ -17,7 +17,6 @@ namespace SPTracer
 
 	private:
 		std::queue<std::unique_ptr<Task>> tasks_;
-		std::vector<std::thread> threads_;
 
 		void WorkerThread();
 	};

@@ -65,7 +65,17 @@ namespace SPTracer
 			return false;
 		}
 
+		// set normal in intersection point
+		intersection.normal = n;
+
 		return true;
 	}
+
+
+	bool Object::GetNewRay(const Ray& ray, const Intersection& intersection, Ray& newRay) const
+	{
+		return material_->GetNewRay(ray, intersection, newRay);
+	}
+
 
 }

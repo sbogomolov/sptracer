@@ -9,6 +9,7 @@ namespace SPTracer
 	struct Intersection
 	{
 		Vec3 point;
+		Vec3 normal;
 		double distance;
 	};
 

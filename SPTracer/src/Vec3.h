@@ -13,6 +13,7 @@ namespace SPTracer
 		void Normalize();
 		double EuclideanNorm() const;
 
+		static Vec3 FromPhiThetaNormal(double phi, double theta, const Vec3& n);
 		static Vec3 CrossProduct(const Vec3& lhs, const Vec3& rhs);
 
 		friend Vec3 operator+(const Vec3& lhs, const Vec3& rhs);

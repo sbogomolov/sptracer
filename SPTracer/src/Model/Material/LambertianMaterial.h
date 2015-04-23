@@ -10,7 +10,9 @@ namespace SPTracer
 	{
 	public:
 		LambertianMaterial(std::unique_ptr<Color> diffuseReflactance);
+		
 		bool IsEmissive() const override;
+		bool GetNewRay(const Ray& ray, const Intersection& intersection, Ray& newRay) const override;
 
 	private:
 		std::unique_ptr<Color> diffuseReflactance_;
