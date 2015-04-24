@@ -9,19 +9,21 @@
 
 namespace SPTracer
 {
+	struct Intersection;
+	struct Ray;
 
 	class Model
 	{
 	public:
 		virtual ~Model();
 
-		bool GetNewRay(const Ray& ray, Ray& newRay) const;
+		bool Intersect(const Ray& ray, Intersection& intersection) const;
 		static double RandDouble(double min, double max);
 
 	protected:
 		Camera camera_;
 		std::unordered_map<std::string, std::shared_ptr<Material>> materials_;
-		std::vector<std::unique_ptr<Object>> objects_;
+		std::vector<std::shared_ptr<Object>> objects_;
 
 		Model();
 	};

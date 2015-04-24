@@ -2,9 +2,15 @@
 #define APP_H
 
 #include <memory>
+#include <string>
 #include <windows.h>
-#include "SPTracer.h"
-#include "Window.h"
+
+namespace SPTracer
+{
+	class SPTracer;
+}
+
+class Window;
 
 class App
 {

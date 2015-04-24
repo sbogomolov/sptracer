@@ -7,7 +7,11 @@ namespace SPTracer
 	class Task
 	{
 	public:
+		virtual ~Task() { };
 		virtual void operator()() = 0;
+
+	protected:
+		Task() { };
 	};
 
 }

@@ -12,8 +12,8 @@ namespace SPTracer
 	public:
 		struct Amplitude
 		{
-			double l;	// length
-			double a;	// amplitude
+			double waveLength;	// length
+			double amplitude;	// amplitude
 		};
 
 		SpectralColor();

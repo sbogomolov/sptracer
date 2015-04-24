@@ -1,4 +1,7 @@
 #include <cmath>
+#include "../../Intersection.h"
+#include "../../Ray.h"
+#include "../Material/Material.h"
 #include "Object.h"
 
 namespace SPTracer
@@ -72,10 +75,14 @@ namespace SPTracer
 	}
 
 
-	bool Object::GetNewRay(const Ray& ray, const Intersection& intersection, Ray& newRay) const
+	bool Object::GetNewRay(const Ray& ray, const Intersection& intersection, double waveLength, Ray& newRay, double& reflectance, double& bdrfPdf) const
 	{
-		return material_->GetNewRay(ray, intersection, newRay);
+		return material_->GetNewRay(ray, intersection, waveLength, newRay, reflectance, bdrfPdf);
 	}
 
+	bool Object::IsEmissive() const
+	{
+		return material_->IsEmissive();
+	}
 
 }

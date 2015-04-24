@@ -29,7 +29,7 @@ namespace SPTracer
 
 		// sort by wave length
 		std::sort(amplitudes_.begin(), amplitudes_.end(),
-			[](const SpectralColor::Amplitude& a, const SpectralColor::Amplitude& b) { return a.l < b.l; });
+			[](const Amplitude& a, const Amplitude& b) { return a.waveLength < b.waveLength; });
 
 		initialized_ = true;
 	}
@@ -46,14 +46,14 @@ namespace SPTracer
 
 		// get upper bound
 		auto upper = std::upper_bound(amplitudes_.begin(), amplitudes_.end(), waveLength,
-			[](const double& a, const SpectralColor::Amplitude& b) { return a < b.l; });
+			[](const double& a, const Amplitude& b) { return a < b.waveLength; });
 		
 		// check that we're not lower than the first wave legth
 		if (upper == amplitudes_.begin())
 		{
 			std::ostringstream oss;
 			oss << "SpectralColor: Wave length was out of range: "
-				<< waveLength << " < " << amplitudes_[0].l;
+				<< waveLength << " < " << amplitudes_[0].waveLength;
 			Log::Warning(oss.str());
 
 			return 0.0;
@@ -62,9 +62,9 @@ namespace SPTracer
 		// get lower bound
 		auto lower = --upper;
 		const Amplitude& lowerAmp = *lower;
-		if ((waveLength - lowerAmp.l) < WaveLengthAccuracy)
+		if ((waveLength - lowerAmp.waveLength) < WaveLengthAccuracy)
 		{
-			return lowerAmp.a;
+			return lowerAmp.amplitude;
 		}
 
 		// check that we're not higher than the last wave legth
@@ -72,7 +72,7 @@ namespace SPTracer
 		{
 			std::ostringstream oss;
 			oss << "SpectralColor: Wave length was out of range: "
-				<< waveLength << " > " << amplitudes_[amplitudes_.size() - 1].l;
+				<< waveLength << " > " << amplitudes_[amplitudes_.size() - 1].waveLength;
 			Log::Warning(oss.str());
 
 			return 0.0;
@@ -81,8 +81,9 @@ namespace SPTracer
 		const Amplitude& upperAmp = *upper;
 
 		// return linear interpolation of amplitude
-		return lowerAmp.a
-			+ ((waveLength - lowerAmp.l) / (upperAmp.l - lowerAmp.l)
-			* (upperAmp.a - lowerAmp.a));
+		return lowerAmp.amplitude
+			+ ((waveLength - lowerAmp.waveLength) / (upperAmp.waveLength - lowerAmp.waveLength)
+			* (upperAmp.amplitude - lowerAmp.amplitude));
 	}
+
 }

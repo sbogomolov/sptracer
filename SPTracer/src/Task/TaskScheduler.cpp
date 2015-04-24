@@ -1,6 +1,5 @@
-#include "TaskScheduler.h"
-
 #include <thread>
+#include "TaskScheduler.h"
 
 namespace SPTracer
 {

@@ -3,13 +3,10 @@
 
 #include <memory>
 #include <queue>
-#include <thread>
-#include <vector>
 #include "Task.h"
 
 namespace SPTracer
 {
-
 	class TaskScheduler
 	{
 	public:

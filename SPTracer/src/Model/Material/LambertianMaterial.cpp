@@ -2,7 +2,10 @@
 
 #include <cmath>
 #include <math.h>
+#include "../../Intersection.h"
+#include "../../Ray.h"
 #include "../Model.h"
+#include "../Color/Color.h"
 #include "LambertianMaterial.h"
 
 namespace SPTracer
@@ -18,7 +21,7 @@ namespace SPTracer
 		return false;
 	}
 
-	bool LambertianMaterial::GetNewRay(const Ray& ray, const Intersection& intersection, Ray& newRay) const
+	bool LambertianMaterial::GetNewRay(const Ray& ray, const Intersection& intersection, double waveLength, Ray& newRay, double& reflectance, double& bdrfPdf) const
 	{
 		// NOTE:
 		// BDRF is 1/pi * cos(theta), it will be used as PDF
@@ -27,20 +30,20 @@ namespace SPTracer
 		// new ray origin is intersection point
 		newRay.origin = intersection.point;
 
-		// wave length is not changed
-		newRay.waveLength = ray.waveLength;
-
 		// generate random ray direction using BDRF as PDF
 		double phi = Model::RandDouble(0.0, 2.0 * M_PI);
 		double rho = std::acos(std::sqrt(Model::RandDouble(0.0, 1.0)));
 		double theta = M_PI_2 - rho;
 		newRay.direction = Vec3::FromPhiThetaNormal(phi, theta, intersection.normal);
 
+		// get reflectance
+		reflectance = diffuseReflactance_->GetAmplitude(waveLength);
+
 		// Because the bright directions are preferred in 
 		// the choice of samples, we do not have to weight
 		// them again by applying the BDRF as a scaling
 		// factor to reflectance.
-		newRay.weight = ray.weight * diffuseReflactance_->GetAmplitude(ray.waveLength);
+		bdrfPdf = 1.0;
 
 		return false;
 	}

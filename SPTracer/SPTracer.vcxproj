@@ -187,6 +187,7 @@
     <ClInclude Include="src\Model\Model.h" />
     <ClInclude Include="src\Model\Object\Object.h" />
     <ClInclude Include="src\Model\Object\PlanarMeshObject.h" />
+    <ClInclude Include="src\PixelData.h" />
     <ClInclude Include="src\Ray.h" />
     <ClInclude Include="src\Task\Task.h" />
     <ClInclude Include="src\Task\TaskScheduler.h" />

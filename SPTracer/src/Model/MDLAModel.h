@@ -4,14 +4,15 @@
 #include <string>
 #include <vector>
 #include "Model.h"
-#include "Color/ScalarColor.h"
-#include "Color/SpectralColor.h"
-#include "Material/LambertianMaterial.h"
-#include "Material/PhongLuminaireMaterial.h"
-#include "Object/PlanarMeshObject.h"
 
 namespace SPTracer
 {
+	class Color;
+	class SpectralColor;
+	class ScalarColor;
+	class Material;
+	class LambertianMaterial;
+	class PhongLuminaireMaterial;
 
 	class MDLAModel : public Model
 	{

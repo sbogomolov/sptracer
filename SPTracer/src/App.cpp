@@ -2,6 +2,8 @@
 #include "App.h"
 #include "Exception.h"
 #include "Log.h"
+#include "SPTracer.h"
+#include "Window.h"
 
 App::App(std::string fileName, int width, int height)
 {
@@ -15,7 +17,7 @@ App::App(std::string fileName, int width, int height)
 	try
 	{
 		window_ = std::make_unique<Window>(width, height, title.c_str());
-		tracer_ = std::make_unique<SPTracer::SPTracer>(fileName, 4);
+		tracer_ = std::make_unique<SPTracer::SPTracer>(fileName, 4, width, height);
 	}
 	catch (SPTracer::Exception e)
 	{

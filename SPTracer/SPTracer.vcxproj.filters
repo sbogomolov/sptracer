@@ -131,5 +131,8 @@
     <ClInclude Include="src\Intersection.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\PixelData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

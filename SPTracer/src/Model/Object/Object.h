@@ -2,12 +2,12 @@
 #define SPT_OBJECT_H
 
 #include <memory>
-#include "../../Intersection.h"
-#include "../../Ray.h"
-#include "../Material/Material.h"
 
 namespace SPTracer
 {
+	struct Intersection;
+	struct Ray;
+	class Material;
 
 	class Object
 	{
@@ -15,8 +15,9 @@ namespace SPTracer
 		virtual ~Object();
 
 		virtual bool Intersect(const Ray& ray, Intersection& intersection) const = 0;
-		virtual bool GetNewRay(const Ray& ray, const Intersection& intersection, Ray& newRay) const;
-
+		bool GetNewRay(const Ray& ray, const Intersection& intersection, double waveLength, Ray& newRay, double& reflectance, double& bdrfPdf) const;
+		bool IsEmissive() const;
+		
 	protected:
 		static const double Eps;
 

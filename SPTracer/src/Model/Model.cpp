@@ -1,4 +1,6 @@
 #include <random>
+#include "../Intersection.h"
+#include "../Ray.h"
 #include "Model.h"
 
 namespace SPTracer
@@ -11,31 +13,23 @@ namespace SPTracer
 	{
 	}
 
-	bool Model::GetNewRay(const Ray& ray, Ray& newRay) const
+	bool Model::Intersect(const Ray& ray, Intersection& intersection) const
 	{
 		bool found = false;
 		
-		Object& object = *objects_[0];
-		Intersection best;
 		Intersection current;
 		for (const auto& o : objects_)
 		{
 			bool success = o->Intersect(ray, current);
-			if (success && (!found || (current.distance < best.distance)))
+			if (success && (!found || (current.distance < intersection.distance)))
 			{
 				found = true;
-				best = current;
-				object = *o;
+				intersection = current;
+				intersection.object = o;
 			}
 		}
 
-		// check if intersection was found
-		if (found)
-		{
-			return object.GetNewRay(ray, best, newRay);
-		}
-
-		return false;
+		return found;
 	}
 
 	double Model::RandDouble(double min, double max)

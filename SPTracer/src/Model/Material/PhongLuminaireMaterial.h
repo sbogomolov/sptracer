@@ -3,11 +3,14 @@
 
 #include <memory>
 
-#include "../Color/Color.h"
 #include "Material.h"
 
 namespace SPTracer
 {
+
+	struct Intersection;
+	struct Ray;
+	class Color;
 
 	class PhongLuminaireMaterial : public Material
 	{
@@ -18,7 +21,7 @@ namespace SPTracer
 			double phongExponent);
 
 		bool IsEmissive() const override;
-		bool GetNewRay(const Ray& ray, const Intersection& intersection, Ray& newRay) const override;
+		bool GetNewRay(const Ray& ray, const Intersection& intersection, double waveLength, Ray& newRay, double& reflectance, double& bdrfPdf) const override;
 
 	private:
 		std::unique_ptr<Material> reflectiveMaterial_;

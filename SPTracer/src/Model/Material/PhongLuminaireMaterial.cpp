@@ -1,3 +1,6 @@
+#include "../../Intersection.h"
+#include "../../Ray.h"
+#include "../Color/Color.h"
 #include "PhongLuminaireMaterial.h"
 
 namespace SPTracer
@@ -19,9 +22,9 @@ namespace SPTracer
 		return true;
 	}
 
-	bool PhongLuminaireMaterial::GetNewRay(const Ray& ray, const Intersection& intersection, Ray& newRay) const
+	bool PhongLuminaireMaterial::GetNewRay(const Ray& ray, const Intersection& intersection, double waveLength, Ray& newRay, double& reflectance, double& bdrfPdf) const
 	{
-		return reflectiveMaterial_->GetNewRay(ray, intersection, newRay);
+		return reflectiveMaterial_->GetNewRay(ray, intersection, waveLength, newRay, reflectance, bdrfPdf);
 	}
 
 }

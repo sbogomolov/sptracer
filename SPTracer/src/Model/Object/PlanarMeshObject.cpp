@@ -1,3 +1,4 @@
+#include "../Material/Material.h"
 #include "PlanarMeshObject.h"
 
 namespace SPTracer
@@ -21,7 +22,6 @@ namespace SPTracer
 		normal_ = ComputeNormal(v1, v2, v3);
 
 		// compute d parameter for outline
-		const Vec3& v = vertices_[outline_[0]];
 		d_ = (normal_.x * v1.x) + (normal_.y * v1.y) + (normal_.z * v1.z);
 
 		// compute d parameter for holes

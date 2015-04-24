@@ -4,11 +4,11 @@
 #include <memory>
 #include <vector>
 #include "../../Vec3.h"
-#include "../Material/Material.h"
 #include "Object.h"
 
 namespace SPTracer
 {
+	class Material;
 
 	class PlanarMeshObject : public Object
 	{

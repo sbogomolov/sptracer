@@ -5,6 +5,11 @@
 #include "../Exception.h"
 #include "../Log.h"
 #include "MDLAModel.h"
+#include "Color/ScalarColor.h"
+#include "Color/SpectralColor.h"
+#include "Material/LambertianMaterial.h"
+#include "Material/PhongLuminaireMaterial.h"
+#include "Object/PlanarMeshObject.h"
 
 namespace SPTracer
 {
@@ -603,7 +608,7 @@ namespace SPTracer
 		}
 
 		// add object
-		objects_.push_back(std::make_unique<PlanarMeshObject>(
+		objects_.push_back(std::make_shared<PlanarMeshObject>(
 			std::move(name),
 			std::move(material),
 			std::move(vertices),
