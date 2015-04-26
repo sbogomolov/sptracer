@@ -60,6 +60,7 @@ namespace SPTracer
 		double FindExposure(const std::vector<Vec3>& xyzColor) const;
 		double Clamp(double c) const;
 		std::vector<Vec3> Tonemap(const std::vector<Vec3>& xyzColor) const;
+		std::string FormatNumber(double n) const;
 	};
 
 }

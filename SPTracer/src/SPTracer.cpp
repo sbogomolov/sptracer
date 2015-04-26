@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <cmath>
+#include <iomanip>
 #include <numeric>
 #include <sstream>
 #include <thread>
@@ -206,13 +207,40 @@ namespace SPTracer {
 
 		// prepare title
 		size_t spp = completedSamplesCount_ * waveLengthCount_;
-		double rps = (double)(spp * width_ * height_) / ((double)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start_).count() / 1000.0);
-
+		double sps = ((double)(spp * width_ * height_) / ((double)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start_).count() / 1000.0));
+		
 		std::ostringstream oss;
-		oss << spp << " SPP (" << completedSamplesCount_ << " S x " << waveLengthCount_ << " WPS), " << (size_t)rps << " RPS" ;
+		oss << FormatNumber(spp) << " SPP, " << FormatNumber(sps) << " SPS" ;
 
 		// call image updater
 		imageUpdater_->UpdateImage(rgbColor, oss.str());
+	}
+
+	std::string SPTracer::FormatNumber(double n) const
+	{
+		std::ostringstream oss;
+		if (n < 1e3)
+		{
+			oss << (size_t)n;
+		}
+		else
+		{
+			oss << std::setprecision(2) << std::fixed;
+			if (n < 1e6)
+			{
+				oss << n / 1e3 << "K";
+			}
+			else if (n <= 1e9)
+			{
+				oss << n / 1e6 << "M";
+			}
+			else
+			{
+				oss << n / 1e9 << "B";
+			}
+		}
+
+		return oss.str();
 	}
 
 }
