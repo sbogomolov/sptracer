@@ -17,7 +17,7 @@ namespace SPTracer
 		
 		bool GetNewRay(const Ray& ray, const Intersection& intersection, double waveLength, Ray& newRay, WeightFactors& weightFactors) const override;
 		bool IsEmissive() const override;
-		double GetLuminance(const Ray& ray, const Intersection& intersection, double waveLength) const override;
+		double GetRadiance(const Ray& ray, const Intersection& intersection, double waveLength) const override;
 
 	private:
 		double absorptionProbability_;

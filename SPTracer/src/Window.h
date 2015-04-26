@@ -15,24 +15,28 @@ public:
 	class ImageUpdater : public SPTracer::ImageUpdater
 	{
 	public:
-		ImageUpdater(std::vector<SPTracer::Vec3>& image, std::mutex& mutex, HWND& hwnd);
+		ImageUpdater(Window& window);
 		void UpdateImage(std::vector<SPTracer::Vec3> image, std::string status) override;
 
 	private:
-		HWND& hwnd_;
-		std::vector<SPTracer::Vec3>& image_;
-		std::mutex& mutex_;
+		Window& window_;
 		std::string title_;
 	};
 
 	Window(unsigned int width, unsigned int height, std::string title);
 	virtual ~Window();
 	
-	const HWND GetHwnd() const;
+	const unsigned int GetWidth() const;
+	const unsigned int GetHeight() const;
+	const HWND& GetHwnd() const;
+	const HBITMAP& GetBitmap() const;
+	std::mutex& GetMutex();
 	std::shared_ptr<ImageUpdater> GetImageUpdater();
 
 private:
 	HWND hwnd_;
+	HBITMAP bitmap_;
+
 	const unsigned int width_;
 	const unsigned int height_;
 	std::vector<SPTracer::Vec3> image_;

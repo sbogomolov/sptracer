@@ -28,18 +28,18 @@ namespace SPTracer
 		return reflectiveMaterial_->GetNewRay(ray, intersection, waveLength, newRay, weightFactors);
 	}
 
-	double PhongLuminaireMaterial::GetLuminance(const Ray& ray, const Intersection& intersection, double waveLength) const
+	double PhongLuminaireMaterial::GetRadiance(const Ray& ray, const Intersection& intersection, double waveLength) const
 	{
 		// get radiant exitance for wave length
-		double luminance = radiantExitance_->GetAmplitude(waveLength);
+		double radiance = radiantExitance_->GetAmplitude(waveLength);
 
 		// angle between ray and normal
 		double theta = std::acos((-1 * ray.direction) * intersection.normal);
 
 		// scale according to phong exponent
-		luminance *= std::pow(std::cos(theta), phongExponent_);
+		radiance *= std::pow(std::cos(theta), phongExponent_);
 
-		return luminance;
+		return radiance;
 	}
 
 }

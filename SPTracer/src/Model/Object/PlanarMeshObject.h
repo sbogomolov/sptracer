@@ -23,12 +23,15 @@ namespace SPTracer
 		bool Intersect(const Ray& ray, Intersection& intersection) const override;
 
 	private:
-		Vec3 normal_;
-		std::vector<std::vector<unsigned long>> holes_;
-		std::vector<unsigned long> outline_;
 		std::vector<Vec3> vertices_;
-		double d_;
-		std::vector<double> dh_;
+		std::vector<unsigned long> outline_;
+		std::vector<std::vector<unsigned long>> holes_;
+		
+		std::vector<Vec3> outlineNormals_;
+		std::vector<std::vector<Vec3>> holesNormals_;
+
+		std::vector<double> d_;
+		std::vector<std::vector<double>> dh_;
 	};
 
 }

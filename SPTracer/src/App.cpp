@@ -5,7 +5,7 @@
 #include "SPTracer.h"
 #include "Window.h"
 
-App::App(std::string fileName, unsigned int width, unsigned int height)
+App::App(std::string fileName)
 {
 #ifdef _WIN64
 	std::string title = "SPTracer (64-bit) - [ " + fileName + " ]";
@@ -16,8 +16,11 @@ App::App(std::string fileName, unsigned int width, unsigned int height)
 #ifdef _DEBUG
 	size_t numThreads = 1;
 #else
-	size_t numThreads = 8;
+	size_t numThreads = 6;
 #endif
+
+	unsigned int width = 500;
+	unsigned int height = 500;
 
 	try
 	{

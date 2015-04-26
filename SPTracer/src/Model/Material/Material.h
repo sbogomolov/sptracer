@@ -18,7 +18,7 @@ namespace SPTracer
 
 		virtual bool GetNewRay(const Ray& ray, const Intersection& intersection, double waveLength, Ray& newRay, WeightFactors& weightFactors) const = 0;
 		virtual bool IsEmissive() const = 0;
-		virtual double GetLuminance(const Ray& ray, const Intersection& intersection, double waveLength) const = 0;
+		virtual double GetRadiance(const Ray& ray, const Intersection& intersection, double waveLength) const = 0;
 
 	protected:
 		Material() { };

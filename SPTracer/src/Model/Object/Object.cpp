@@ -1,13 +1,12 @@
 #include <cmath>
 #include "../../Intersection.h"
 #include "../../Ray.h"
+#include "../../Util.h"
 #include "../Material/Material.h"
 #include "Object.h"
 
 namespace SPTracer
 {
-
-	const double Object::Eps = 1e-10;
 
 	Object::Object(std::string name, std::shared_ptr<Material> material)
 		: name_(std::move(name)), material_(std::move(material))
@@ -33,10 +32,10 @@ namespace SPTracer
 		return normal;
 	}
 
-	bool Object::IntersectWithPlane(const Ray& ray, const Vec3& n, double d, Intersection& intersection)
+	bool Object::IntersectWithTriangle(const Ray& ray, const Vec3& n, double d, const Vec3& v1, const Vec3& v2, const Vec3& v3, Intersection& intersection)
 	{
 		double b = (n.x * ray.direction.x) + (n.y * ray.direction.y) + (n.z * ray.direction.z);
-		if (std::abs(b) < Eps)
+		if (std::abs(b) < Util::Eps)
 		{
 			// line is parallel to plane
 			return false;
@@ -46,7 +45,7 @@ namespace SPTracer
 		double& t = intersection.distance;
 		t = a / b;
 
-		if (t < Eps)
+		if (t < Util::Eps)
 		{
 			// ray points in direction oposite from plane or starts from tha plane
 			return false;
@@ -59,26 +58,20 @@ namespace SPTracer
 		// set normal in intersection point
 		intersection.normal = n;
 
-		return true;
-	}
-
-	bool Object::PointInTriangle(const Vec3& p, const Vec3& v1, const Vec3& v2, const Vec3& v3)
-	{
 		// compute areas
 		double area = Vec3::CrossProduct(v2 - v1, v3 - v1).EuclideanNorm() / 2.0;
 		double a1 = Vec3::CrossProduct(v1 - p, v2 - p).EuclideanNorm() / 2.0;
 		double a2 = Vec3::CrossProduct(v2 - p, v3 - p).EuclideanNorm() / 2.0;
 		double a3 = Vec3::CrossProduct(v3 - p, v1 - p).EuclideanNorm() / 2.0;
 
-		if ((a1 + a2 + a3) > area)
+		if ((a1 + a2 + a3) > (area + Util::Eps))
 		{
-			// point is outside of triangle
+			// point is outside the triangle
 			return false;
 		}
 
 		return true;
 	}
-
 
 	bool Object::GetNewRay(const Ray& ray, const Intersection& intersection, double waveLength, Ray& newRay, WeightFactors& weightFactors) const
 	{
@@ -87,7 +80,7 @@ namespace SPTracer
 
 	double Object::GetRadiance(const Ray& ray, const Intersection& intersection, double waveLength) const
 	{
-		return material_->GetLuminance(ray, intersection, waveLength);
+		return material_->GetRadiance(ray, intersection, waveLength);
 	}
 
 	bool Object::IsEmissive() const

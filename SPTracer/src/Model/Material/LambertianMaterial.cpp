@@ -1,10 +1,8 @@
-#define _USE_MATH_DEFINES
-
 #include <cmath>
-#include <math.h>
 #include "../../Intersection.h"
 #include "../../Ray.h"
 #include "../../WeightFactors.h"
+#include "../../Util.h"
 #include "../Model.h"
 #include "../Color/Color.h"
 #include "LambertianMaterial.h"
@@ -27,9 +25,9 @@ namespace SPTracer
 		newRay.origin = intersection.point;
 
 		// generate random ray direction using BDRF as PDF
-		double phi = Model::RandDouble(0.0, 2.0 * M_PI);
-		double rho = std::acos(std::sqrt(Model::RandDouble(0.0, 1.0)));
-		double theta = M_PI_2 - rho;
+		double phi = Util::RandDouble(0.0, 2.0 * Util::Pi);
+		double rho = std::acos(std::sqrt(Util::RandDouble(0.0, 1.0)));
+		double theta = Util::Pi / 2.0 - rho;
 		newRay.direction = Vec3::FromPhiThetaNormal(phi, theta, intersection.normal);
 
 		// get reflectance
@@ -49,7 +47,7 @@ namespace SPTracer
 		return false;
 	}
 
-	double LambertianMaterial::GetLuminance(const Ray & ray, const Intersection & intersection, double waveLength) const
+	double LambertianMaterial::GetRadiance(const Ray & ray, const Intersection & intersection, double waveLength) const
 	{
 		return 0.0;
 	}

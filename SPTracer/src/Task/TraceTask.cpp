@@ -1,5 +1,6 @@
 #include "../Intersection.h"
 #include "../SPTracer.h"
+#include "../Util.h"
 #include "../WeightFactors.h"
 #include "../Model/Camera.h"
 #include "../Model/Model.h"
@@ -70,8 +71,8 @@ namespace SPTracer
 				Vec3& xyzColor = color[i * width + j];
 
 				// sample pixel
-				double u = left + ((double)j + Model::RandDouble(0.0, 1.0)) * pixelWidth;
-				double v = top - ((double)i + Model::RandDouble(0.0, 1.0)) * pixelHeight;
+				double u = left + ((double)j + Util::RandDouble(0.0, 1.0)) * pixelWidth;
+				double v = top - ((double)i + Util::RandDouble(0.0, 1.0)) * pixelHeight;
 
 				// direction
 				Vec3 direction{
@@ -116,9 +117,9 @@ namespace SPTracer
 						// check if light should be emitted
 						if (intersection.object->IsEmissive())
 						{
-							if (Model::RandDouble(0.0, 1.0) < emissionProbability)
+							if (Util::RandDouble(0.0, 1.0) < emissionProbability)
 							{
-								// luminance
+								// radiance
 								double radiance = intersection.object->GetRadiance(*ray, intersection, waveLength);
 
 								// apply ray weight
@@ -153,7 +154,7 @@ namespace SPTracer
 						double absorptionProbability = 1.0 - weightFactors.reflectance;
 						if (bounces > minBounces)
 						{
-							if (Model::RandDouble(0.0, 1.0) < absorptionProbability)
+							if (Util::RandDouble(0.0, 1.0) < absorptionProbability)
 							{
 								// ray was absorped
 								break;

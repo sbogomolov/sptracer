@@ -21,13 +21,10 @@ namespace SPTracer
 		bool IsEmissive() const;
 		
 	protected:
-		static const double Eps;
-
 		Object(std::string name, std::shared_ptr<Material> material);
 
 		static Vec3 ComputeNormal(const Vec3& v1, const Vec3& v2, const Vec3& v3);
-		static bool IntersectWithPlane(const Ray& ray, const Vec3& n, double d, Intersection& intersection);
-		static bool PointInTriangle(const Vec3& p, const Vec3& v1, const Vec3& v2, const Vec3& v3);
+		static bool IntersectWithTriangle(const Ray& ray, const Vec3& n, double d, const Vec3& v1, const Vec3& v2, const Vec3& v3, Intersection& intersection);
 
 	private:
 		std::string name_;

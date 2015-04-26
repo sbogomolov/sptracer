@@ -1,5 +1,3 @@
-#include <chrono>
-#include <random>
 #include "../Intersection.h"
 #include "../Ray.h"
 #include "Model.h"
@@ -40,13 +38,6 @@ namespace SPTracer
 		}
 
 		return found;
-	}
-
-	double Model::RandDouble(double min, double max)
-	{
-		static thread_local std::mt19937 generator((unsigned int)std::chrono::high_resolution_clock::now().time_since_epoch().count());
-		std::uniform_real_distribution<double> distribution(min, max);
-		return distribution(generator);
 	}
 
 }

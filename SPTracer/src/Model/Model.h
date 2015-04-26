@@ -19,7 +19,6 @@ namespace SPTracer
 
 		const Camera& GetCamera() const;
 		bool Intersect(const Ray& ray, Intersection& intersection) const;
-		static double RandDouble(double min, double max);
 
 	protected:
 		Camera camera_;

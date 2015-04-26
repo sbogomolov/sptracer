@@ -1,4 +1,5 @@
 #include <cmath>
+#include "Util.h"
 #include "Vec3.h"
 
 namespace SPTracer
@@ -15,19 +16,28 @@ namespace SPTracer
 
 	Vec3 Vec3::RotateFromTo(const Vec3& fromDirection, const Vec3& toDirection)
 	{
-		static const double Eps = 1e-10;
-
 		// rotation angle
 		double theta = std::acos(fromDirection * toDirection);
 		
+		double absTheta = std::abs(theta);
+
 		// do not rotate if angle is too small
-		if (std::abs(theta) < Eps)
+		if (absTheta < Util::Eps)
 		{
 			return *this;
 		}
 
+		// if angle is PI - flip vector
+		if (std::abs(absTheta - Util::Pi) < Util::Eps)
+		{
+			return -1 * (*this);
+		}
+
 		// axis of rotation
 		Vec3 rotAxis = Vec3::CrossProduct(fromDirection, toDirection);
+
+		// normalize axis of rotation
+		rotAxis.Normalize();
 
 		// rotate about axis
 		return (*this).RotateAboutAxis(rotAxis, theta);
@@ -43,7 +53,7 @@ namespace SPTracer
 
 		return Vec3{
 			n.x * a + v.x * cosTheta + (-n.z * v.y + n.y * v.z) * sinTheta,	// x
-			n.y * a + v.y * cosTheta + (n.z * v.x - n.x * v.z) * sinTheta,	// y
+			n.y * a + v.y * cosTheta + ( n.z * v.x - n.x * v.z) * sinTheta,	// y
 			n.z * a + v.z * cosTheta + (-n.y * v.x + n.x * v.y) * sinTheta	// z
 		};
 	}

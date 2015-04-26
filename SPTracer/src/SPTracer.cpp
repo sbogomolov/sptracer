@@ -30,13 +30,19 @@ namespace SPTracer {
 		waveLengthMin_ = 400.0;
 		waveLengthMax_ = 700.0;
 		waveLengthStep_ = 20.0;
+
+#ifdef _DEBUG
+		waveLengthStep_ = 150.0;
+#endif
+
 		waveLengthCount_ = (size_t)((waveLengthMax_ - waveLengthMin_) / waveLengthStep_) + 1;
-		
+
 		// color converter
 		xyzConverter_ = std::make_unique<CIE1931>();
 
 		// color system
 		rgbConverter_ = std::make_unique<SRGB>();
+
 	}
 
 	SPTracer::~SPTracer()

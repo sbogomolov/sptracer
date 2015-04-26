@@ -64,17 +64,43 @@ Window::Window(unsigned int width, unsigned int height, std::string title)
 	ShowWindow(hwnd_, SW_SHOWNORMAL);
 	UpdateWindow(hwnd_);
 
+	// create bitmap in memory
+	HDC hdc = GetDC(hwnd_);
+	bitmap_ = CreateCompatibleBitmap(hdc, width_, height_);
+	ReleaseDC(hwnd_, hdc);
+
 	// create image upadter
-	imageUpdater_ = std::make_shared<Window::ImageUpdater>(image_, mutex_, hwnd_);
+	imageUpdater_ = std::make_shared<Window::ImageUpdater>(*this);
 }
 
 Window::~Window()
 {
+	DeleteObject(bitmap_);
 }
 
-const HWND Window::GetHwnd() const
+const unsigned int Window::GetWidth() const
+{
+	return width_;
+}
+
+const unsigned int Window::GetHeight() const
+{
+	return height_;
+}
+
+const HWND& Window::GetHwnd() const
 {
 	return hwnd_;
+}
+
+const HBITMAP& Window::GetBitmap() const
+{
+	return bitmap_;
+}
+
+std::mutex& Window::GetMutex()
+{
+	return mutex_;
 }
 
 std::shared_ptr<Window::ImageUpdater> Window::GetImageUpdater()
@@ -137,54 +163,75 @@ LRESULT Window::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
 void Window::Paint()
 {
+	// lock
+	std::lock_guard<std::mutex> lock(mutex_);
+
+	// get DC
 	PAINTSTRUCT ps;
 	HDC hdc = BeginPaint(hwnd_, &ps);
+
+	// create memory DC
 	HDC hdcMem = CreateCompatibleDC(hdc);
 
-	HBITMAP bitmap = CreateCompatibleBitmap(hdc, width_, height_);
-	SelectObject(hdcMem, bitmap);
-	
-	{
-		// lock
-		std::lock_guard<std::mutex> lock(mutex_);
+	// select bitmap to memory DC
+	SelectObject(hdcMem, bitmap_);
 
-		for (unsigned int i = 0; i < height_; i++)
-		{
-			for (unsigned int j = 0; j < width_; j++)
-			{
-				SPTracer::Vec3& c = image_[i * width_ + j];
-				SetPixel(hdcMem, j, i, RGB((byte)(c.x * 255), (byte)(c.y * 255), (byte)(c.z * 255)));
-			}
-		}
+	// copy bitmap from memory to window
+	BitBlt(hdc, 0, 0, width_, height_, hdcMem, 0, 0, SRCCOPY);
 
-		BitBlt(hdc, 0, 0, width_, height_, hdcMem, 0, 0, SRCCOPY);
-	}
-
-
+	// delete memory DC
 	DeleteDC(hdcMem);
+
+	// release DC
 	EndPaint(hwnd_, &ps);
 }
 
-Window::ImageUpdater::ImageUpdater(std::vector<SPTracer::Vec3>& image, std::mutex& mutex, HWND& hwnd)
-	: hwnd_(hwnd), image_(image), mutex_(mutex)
+Window::ImageUpdater::ImageUpdater(Window& window)
+	: window_(window)
 {
 	char buf[1024];
-	GetWindowTextA(hwnd_, buf, 1024);
+	GetWindowTextA(window_.GetHwnd(), buf, 1024);
 	title_ = std::string(buf);
 }
 
 void Window::ImageUpdater::UpdateImage(std::vector<SPTracer::Vec3> image, std::string status)
 {
+	const auto& hwnd = window_.GetHwnd();
+
 	{
 		// lock
-		std::lock_guard<std::mutex> lock(mutex_);
+		std::lock_guard<std::mutex> lock(window_.GetMutex());
 		
-		// update image
-		image_ = std::move(image);
-
 		// update title
-		SetWindowTextA(hwnd_, (title_ + ": " + status).c_str());
+		SetWindowTextA(hwnd, (title_ + ": " + status).c_str());
+
+		// get DC
+		HDC hdc = GetDC(hwnd);
+
+		// create memory DC
+		HDC hdcMem = CreateCompatibleDC(hdc);
+
+		// select bitmap to memory DC
+		SelectObject(hdcMem, window_.GetBitmap());
+
+		// draw to bitmap
+		const auto& w = window_.GetWidth();
+		const auto& h = window_.GetHeight();
+		for (unsigned int i = 0; i < h; i++)
+		{
+			for (unsigned int j = 0; j < w; j++)
+			{
+				SPTracer::Vec3& c = image[i * w + j];
+				SetPixel(hdcMem, j, i, RGB((byte)(c.x * 255), (byte)(c.y * 255), (byte)(c.z * 255)));
+			}
+		}
+
+		// delete memory DC
+		DeleteDC(hdcMem);
+
+		// release DC
+		ReleaseDC(hwnd, hdc);
 	}
 
-	InvalidateRect(hwnd_, nullptr, false);
+	InvalidateRect(hwnd, nullptr, false);
 }

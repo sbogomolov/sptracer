@@ -22,7 +22,7 @@ int main(int argc, char **argv)
 	SPTracer::Log::Info("Model file: " + fileName);
 
 	// create application
-	App app(fileName, 500, 500);
+	App app(fileName);
 	
 	// check that application is initialized
 	if (!app.IsInitialized())

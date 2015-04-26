@@ -171,6 +171,7 @@
     <ClCompile Include="src\SPTracer.cpp" />
     <ClCompile Include="src\Task\TaskScheduler.cpp" />
     <ClCompile Include="src\Task\TraceTask.cpp" />
+    <ClCompile Include="src\Util.cpp" />
     <ClCompile Include="src\Vec3.cpp" />
     <ClCompile Include="src\Window.cpp" />
   </ItemGroup>
@@ -198,6 +199,7 @@
     <ClInclude Include="src\Task\Task.h" />
     <ClInclude Include="src\Task\TaskScheduler.h" />
     <ClInclude Include="src\Task\TraceTask.h" />
+    <ClInclude Include="src\Util.h" />
     <ClInclude Include="src\Vec3.h" />
     <ClInclude Include="src\Exception.h" />
     <ClInclude Include="src\SPTracer.h" />
