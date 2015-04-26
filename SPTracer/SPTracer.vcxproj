@@ -156,7 +156,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\App.cpp" />
+    <ClCompile Include="src\Color\SRGB.cpp" />
     <ClCompile Include="src\Log.cpp" />
+    <ClCompile Include="src\Color\CIE1931.cpp" />
     <ClCompile Include="src\Model\Color\ScalarColor.cpp" />
     <ClCompile Include="src\Model\Color\SpectralColor.cpp" />
     <ClCompile Include="src\Model\Material\LambertianMaterial.cpp" />
@@ -168,15 +170,20 @@
     <ClCompile Include="src\Model\Object\PlanarMeshObject.cpp" />
     <ClCompile Include="src\SPTracer.cpp" />
     <ClCompile Include="src\Task\TaskScheduler.cpp" />
-    <ClCompile Include="src\Task\TraceRayTask.cpp" />
+    <ClCompile Include="src\Task\TraceTask.cpp" />
     <ClCompile Include="src\Vec3.cpp" />
     <ClCompile Include="src\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\App.h" />
+    <ClInclude Include="src\Color\RGBConverter.h" />
+    <ClInclude Include="src\Color\SRGB.h" />
+    <ClInclude Include="src\ImageUpdater.h" />
     <ClInclude Include="src\Log.h" />
     <ClInclude Include="src\Model\Camera.h" />
+    <ClInclude Include="src\Color\CIE1931.h" />
     <ClInclude Include="src\Model\Color\Color.h" />
+    <ClInclude Include="src\Color\XYZConverter.h" />
     <ClInclude Include="src\Model\Color\ScalarColor.h" />
     <ClInclude Include="src\Model\Color\SpectralColor.h" />
     <ClInclude Include="src\Intersection.h" />
@@ -187,14 +194,14 @@
     <ClInclude Include="src\Model\Model.h" />
     <ClInclude Include="src\Model\Object\Object.h" />
     <ClInclude Include="src\Model\Object\PlanarMeshObject.h" />
-    <ClInclude Include="src\PixelData.h" />
     <ClInclude Include="src\Ray.h" />
     <ClInclude Include="src\Task\Task.h" />
     <ClInclude Include="src\Task\TaskScheduler.h" />
-    <ClInclude Include="src\Task\TraceRayTask.h" />
+    <ClInclude Include="src\Task\TraceTask.h" />
     <ClInclude Include="src\Vec3.h" />
     <ClInclude Include="src\Exception.h" />
     <ClInclude Include="src\SPTracer.h" />
+    <ClInclude Include="src\WeightFactors.h" />
     <ClInclude Include="src\Window.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

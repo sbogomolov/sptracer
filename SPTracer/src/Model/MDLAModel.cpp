@@ -306,8 +306,12 @@ namespace SPTracer
 		camera_.icx = GetDouble(++it, end);		// image center x
 		camera_.icy = GetDouble(++it, end);		// image center y
 		camera_.t = GetDouble(++it, end);		// time of exposure
-
+		
 		MustBeEndToken(++it, end);				// check end token
+
+		// normalize vectors
+		camera_.n.Normalize();
+		camera_.up.Normalize();
 	}
 
 	std::unique_ptr<Color> MDLAModel::ParseColorType(TokensIterator& it, TokensIterator& end)

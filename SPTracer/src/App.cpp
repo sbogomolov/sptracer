@@ -5,19 +5,25 @@
 #include "SPTracer.h"
 #include "Window.h"
 
-App::App(std::string fileName, int width, int height)
+App::App(std::string fileName, unsigned int width, unsigned int height)
 {
-	std::string title =
 #ifdef _WIN64
-		"SPTracer (64-bit) - [ " + fileName + " ]";
+	std::string title = "SPTracer (64-bit) - [ " + fileName + " ]";
 #else
-		"SPTracer (32-bit) - [ " + fileName + " ]";
+	std::string title = "SPTracer (32-bit) - [ " + fileName + " ]";
+#endif
+
+#ifdef _DEBUG
+	size_t numThreads = 1;
+#else
+	size_t numThreads = 8;
 #endif
 
 	try
 	{
 		window_ = std::make_unique<Window>(width, height, title.c_str());
-		tracer_ = std::make_unique<SPTracer::SPTracer>(fileName, 4, width, height);
+		tracer_ = std::make_unique<SPTracer::SPTracer>(fileName, numThreads, width, height);
+		tracer_->SetImageUpdater(window_->GetImageUpdater());
 	}
 	catch (SPTracer::Exception e)
 	{
@@ -40,6 +46,8 @@ int App::Run()
 		SPTracer::Log::Error(s);
 		throw std::exception(s);
 	}
+
+	tracer_->Run();
 
 	MSG msg;
 	while (GetMessage(&msg, nullptr, 0, 0) > 0)

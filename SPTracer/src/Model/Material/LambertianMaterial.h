@@ -7,6 +7,7 @@ namespace SPTracer
 {
 	struct Intersection;
 	struct Ray;
+	struct WeightFactors;
 	class Color;
 
 	class LambertianMaterial : public Material
@@ -14,8 +15,9 @@ namespace SPTracer
 	public:
 		LambertianMaterial(std::unique_ptr<Color> diffuseReflactance);
 		
+		bool GetNewRay(const Ray& ray, const Intersection& intersection, double waveLength, Ray& newRay, WeightFactors& weightFactors) const override;
 		bool IsEmissive() const override;
-		bool GetNewRay(const Ray& ray, const Intersection& intersection, double waveLength, Ray& newRay, double& reflectance, double& bdrfPdf) const override;
+		double GetLuminance(const Ray& ray, const Intersection& intersection, double waveLength) const override;
 
 	private:
 		double absorptionProbability_;

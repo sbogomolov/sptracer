@@ -4,6 +4,7 @@
 #include <math.h>
 #include "../../Intersection.h"
 #include "../../Ray.h"
+#include "../../WeightFactors.h"
 #include "../Model.h"
 #include "../Color/Color.h"
 #include "LambertianMaterial.h"
@@ -16,12 +17,7 @@ namespace SPTracer
 	{
 	}
 
-	bool LambertianMaterial::IsEmissive() const
-	{
-		return false;
-	}
-
-	bool LambertianMaterial::GetNewRay(const Ray& ray, const Intersection& intersection, double waveLength, Ray& newRay, double& reflectance, double& bdrfPdf) const
+	bool LambertianMaterial::GetNewRay(const Ray& ray, const Intersection& intersection, double waveLength, Ray& newRay, WeightFactors& weightFactors) const
 	{
 		// NOTE:
 		// BDRF is 1/pi * cos(theta), it will be used as PDF
@@ -37,15 +33,25 @@ namespace SPTracer
 		newRay.direction = Vec3::FromPhiThetaNormal(phi, theta, intersection.normal);
 
 		// get reflectance
-		reflectance = diffuseReflactance_->GetAmplitude(waveLength);
+		weightFactors.reflectance = diffuseReflactance_->GetAmplitude(waveLength);
 
 		// Because the bright directions are preferred in 
 		// the choice of samples, we do not have to weight
 		// them again by applying the BDRF as a scaling
 		// factor to reflectance.
-		bdrfPdf = 1.0;
+		weightFactors.bdrfPdf = 1.0;
 
 		return false;
+	}
+
+	bool LambertianMaterial::IsEmissive() const
+	{
+		return false;
+	}
+
+	double LambertianMaterial::GetLuminance(const Ray & ray, const Intersection & intersection, double waveLength) const
+	{
+		return 0.0;
 	}
 
 }

@@ -15,7 +15,7 @@ class Window;
 class App
 {
 public:
-	App(std::string fileName, int width, int height);
+	App(std::string fileName, unsigned int width, unsigned int height);
 	virtual ~App();
 	int Run();
 

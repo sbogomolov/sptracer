@@ -1,3 +1,4 @@
+#include "../../Intersection.h"
 #include "../Material/Material.h"
 #include "PlanarMeshObject.h"
 
@@ -21,32 +22,29 @@ namespace SPTracer
 		const Vec3& v3 = vertices_[outline_[2]];
 		normal_ = ComputeNormal(v1, v2, v3);
 
-		// compute d parameter for outline
+		// compute d parameter for plane
 		d_ = (normal_.x * v1.x) + (normal_.y * v1.y) + (normal_.z * v1.z);
-
-		// compute d parameter for holes
-		for (size_t j = 0; j < holes_.size(); j++)
-		{
-			const Vec3& v = vertices_[holes_[j][0]];
-			double d = (normal_.x * v.x) + (normal_.y * v.y) + (normal_.z * v.z);
-			dh_.push_back(d);
-		}
 	}
 
 	bool PlanarMeshObject::Intersect(const Ray& ray, Intersection& intersection) const
 	{
+		// check intersection with plane
+		if (!IntersectWithPlane(ray, normal_, d_, intersection))
+		{
+			return false;
+		}
+
 		// check intersection with holes
 		for (size_t j = 0; j < holes_.size(); j++)
 		{
 			const auto& hole = holes_[j];
-			const Vec3& v1 = vertices_[hole[0]];
-			double d = dh_[j];
 
+			const Vec3& v1 = vertices_[hole[0]];
 			for (size_t i = 1; i < hole.size() - 1; i++)
 			{
 				const Vec3& v2 = vertices_[hole[i]];
 				const Vec3& v3 = vertices_[hole[i + 1]];
-				if (IntersectWithTriangle(ray, v1, v2, v3, normal_, d, intersection))
+				if (PointInTriangle(intersection.point, v1, v2, v3))
 				{
 					return false;
 				}
@@ -59,7 +57,7 @@ namespace SPTracer
 		{
 			const Vec3& v2 = vertices_[outline_[i]];
 			const Vec3& v3 = vertices_[outline_[i + 1]];
-			if (IntersectWithTriangle(ray, v1, v2, v3, normal_, d_, intersection))
+			if (PointInTriangle(intersection.point, v1, v2, v3))
 			{
 				return true;
 			}

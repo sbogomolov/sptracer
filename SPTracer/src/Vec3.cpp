@@ -13,23 +13,53 @@ namespace SPTracer
 		return std::sqrt((*this) * (*this));
 	}
 
-	Vec3 Vec3::FromPhiThetaNormal(double phi, double theta, const Vec3 & n)
+	Vec3 Vec3::RotateFromTo(const Vec3& fromDirection, const Vec3& toDirection)
 	{
-		// get rotation of coordinate system
-		double csPhi = std::atan2(n.y, n.x);
-		double csTheta = std::acos(n.z);
+		static const double Eps = 1e-10;
 
-		// get corrected phi and theta
-		double corPhi = phi + csPhi;
-		double corTheta = theta + csTheta;
+		// rotation angle
+		double theta = std::acos(fromDirection * toDirection);
+		
+		// do not rotate if angle is too small
+		if (std::abs(theta) < Eps)
+		{
+			return *this;
+		}
+
+		// axis of rotation
+		Vec3 rotAxis = Vec3::CrossProduct(fromDirection, toDirection);
+
+		// rotate about axis
+		return (*this).RotateAboutAxis(rotAxis, theta);
+	}
+
+	Vec3 Vec3::RotateAboutAxis(const Vec3& rotationAxis, double theta)
+	{
+		Vec3& v = *this;
+		const Vec3& n = rotationAxis;
+		const double cosTheta = std::cos(theta);
+		const double sinTheta = std::sin(theta);
+		const double a = ((n.x * v.x) + (n.y * v.y) + (n.z * v.z)) * (1.0 - cosTheta);
+
+		return Vec3{
+			n.x * a + v.x * cosTheta + (-n.z * v.y + n.y * v.z) * sinTheta,	// x
+			n.y * a + v.y * cosTheta + (n.z * v.x - n.x * v.z) * sinTheta,	// y
+			n.z * a + v.z * cosTheta + (-n.y * v.x + n.x * v.y) * sinTheta	// z
+		};
+	}
+
+	Vec3 Vec3::FromPhiThetaNormal(double phi, double theta, const Vec3& n)
+	{
+		// z axis
+		static const Vec3 zAxis{ 0.0, 0.0, 1.0 };
 
 		// get vector coordinates
-		double sinTheta = std::sin(corTheta);
+		double sinTheta = std::sin(theta);
 		return Vec3{
-			sinTheta * std::cos(corPhi),	// x
-			sinTheta * std::sin(corPhi),	// y
-			std::cos(corTheta)				// z
-		};
+			sinTheta * std::cos(phi),	// x
+			sinTheta * std::sin(phi),	// y
+			std::cos(theta)				// z
+		}.RotateFromTo(zAxis, n);
 	}
 
 	Vec3 Vec3::CrossProduct(const Vec3& lhs, const Vec3& rhs)

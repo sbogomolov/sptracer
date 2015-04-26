@@ -2,7 +2,6 @@
 #define SPT_PHONG_LUMINAIRE_MATERIAL_H
 
 #include <memory>
-
 #include "Material.h"
 
 namespace SPTracer
@@ -10,6 +9,7 @@ namespace SPTracer
 
 	struct Intersection;
 	struct Ray;
+	struct WeightFactors;
 	class Color;
 
 	class PhongLuminaireMaterial : public Material
@@ -20,8 +20,9 @@ namespace SPTracer
 			std::unique_ptr<Color> radiantExitance,
 			double phongExponent);
 
+		bool GetNewRay(const Ray& ray, const Intersection& intersection, double waveLength, Ray& newRay, WeightFactors& weightFactors) const override;
 		bool IsEmissive() const override;
-		bool GetNewRay(const Ray& ray, const Intersection& intersection, double waveLength, Ray& newRay, double& reflectance, double& bdrfPdf) const override;
+		double GetLuminance(const Ray& ray, const Intersection& intersection, double waveLength) const override;
 
 	private:
 		std::unique_ptr<Material> reflectiveMaterial_;

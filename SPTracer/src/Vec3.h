@@ -12,6 +12,8 @@ namespace SPTracer
 
 		void Normalize();
 		double EuclideanNorm() const;
+		Vec3 RotateFromTo(const Vec3& fromDirection, const Vec3& toDirection);
+		Vec3 RotateAboutAxis(const Vec3& rotationAxis, double theta);
 
 		static Vec3 FromPhiThetaNormal(double phi, double theta, const Vec3& n);
 		static Vec3 CrossProduct(const Vec3& lhs, const Vec3& rhs);

@@ -7,6 +7,7 @@ namespace SPTracer
 {
 	struct Intersection;
 	struct Ray;
+	struct WeightFactors;
 	class Material;
 
 	class Object
@@ -15,7 +16,8 @@ namespace SPTracer
 		virtual ~Object();
 
 		virtual bool Intersect(const Ray& ray, Intersection& intersection) const = 0;
-		bool GetNewRay(const Ray& ray, const Intersection& intersection, double waveLength, Ray& newRay, double& reflectance, double& bdrfPdf) const;
+		bool GetNewRay(const Ray& ray, const Intersection& intersection, double waveLength, Ray& newRay, WeightFactors& weightFactors) const;
+		double GetRadiance(const Ray& ray, const Intersection& intersection, double waveLength) const;
 		bool IsEmissive() const;
 		
 	protected:
@@ -24,7 +26,8 @@ namespace SPTracer
 		Object(std::string name, std::shared_ptr<Material> material);
 
 		static Vec3 ComputeNormal(const Vec3& v1, const Vec3& v2, const Vec3& v3);
-		static bool IntersectWithTriangle(const Ray& ray, const Vec3& v1, const Vec3& v2, const Vec3& v3, const Vec3& n, double d, Intersection& intersection);
+		static bool IntersectWithPlane(const Ray& ray, const Vec3& n, double d, Intersection& intersection);
+		static bool PointInTriangle(const Vec3& p, const Vec3& v1, const Vec3& v2, const Vec3& v3);
 
 	private:
 		std::string name_;
