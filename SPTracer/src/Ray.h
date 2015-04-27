@@ -6,11 +6,13 @@
 
 namespace SPTracer
 {
+	class Object;
 
 	struct Ray
 	{
 		Vec3 origin;
 		Vec3 direction;
+		bool refracted = false;
 	};
 
 }

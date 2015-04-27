@@ -20,7 +20,6 @@ namespace SPTracer
 		float GetRadiance(const Ray& ray, const Intersection& intersection, float waveLength) const override;
 
 	private:
-		float absorptionProbability_;
 		std::unique_ptr<Color> diffuseReflactance_;
 	};
 

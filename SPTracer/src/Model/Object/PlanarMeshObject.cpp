@@ -27,10 +27,10 @@ namespace SPTracer
 			holeNormals.reserve(hole.size() - 2);
 
 			const Vec3& v1 = vertices_[hole[0]];
-			for (size_t i = 1; i < hole.size() - 1; i++)
+			for (size_t i = 0; i < hole.size() - 2; i++)
 			{
-				const Vec3& v2 = vertices_[hole[i]];
-				const Vec3& v3 = vertices_[hole[i + 1]];
+				const Vec3& v2 = vertices_[hole[i + 1]];
+				const Vec3& v3 = vertices_[hole[i + 2]];
 				
 				Vec3 n = ComputeNormal(v1, v2, v3);
 				holeNormals.push_back(std::move(n));
@@ -41,10 +41,10 @@ namespace SPTracer
 		outlineNormals_.reserve(outline_.size() - 2);
 
 		const Vec3& v1 = vertices_[outline_[0]];
-		for (size_t i = 1; i < outline_.size() - 1; i++)
+		for (size_t i = 0; i < outline_.size() - 2; i++)
 		{
-			const Vec3& v2 = vertices_[outline_[i]];
-			const Vec3& v3 = vertices_[outline_[i + 1]];
+			const Vec3& v2 = vertices_[outline_[i + 1]];
+			const Vec3& v3 = vertices_[outline_[i + 2]];
 			
 			Vec3 n = ComputeNormal(v1, v2, v3);
 			outlineNormals_.push_back(std::move(n));
@@ -60,11 +60,11 @@ namespace SPTracer
 			const auto& holeNormals = holesNormals_[j];
 
 			const Vec3& v1 = vertices_[hole[0]];
-			for (size_t i = 1; i < hole.size() - 1; i++)
+			for (size_t i = 0; i < hole.size() - 2; i++)
 			{
-				const Vec3& v2 = vertices_[hole[i]];
-				const Vec3& v3 = vertices_[hole[i + 1]];
-				if (IntersectWithTriangle(ray, holeNormals[i - 1], v1, v2, v3, intersection))
+				const Vec3& v2 = vertices_[hole[i + 1]];
+				const Vec3& v3 = vertices_[hole[i + 2]];
+				if (IntersectWithTriangle(ray, holeNormals[i], v1, v2, v3, intersection))
 				{
 					return false;
 				}
@@ -73,11 +73,11 @@ namespace SPTracer
 
 		// check intersection with object
 		const Vec3& v1 = vertices_[outline_[0]];
-		for (size_t i = 1; i < outline_.size() - 1; i++)
+		for (size_t i = 0; i < outline_.size() - 2; i++)
 		{
-			const Vec3& v2 = vertices_[outline_[i]];
-			const Vec3& v3 = vertices_[outline_[i + 1]];
-			if (IntersectWithTriangle(ray, outlineNormals_[i - 1], v1, v2, v3, intersection))
+			const Vec3& v2 = vertices_[outline_[i + 1]];
+			const Vec3& v3 = vertices_[outline_[i + 2]];
+			if (IntersectWithTriangle(ray, outlineNormals_[i], v1, v2, v3, intersection))
 			{
 				return true;
 			}
