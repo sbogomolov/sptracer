@@ -205,7 +205,7 @@ namespace SPTracer {
 		}
 
 		// divide XYZ color in pixels on the number of samples
-		long double num = static_cast<long double>(completedSamplesCount_ * waveLengthCount_);
+		long double num = static_cast<long double>(completedSamplesCount_);
 		std::vector<Vec3> xyzColor(pixels_.size() / 3);
 		for (size_t i = 0; i < xyzColor.size(); i++)
 		{

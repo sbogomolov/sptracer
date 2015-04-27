@@ -5,7 +5,7 @@
 namespace SPTracer
 {
 
-	Vec3 SRGB::GetRGB(const Vec3 & xyz) const
+	Vec3 SRGB::GetRGB(const Vec3& xyz) const
 	{
 		return Vec3{
 			GammaCorrect( 3.2406f * xyz.x - 1.5372f * xyz.y - 0.4986f * xyz.z),		// r

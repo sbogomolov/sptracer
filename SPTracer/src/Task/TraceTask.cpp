@@ -129,7 +129,7 @@ namespace SPTracer
 								radiance /= emissionProbability;
 
 								// store radiance
-								xyzColor += radiance * xyzConverter.GetXYZ(waveLength);
+								xyzColor += radiance * xyzConverter.GetXYZ(waveLength) / static_cast<float>(count);
 
 								// done
 								break;
