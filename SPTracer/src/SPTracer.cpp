@@ -25,7 +25,7 @@ namespace SPTracer {
 		taskScheduler_ = std::make_unique<TaskScheduler>(*this, numThreads);
 
 		// prepare array of pixels
-		pixels_.resize(static_cast<size_t>(width_ * height_));
+		pixels_.resize(static_cast<size_t>(width_ * height_) * 3);
 
 		// wave length parameters
 		waveLengthMin_ = 400.0f;
@@ -118,9 +118,11 @@ namespace SPTracer {
 		std::lock_guard<std::mutex> lock(mutex_);
 
 		// for every pixel
-		for (size_t i = 0; i < pixels_.size(); i++)
+		for (size_t i = 0; i < color.size(); i++)
 		{
-			pixels_[i] += color[i];
+			pixels_[3 * i] += static_cast<long double>(color[i].x);
+			pixels_[3 * i + 1] += static_cast<long double>(color[i].y);
+			pixels_[3 * i + 2] += static_cast<long double>(color[i].z);
 		}
 
 		// increase count of completed samples
@@ -175,7 +177,7 @@ namespace SPTracer {
 
 		for (size_t i = 0; i < xyzColor.size(); i++)
 		{
-			Vec3 xyz = xyzColor[i]/* / static_cast<float>(completedSamplesCount_ * waveLengthCount_)*/;
+			Vec3 xyz = xyzColor[i];
 			Vec3& rgb = rgbColor[i];
 
 			// Apply exposure correction
@@ -202,8 +204,18 @@ namespace SPTracer {
 			return;
 		}
 
+		// divide XYZ color in pixels on the number of samples
+		long double num = static_cast<long double>(completedSamplesCount_ * waveLengthCount_);
+		std::vector<Vec3> xyzColor(pixels_.size() / 3);
+		for (size_t i = 0; i < xyzColor.size(); i++)
+		{
+			xyzColor[i].x = static_cast<float>(pixels_[i * 3] / num);
+			xyzColor[i].y = static_cast<float>(pixels_[i * 3 + 1] / num);
+			xyzColor[i].z = static_cast<float>(pixels_[i * 3 + 2] / num);
+		}
+
 		// tonemap XYZ to RGB
-		std::vector<Vec3> rgbColor = Tonemap(pixels_);
+		std::vector<Vec3> rgbColor = Tonemap(xyzColor);
 
 		// prepare title
 		auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(
