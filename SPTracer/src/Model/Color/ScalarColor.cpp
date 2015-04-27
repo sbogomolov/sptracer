@@ -3,12 +3,12 @@
 namespace SPTracer
 {
 
-	ScalarColor::ScalarColor(double amplitude)
+	ScalarColor::ScalarColor(float amplitude)
 		: amplitude_(amplitude)
 	{
 	}
 
-	double ScalarColor::GetAmplitude(double waveLength) const
+	float ScalarColor::GetAmplitude(float waveLength) const
 	{
 		return amplitude_;
 	}

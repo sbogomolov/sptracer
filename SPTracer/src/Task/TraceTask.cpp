@@ -19,7 +19,7 @@ namespace SPTracer
 	void TraceTask::Run()
 	{
 		// emission probability for emissive material
-		static const double emissionProbability = 0.9;
+		static const float emissionProbability = 0.9f;
 
 		// minimal number of bounces before russian roulette
 		static const int minBounces = 5;
@@ -35,23 +35,23 @@ namespace SPTracer
 		static const Vec3& origin = camera.p;
 		
 		// y-axis
-		static const Vec3 yAxis{ 0.0, 1.0, 0.0 };
+		static const Vec3 yAxis{ 0.0f, 1.0f, 0.0f };
 
 		// z-axis
-		static const Vec3 zAxis{ 0.0, 0.0, 1.0 };
+		static const Vec3 zAxis{ 0.0f, 0.0f, 1.0f };
 
 		// width and height
 		static const unsigned int width = tracer_.GetWidth();
 		static const unsigned int height = tracer_.GetHeight();
-		static const double pixelWidth = camera.iw / width;
-		static const double pixelHeight = camera.ih / height;
-		static const double left = camera.icx - camera.iw / 2.0;
-		static const double top = camera.icy + camera.ih / 2.0;
+		static const float pixelWidth = camera.iw / width;
+		static const float pixelHeight = camera.ih / height;
+		static const float left = camera.icx - camera.iw / 2.0f;
+		static const float top = camera.icy + camera.ih / 2.0f;
 
 		// wave lengths
-		static const double min = tracer_.GetWaveLengthMin();
-		static const double max = tracer_.GetWaveLengthMax();
-		static const double step = tracer_.GetWaveLengthStep();
+		static const float min = tracer_.GetWaveLengthMin();
+		static const float max = tracer_.GetWaveLengthMax();
+		static const float step = tracer_.GetWaveLengthStep();
 		static const size_t count = tracer_.GetWaveLengthCount();
 
 		Ray newRay;
@@ -71,8 +71,8 @@ namespace SPTracer
 				Vec3& xyzColor = color[i * width + j];
 
 				// sample pixel
-				double u = left + ((double)j + Util::RandDouble(0.0, 1.0)) * pixelWidth;
-				double v = top - ((double)i + Util::RandDouble(0.0, 1.0)) * pixelHeight;
+				float u = left + (static_cast<float>(j) + Util::RandFloat(0.0f, 1.0f)) * pixelWidth;
+				float v = top - (static_cast<float>(i) + Util::RandFloat(0.0f, 1.0f)) * pixelHeight;
 
 				// direction
 				Vec3 direction{
@@ -96,9 +96,9 @@ namespace SPTracer
 				// go over all wave lengths
 				for (size_t w = 0; w < count; w++)
 				{
-					double waveLength = min + step * (double)w;
+					float waveLength = min + step * static_cast<float>(w);
 					Ray* ray = &generatedRay;
-					double weight = 1.0;
+					float weight = 1.0f;
 					unsigned int bounces = 0;
 
 					// trace ray
@@ -112,15 +112,15 @@ namespace SPTracer
 						}
 
 						// reflected (refracted) ray weight correction
-						double reflectionProbability = 1.0;
+						float reflectionProbability = 1.0f;
 
 						// check if light should be emitted
 						if (intersection.object->IsEmissive())
 						{
-							if (Util::RandDouble(0.0, 1.0) < emissionProbability)
+							if (Util::RandFloat(0.0f, 1.0f) < emissionProbability)
 							{
 								// radiance
-								double radiance = intersection.object->GetRadiance(*ray, intersection, waveLength);
+								float radiance = intersection.object->GetRadiance(*ray, intersection, waveLength);
 
 								// apply ray weight
 								radiance *= weight;
@@ -137,7 +137,7 @@ namespace SPTracer
 							else
 							{
 								// set reflection probability
-								reflectionProbability = 1.0 - emissionProbability;
+								reflectionProbability = 1.0f - emissionProbability;
 							}
 						}
 
@@ -151,17 +151,17 @@ namespace SPTracer
 						weight /= reflectionProbability;
 
 						// russian roulette
-						double absorptionProbability = 1.0 - weightFactors.reflectance;
+						float absorptionProbability = 1.0f - weightFactors.reflectance;
 						if (bounces > minBounces)
 						{
-							if (Util::RandDouble(0.0, 1.0) < absorptionProbability)
+							if (Util::RandFloat(0.0f, 1.0f) < absorptionProbability)
 							{
 								// ray was absorped
 								break;
 							}
 
 							// ray was not absorped, increase its weight
-							weight /= (1.0 - absorptionProbability);
+							weight /= (1.0f - absorptionProbability);
 						}
 
 						// change current ray to new ray
@@ -172,6 +172,9 @@ namespace SPTracer
 				}
 			}
 		}
+
+		// add another task
+		tracer_.GetTaskScheduler().AddTask(std::make_unique<TraceTask>(tracer_));
 		
 		// add samples
 		tracer_.AddSamples(color);

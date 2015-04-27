@@ -10,7 +10,7 @@ namespace SPTracer
 	PhongLuminaireMaterial::PhongLuminaireMaterial(
 		std::unique_ptr<Material> reflectiveMaterial,
 		std::unique_ptr<Color> radiantExitance,
-		double phongExponent)
+		float phongExponent)
 			: reflectiveMaterial_(std::move(reflectiveMaterial)),
 			  radiantExitance_(std::move(radiantExitance)),
 		      phongExponent_(phongExponent)
@@ -23,18 +23,18 @@ namespace SPTracer
 		return true;
 	}
 
-	bool PhongLuminaireMaterial::GetNewRay(const Ray& ray, const Intersection& intersection, double waveLength, Ray& newRay, WeightFactors& weightFactors) const
+	bool PhongLuminaireMaterial::GetNewRay(const Ray& ray, const Intersection& intersection, float waveLength, Ray& newRay, WeightFactors& weightFactors) const
 	{
 		return reflectiveMaterial_->GetNewRay(ray, intersection, waveLength, newRay, weightFactors);
 	}
 
-	double PhongLuminaireMaterial::GetRadiance(const Ray& ray, const Intersection& intersection, double waveLength) const
+	float PhongLuminaireMaterial::GetRadiance(const Ray& ray, const Intersection& intersection, float waveLength) const
 	{
 		// get radiant exitance for wave length
-		double radiance = radiantExitance_->GetAmplitude(waveLength);
+		float radiance = radiantExitance_->GetAmplitude(waveLength);
 
 		// angle between ray and normal
-		double theta = std::acos((-1 * ray.direction) * intersection.normal);
+		float theta = std::acos((-1 * ray.direction) * intersection.normal);
 
 		// scale according to phong exponent
 		radiance *= std::pow(std::cos(theta), phongExponent_);

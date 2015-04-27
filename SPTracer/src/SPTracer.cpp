@@ -25,18 +25,18 @@ namespace SPTracer {
 		taskScheduler_ = std::make_unique<TaskScheduler>(*this, numThreads);
 
 		// prepare array of pixels
-		pixels_.resize((size_t)width_ * height_);
+		pixels_.resize(static_cast<size_t>(width_ * height_));
 
 		// wave length parameters
-		waveLengthMin_ = 400.0;
-		waveLengthMax_ = 700.0;
-		waveLengthStep_ = 20.0;
+		waveLengthMin_ = 400.0f;
+		waveLengthMax_ = 700.0f;
+		waveLengthStep_ = 20.0f;
 
 #ifdef _DEBUG
-		waveLengthStep_ = 150.0;
+		waveLengthStep_ = 150.0f;
 #endif
 
-		waveLengthCount_ = (size_t)((waveLengthMax_ - waveLengthMin_) / waveLengthStep_) + 1;
+		waveLengthCount_ = static_cast<size_t>((waveLengthMax_ - waveLengthMin_) / waveLengthStep_) + 1;
 
 		// color converter
 		xyzConverter_ = std::make_unique<CIE1931>();
@@ -65,17 +65,17 @@ namespace SPTracer {
 		return *taskScheduler_;
 	}
 
-	double SPTracer::GetWaveLengthMin() const
+	float SPTracer::GetWaveLengthMin() const
 	{
 		return waveLengthMin_;
 	}
 
-	double SPTracer::GetWaveLengthMax() const
+	float SPTracer::GetWaveLengthMax() const
 	{
 		return waveLengthMax_;
 	}
 
-	double SPTracer::GetWaveLengthStep() const
+	float SPTracer::GetWaveLengthStep() const
 	{
 		return waveLengthStep_;
 	}
@@ -105,8 +105,8 @@ namespace SPTracer {
 		// record start time
 		start_ = std::chrono::high_resolution_clock::now();
 
-		// sample pixels
-		for (size_t i = 0; i < 1000; i++)
+		// add tasks to start sampling
+		for (size_t i = 0; i < numThreads_; i++)
 		{
 			taskScheduler_->AddTask(std::make_unique<TraceTask>(*this));
 		}
@@ -144,44 +144,44 @@ namespace SPTracer {
 		imageUpdater_ = std::move(imageUpdater);
 	}
 
-	double SPTracer::FindExposure(const std::vector<Vec3>& xyzColor) const
+	float SPTracer::FindExposure(const std::vector<Vec3>& xyzColor) const
 	{
-		double n = width_ * height_;
+		float n = static_cast<float>(width_ * height_);
 
 		// Calculate the average intensity. Calculations are based
 		// on the CIE Y component, which corresponds to lightness.
-		double mean = std::accumulate(xyzColor.begin(), xyzColor.end(), 0.0,
-			[](double a, const Vec3& xyz) { return a + xyz.y; }) / n;
+		float mean = std::accumulate(xyzColor.begin(), xyzColor.end(), 0.0f,
+			[](float a, const Vec3& xyz) { return a + xyz.y; }) / n;
 
 		// Then compute the standard deviation.
-		double sqrMean = std::accumulate(xyzColor.begin(), xyzColor.end(), 0.0,
-			[](double a, const Vec3& xyz) { return a + xyz.y * xyz.y; }) / n;
+		float sqrMean = std::accumulate(xyzColor.begin(), xyzColor.end(), 0.0f,
+			[](float a, const Vec3& xyz) { return a + xyz.y * xyz.y; }) / n;
 
-		double variance = sqrMean - mean * mean;
+		float variance = sqrMean - mean * mean;
 
 		// The desired 'white' is one standard deviation above average
 		return mean + std::sqrt(variance);
 	}
 
-	double SPTracer::Clamp(double c) const
+	float SPTracer::Clamp(float c) const
 	{
-		return std::min(1.0, std::max(0.0, c));
+		return std::min(1.0f, std::max(0.0f, c));
 	}
 
 	std::vector<Vec3> SPTracer::Tonemap(const std::vector<Vec3>& xyzColor) const
 	{
-		double maxIntensity = FindExposure(xyzColor);
+		float maxIntensity = FindExposure(xyzColor);
 		std::vector<Vec3> rgbColor(xyzColor.size());
 
 		for (size_t i = 0; i < xyzColor.size(); i++)
 		{
-			Vec3 xyz = xyzColor[i]/* / (double)(completedSamplesCount_ * waveLengthCount_)*/;
+			Vec3 xyz = xyzColor[i]/* / static_cast<float>(completedSamplesCount_ * waveLengthCount_)*/;
 			Vec3& rgb = rgbColor[i];
 
 			// Apply exposure correction
-			xyz.x = std::log(xyz.x / maxIntensity + 1.0) / std::log(4.0);
-			xyz.y = std::log(xyz.y / maxIntensity + 1.0) / std::log(4.0);
-			xyz.z = std::log(xyz.z / maxIntensity + 1.0) / std::log(4.0);
+			xyz.x = std::log(xyz.x / maxIntensity + 1.0f) / std::log(4.0f);
+			xyz.y = std::log(xyz.y / maxIntensity + 1.0f) / std::log(4.0f);
+			xyz.z = std::log(xyz.z / maxIntensity + 1.0f) / std::log(4.0f);
 
 			// Convert to sRGB.
 			rgb = rgbConverter_->GetRGB(xyz);
@@ -206,37 +206,40 @@ namespace SPTracer {
 		std::vector<Vec3> rgbColor = Tonemap(pixels_);
 
 		// prepare title
+		auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(
+			std::chrono::high_resolution_clock::now() - start_);
 		size_t spp = completedSamplesCount_ * waveLengthCount_;
-		double sps = ((double)(spp * width_ * height_) / ((double)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start_).count() / 1000.0));
+		float sps = (static_cast<float>(spp * width_ * height_) / 
+			(static_cast<float>(duration.count()) / 1000.0f));
 		
 		std::ostringstream oss;
-		oss << FormatNumber(spp) << " SPP, " << FormatNumber(sps) << " SPS" ;
+		oss << FormatNumber(static_cast<float>(spp)) << " SPP, " << FormatNumber(sps) << " SPS" ;
 
 		// call image updater
 		imageUpdater_->UpdateImage(rgbColor, oss.str());
 	}
 
-	std::string SPTracer::FormatNumber(double n) const
+	std::string SPTracer::FormatNumber(float n) const
 	{
 		std::ostringstream oss;
-		if (n < 1e3)
+		if (n < 1e3f)
 		{
-			oss << (size_t)n;
+			oss << static_cast<size_t>(n);
 		}
 		else
 		{
 			oss << std::setprecision(2) << std::fixed;
-			if (n < 1e6)
+			if (n < 1e6f)
 			{
-				oss << n / 1e3 << "K";
+				oss << n / 1e3f << "K";
 			}
-			else if (n <= 1e9)
+			else if (n <= 1e9f)
 			{
-				oss << n / 1e6 << "M";
+				oss << n / 1e6f << "M";
 			}
 			else
 			{
-				oss << n / 1e9 << "B";
+				oss << n / 1e9f << "B";
 			}
 		}
 

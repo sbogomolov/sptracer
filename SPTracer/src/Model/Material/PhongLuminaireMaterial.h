@@ -18,16 +18,16 @@ namespace SPTracer
 		PhongLuminaireMaterial(
 			std::unique_ptr<Material> reflectiveMaterial,
 			std::unique_ptr<Color> radiantExitance,
-			double phongExponent);
+			float phongExponent);
 
-		bool GetNewRay(const Ray& ray, const Intersection& intersection, double waveLength, Ray& newRay, WeightFactors& weightFactors) const override;
+		bool GetNewRay(const Ray& ray, const Intersection& intersection, float waveLength, Ray& newRay, WeightFactors& weightFactors) const override;
 		bool IsEmissive() const override;
-		double GetRadiance(const Ray& ray, const Intersection& intersection, double waveLength) const override;
+		float GetRadiance(const Ray& ray, const Intersection& intersection, float waveLength) const override;
 
 	private:
 		std::unique_ptr<Material> reflectiveMaterial_;
 		std::unique_ptr<Color> radiantExitance_;
-		double phongExponent_;
+		float phongExponent_;
 	};
 
 }

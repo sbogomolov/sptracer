@@ -18,16 +18,13 @@ namespace SPTracer
 	{
 		// compute holes normals and d
 		holesNormals_.resize(holes_.size());
-		dh_.resize(holes_.size());
 
 		for (size_t j = 0; j < holes_.size(); j++)
 		{
 			const auto& hole = holes_[j];
 			auto& holeNormals = holesNormals_[j];
-			auto& dh = dh_[j];
 			
 			holeNormals.reserve(hole.size() - 2);
-			dh.reserve(hole.size() - 2);
 
 			const Vec3& v1 = vertices_[hole[0]];
 			for (size_t i = 1; i < hole.size() - 1; i++)
@@ -36,14 +33,12 @@ namespace SPTracer
 				const Vec3& v3 = vertices_[hole[i + 1]];
 				
 				Vec3 n = ComputeNormal(v1, v2, v3);
-				dh.push_back((n.x * v1.x) + (n.y * v1.y) + (n.z * v1.z));
 				holeNormals.push_back(std::move(n));
 			}
 		}
 		
 		// compute outline normals and d
 		outlineNormals_.reserve(outline_.size() - 2);
-		d_.reserve(outline_.size() - 2);
 
 		const Vec3& v1 = vertices_[outline_[0]];
 		for (size_t i = 1; i < outline_.size() - 1; i++)
@@ -52,7 +47,6 @@ namespace SPTracer
 			const Vec3& v3 = vertices_[outline_[i + 1]];
 			
 			Vec3 n = ComputeNormal(v1, v2, v3);
-			d_.push_back((n.x * v1.x) + (n.y * v1.y) + (n.z * v1.z));
 			outlineNormals_.push_back(std::move(n));
 		}
 	}
@@ -64,14 +58,13 @@ namespace SPTracer
 		{
 			const auto& hole = holes_[j];
 			const auto& holeNormals = holesNormals_[j];
-			const auto& dh = dh_[j];
 
 			const Vec3& v1 = vertices_[hole[0]];
 			for (size_t i = 1; i < hole.size() - 1; i++)
 			{
 				const Vec3& v2 = vertices_[hole[i]];
 				const Vec3& v3 = vertices_[hole[i + 1]];
-				if (IntersectWithTriangle(ray, holeNormals[i - 1], dh[i - 1], v1, v2, v3, intersection))
+				if (IntersectWithTriangle(ray, holeNormals[i - 1], v1, v2, v3, intersection))
 				{
 					return false;
 				}
@@ -84,7 +77,7 @@ namespace SPTracer
 		{
 			const Vec3& v2 = vertices_[outline_[i]];
 			const Vec3& v3 = vertices_[outline_[i + 1]];
-			if (IntersectWithTriangle(ray, outlineNormals_[i - 1], d_[i - 1], v1, v2, v3, intersection))
+			if (IntersectWithTriangle(ray, outlineNormals_[i - 1], v1, v2, v3, intersection))
 			{
 				return true;
 			}

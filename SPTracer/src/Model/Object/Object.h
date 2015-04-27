@@ -16,15 +16,15 @@ namespace SPTracer
 		virtual ~Object();
 
 		virtual bool Intersect(const Ray& ray, Intersection& intersection) const = 0;
-		bool GetNewRay(const Ray& ray, const Intersection& intersection, double waveLength, Ray& newRay, WeightFactors& weightFactors) const;
-		double GetRadiance(const Ray& ray, const Intersection& intersection, double waveLength) const;
+		bool GetNewRay(const Ray& ray, const Intersection& intersection, float waveLength, Ray& newRay, WeightFactors& weightFactors) const;
+		float GetRadiance(const Ray& ray, const Intersection& intersection, float waveLength) const;
 		bool IsEmissive() const;
 		
 	protected:
 		Object(std::string name, std::shared_ptr<Material> material);
 
 		static Vec3 ComputeNormal(const Vec3& v1, const Vec3& v2, const Vec3& v3);
-		static bool IntersectWithTriangle(const Ray& ray, const Vec3& n, double d, const Vec3& v1, const Vec3& v2, const Vec3& v3, Intersection& intersection);
+		static bool IntersectWithTriangle(const Ray& ray, const Vec3& n, const Vec3& v1, const Vec3& v2, const Vec3& v3, Intersection& intersection);
 
 	private:
 		std::string name_;

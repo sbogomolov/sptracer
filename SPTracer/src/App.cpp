@@ -59,7 +59,7 @@ int App::Run()
 		DispatchMessage(&msg);
 	}
 
-	return (int)msg.wParam;
+	return static_cast<int>(msg.wParam);
 }
 
 bool App::IsInitialized() const

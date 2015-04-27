@@ -12,7 +12,7 @@ namespace SPTracer
 	{
 		Vec3 point;
 		Vec3 normal;
-		double distance;
+		float distance;
 		std::shared_ptr<Object> object;
 	};
 

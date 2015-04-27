@@ -5,13 +5,13 @@
 namespace SPTracer
 {
 
-	const double Util::Eps = 1e-10;
-	const double Util::Pi = 3.14159265358979323846;
+	const float Util::Eps = 1e-5f;
+	const float Util::Pi = 3.14159265358979323846f;
 
-	double Util::RandDouble(double min, double max)
+	float Util::RandFloat(float min, float max)
 	{
-		static thread_local std::mt19937 generator((unsigned int)std::chrono::high_resolution_clock::now().time_since_epoch().count());
-		std::uniform_real_distribution<double> distribution(min, max);
+		static thread_local std::mt19937 generator(static_cast<unsigned int>(std::chrono::high_resolution_clock::now().time_since_epoch().count()));
+		std::uniform_real_distribution<float> distribution(min, max);
 		return distribution(generator);
 	}
 

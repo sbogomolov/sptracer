@@ -29,9 +29,6 @@ namespace SPTracer
 		
 		std::vector<Vec3> outlineNormals_;
 		std::vector<std::vector<Vec3>> holesNormals_;
-
-		std::vector<double> d_;
-		std::vector<std::vector<double>> dh_;
 	};
 
 }

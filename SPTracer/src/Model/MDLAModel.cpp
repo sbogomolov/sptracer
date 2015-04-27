@@ -201,7 +201,7 @@ namespace SPTracer
 		return token.substr(1, len - 2);
 	}
 
-	double MDLAModel::GetDouble(TokensIterator& it, TokensIterator& end)
+	float MDLAModel::GetFloat(TokensIterator& it, TokensIterator& end)
 	{
 		// check if there is a token
 		CheckToken(it, end);
@@ -209,12 +209,12 @@ namespace SPTracer
 		const auto& token = *it;
 		try
 		{
-			// try to get double token
-			return std::stod(token);
+			// try to get float token
+			return std::stof(token);
 		}
 		catch (std::invalid_argument e)
 		{
-			std::string s = "MDLAModel: Bad token, expected double, got: " + token;
+			std::string s = "MDLAModel: Bad token, expected float, got: " + token;
 			Log::Error(s);
 			throw Exception(s.c_str());
 		}
@@ -288,24 +288,24 @@ namespace SPTracer
 
 		camera_.name = GetString(++it, end);	// camera name
 
-		camera_.p.x = GetDouble(++it, end);		// center of projection x
-		camera_.p.y = GetDouble(++it, end);		// center of projection y
-		camera_.p.z = GetDouble(++it, end);		// center of projection z
+		camera_.p.x = GetFloat(++it, end);		// center of projection x
+		camera_.p.y = GetFloat(++it, end);		// center of projection y
+		camera_.p.z = GetFloat(++it, end);		// center of projection z
 
-		camera_.n.x = GetDouble(++it, end);		// image plane normal x
-		camera_.n.y = GetDouble(++it, end);		// image plane normal y
-		camera_.n.z = GetDouble(++it, end);		// image plane normal z
+		camera_.n.x = GetFloat(++it, end);		// image plane normal x
+		camera_.n.y = GetFloat(++it, end);		// image plane normal y
+		camera_.n.z = GetFloat(++it, end);		// image plane normal z
 
-		camera_.up.x = GetDouble(++it, end);	// up direction x
-		camera_.up.y = GetDouble(++it, end);	// up direction y
-		camera_.up.z = GetDouble(++it, end);	// up direction z
+		camera_.up.x = GetFloat(++it, end);	// up direction x
+		camera_.up.y = GetFloat(++it, end);	// up direction y
+		camera_.up.z = GetFloat(++it, end);	// up direction z
 
-		camera_.f = GetDouble(++it, end);		// distance to image plane
-		camera_.iw = GetDouble(++it, end);		// image width
-		camera_.ih = GetDouble(++it, end);		// image height
-		camera_.icx = GetDouble(++it, end);		// image center x
-		camera_.icy = GetDouble(++it, end);		// image center y
-		camera_.t = GetDouble(++it, end);		// time of exposure
+		camera_.f = GetFloat(++it, end);		// distance to image plane
+		camera_.iw = GetFloat(++it, end);		// image width
+		camera_.ih = GetFloat(++it, end);		// image height
+		camera_.icx = GetFloat(++it, end);		// image center x
+		camera_.icy = GetFloat(++it, end);		// image center y
+		camera_.t = GetFloat(++it, end);		// time of exposure
 		
 		MustBeEndToken(++it, end);				// check end token
 
@@ -351,8 +351,8 @@ namespace SPTracer
 		while (!IsEndToken(++it, end))
 		{
 			// add amplitude
-			double l = GetDouble(it, end);
-			double a = GetDouble(++it, end);
+			float l = GetFloat(it, end);
+			float a = GetFloat(++it, end);
 			color->AddAmplitude(l, a);
 		}
 
@@ -365,7 +365,7 @@ namespace SPTracer
 		// check keyword
 		CheckKeyword(it, end, "sclr");
 
-		double amplitude = GetDouble(++it, end);
+		float amplitude = GetFloat(++it, end);
 		MustBeEndToken(++it, end);
 		return std::make_unique<ScalarColor>(amplitude);
 	}
@@ -486,7 +486,7 @@ namespace SPTracer
 
 		MustBeEndToken(++it, end);
 		return std::make_unique<PhongLuminaireMaterial>(
-			std::move(reflectiveMaterial), std::move(radiantExitance), phongExponent->GetAmplitude(0.0));
+			std::move(reflectiveMaterial), std::move(radiantExitance), phongExponent->GetAmplitude(0.0f));
 	}
 
 	void MDLAModel::ParseVertexPositions(TokensIterator& it, TokensIterator& end, std::vector<Vec3>& vertices)
@@ -497,9 +497,9 @@ namespace SPTracer
 		while (!IsEndToken(++it, end))
 		{
 			vertices.push_back(Vec3{
-				GetDouble(it, end),		// x
-				GetDouble(++it, end),	// y
-				GetDouble(++it, end)	// z
+				GetFloat(it, end),		// x
+				GetFloat(++it, end),	// y
+				GetFloat(++it, end)		// z
 			});
 		}
 	}

@@ -32,53 +32,65 @@ namespace SPTracer
 		return normal;
 	}
 
-	bool Object::IntersectWithTriangle(const Ray& ray, const Vec3& n, double d, const Vec3& v1, const Vec3& v2, const Vec3& v3, Intersection& intersection)
+	bool Object::IntersectWithTriangle(const Ray& ray, const Vec3& n, const Vec3& v1, const Vec3& v2, const Vec3& v3, Intersection& intersection)
 	{
-		double b = (n.x * ray.direction.x) + (n.y * ray.direction.y) + (n.z * ray.direction.z);
-		if (std::abs(b) < Util::Eps)
+		Vec3 e1 = v2 - v1;
+		Vec3 e2 = v3 - v1;
+
+		Vec3 p = Vec3::CrossProduct(ray.direction, e2);
+		float det = e1 * p;
+
+		if (std::abs(det) < Util::Eps)
 		{
-			// line is parallel to plane
+			// ray lies in plane of triangle
 			return false;
 		}
 
-		double a = d - (n.x * ray.origin.x) - (n.y * ray.origin.y) - (n.z * ray.origin.z);
-		double& t = intersection.distance;
-		t = a / b;
+		float invDet = 1.0f / det;
 
-		if (t < Util::Eps)
+		Vec3 s = ray.origin - v1;
+		float u = invDet * (s * p);
+
+		if ((u < 0.0f) || (u > 1.0f))
 		{
-			// ray points in direction oposite from plane or starts from tha plane
 			return false;
 		}
 
-		// intersection point
-		Vec3& p = intersection.point;
-		p = ray.origin + ray.direction * t;
+		Vec3 q = Vec3::CrossProduct(s, e1);
+		float v = invDet * (ray.direction * q);
 
-		// set normal in intersection point
-		intersection.normal = n;
-
-		// compute areas
-		double area = Vec3::CrossProduct(v2 - v1, v3 - v1).EuclideanNorm() / 2.0;
-		double a1 = Vec3::CrossProduct(v1 - p, v2 - p).EuclideanNorm() / 2.0;
-		double a2 = Vec3::CrossProduct(v2 - p, v3 - p).EuclideanNorm() / 2.0;
-		double a3 = Vec3::CrossProduct(v3 - p, v1 - p).EuclideanNorm() / 2.0;
-
-		if ((a1 + a2 + a3) > (area + Util::Eps))
+		if ((v < 0.0f) || ((u + v) > 1.0))
 		{
-			// point is outside the triangle
 			return false;
 		}
 
-		return true;
+		// at this stage we can compute t to find out where
+		// the intersection point is on the line
+		float t = invDet * (e2 * q);
+
+		if (t > Util::Eps)
+		{
+			// ray intersection
+			intersection.point = ray.origin + t * ray.direction;
+			intersection.normal = n;
+			intersection.distance = t;
+
+			return true;
+		}
+		else
+		{
+			// this means that there is a line intersection
+			// but not a ray intersection
+			return false;
+		}
 	}
 
-	bool Object::GetNewRay(const Ray& ray, const Intersection& intersection, double waveLength, Ray& newRay, WeightFactors& weightFactors) const
+	bool Object::GetNewRay(const Ray& ray, const Intersection& intersection, float waveLength, Ray& newRay, WeightFactors& weightFactors) const
 	{
 		return material_->GetNewRay(ray, intersection, waveLength, newRay, weightFactors);
 	}
 
-	double Object::GetRadiance(const Ray& ray, const Intersection& intersection, double waveLength) const
+	float Object::GetRadiance(const Ray& ray, const Intersection& intersection, float waveLength) const
 	{
 		return material_->GetRadiance(ray, intersection, waveLength);
 	}
