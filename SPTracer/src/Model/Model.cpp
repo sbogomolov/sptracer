@@ -32,11 +32,6 @@ namespace SPTracer
 			}
 		}
 
-		if (found && (intersection.object == objects_[3]))
-		{
-			int a = 1;
-		}
-
 		return found;
 	}
 
