@@ -20,7 +20,7 @@ namespace SPTracer
 			std::unique_ptr<Color> radiantExitance,
 			float phongExponent);
 
-		bool GetNewRay(const Ray& ray, const Intersection& intersection, float waveLength, Ray& newRay, WeightFactors& weightFactors) const override;
+		void GetNewRay(const Ray& ray, const Intersection& intersection, float waveLength, Ray& newRay, WeightFactors& weightFactors) const override;
 		bool IsEmissive() const override;
 		float GetRadiance(const Ray& ray, const Intersection& intersection, float waveLength) const override;
 

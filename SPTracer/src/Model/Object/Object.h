@@ -16,7 +16,7 @@ namespace SPTracer
 		virtual ~Object();
 
 		virtual bool Intersect(const Ray& ray, Intersection& intersection) const = 0;
-		bool GetNewRay(const Ray& ray, const Intersection& intersection, float waveLength, Ray& newRay, WeightFactors& weightFactors) const;
+		void GetNewRay(const Ray& ray, const Intersection& intersection, float waveLength, Ray& newRay, WeightFactors& weightFactors) const;
 		float GetRadiance(const Ray& ray, const Intersection& intersection, float waveLength) const;
 		bool IsEmissive() const;
 		

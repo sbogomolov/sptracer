@@ -23,9 +23,9 @@ namespace SPTracer
 		return true;
 	}
 
-	bool PhongLuminaireMaterial::GetNewRay(const Ray& ray, const Intersection& intersection, float waveLength, Ray& newRay, WeightFactors& weightFactors) const
+	void PhongLuminaireMaterial::GetNewRay(const Ray& ray, const Intersection& intersection, float waveLength, Ray& newRay, WeightFactors& weightFactors) const
 	{
-		return reflectiveMaterial_->GetNewRay(ray, intersection, waveLength, newRay, weightFactors);
+		reflectiveMaterial_->GetNewRay(ray, intersection, waveLength, newRay, weightFactors);
 	}
 
 	float PhongLuminaireMaterial::GetRadiance(const Ray& ray, const Intersection& intersection, float waveLength) const

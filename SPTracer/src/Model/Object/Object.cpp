@@ -68,7 +68,11 @@ namespace SPTracer
 		// the intersection point is on the line
 		float t = invDet * (e2 * q);
 
-		if (t < Util::Eps)
+		// scale epsilon with the distance previous ray traveled
+		float intersectionEps = ray.prevDistance * Util::Eps * 2.0f;
+
+		// check intersection
+		if (t < intersectionEps)
 		{
 			// this means that there is a line intersection
 			// but not a ray intersection
@@ -85,20 +89,20 @@ namespace SPTracer
 		// we slightly move the intersection point along the normal
 		// in the direction of surface to put it on the other side.
 
-		// flip normal if ray is refracted (inside the object)
-		const Vec3& normal = ray.refracted ? -1.0 * n : n;
+		//// flip normal if ray is refracted (inside the object)
+		//const Vec3& normal = ray.refracted ? -1.0 * n : n;
 
-		// check if point is on the right side of surface
-		Vec3 pointVector = (point - v1);
-		
-		// cos of angle between normal and direction to point.
-		float cosTheta = normal * pointVector;
-		if (cosTheta < 0.0f)
-		{
-			// point is on the wrong side of surface, move it along the normal
-			float delta = 2.0f * -cosTheta * pointVector.EuclideanNorm();
-			point += normal * delta;
-		}
+		//// check if point is on the right side of surface
+		//Vec3 pointVector = (point - v1);
+		//
+		//// cos of angle between normal and direction to point.
+		//float cosTheta = normal * pointVector;
+		//if (cosTheta < 0.0f)
+		//{
+		//	// point is on the wrong side of surface, move it along the normal
+		//	float delta = 2.0f * -cosTheta * pointVector.EuclideanNorm();
+		//	point += normal * delta;
+		//}
 
 		// fill the intersection data
 		intersection.point = std::move(point);
@@ -108,9 +112,10 @@ namespace SPTracer
 		return true;
 	}
 
-	bool Object::GetNewRay(const Ray& ray, const Intersection& intersection, float waveLength, Ray& newRay, WeightFactors& weightFactors) const
+	void Object::GetNewRay(const Ray& ray, const Intersection& intersection, float waveLength, Ray& newRay, WeightFactors& weightFactors) const
 	{
-		return material_->GetNewRay(ray, intersection, waveLength, newRay, weightFactors);
+		material_->GetNewRay(ray, intersection, waveLength, newRay, weightFactors);
+		newRay.prevDistance = intersection.distance;
 	}
 
 	float Object::GetRadiance(const Ray& ray, const Intersection& intersection, float waveLength) const

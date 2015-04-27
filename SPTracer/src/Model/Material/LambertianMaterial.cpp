@@ -15,7 +15,7 @@ namespace SPTracer
 	{
 	}
 
-	bool LambertianMaterial::GetNewRay(const Ray& ray, const Intersection& intersection, float waveLength, Ray& newRay, WeightFactors& weightFactors) const
+	void LambertianMaterial::GetNewRay(const Ray& ray, const Intersection& intersection, float waveLength, Ray& newRay, WeightFactors& weightFactors) const
 	{
 		// NOTE:
 		// BDRF is 1/pi * cos(theta), it will be used as PDF
@@ -38,8 +38,6 @@ namespace SPTracer
 		// them again by applying the BDRF as a scaling
 		// factor to reflectance.
 		weightFactors.bdrfPdf = 1.0f;
-
-		return false;
 	}
 
 	bool LambertianMaterial::IsEmissive() const
