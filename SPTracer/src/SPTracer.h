@@ -53,7 +53,7 @@ namespace SPTracer
 		std::unique_ptr<RGBConverter> rgbConverter_;
 		std::unique_ptr<Model> model_;
 		std::unique_ptr<TaskScheduler> taskScheduler_;
-		std::vector<long double> pixels_;
+		std::vector<double> pixels_;
 		std::shared_ptr<ImageUpdater> imageUpdater_;
 		std::chrono::high_resolution_clock::time_point start_;
 
