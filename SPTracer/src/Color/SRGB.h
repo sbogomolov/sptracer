@@ -14,7 +14,7 @@ namespace SPTracer
 		virtual Vec3 GetRGB(const Vec3& xyz) const override;
 
 	private:
-		float GammaCorrect(float c) const;
+		double GammaCorrect(double c) const;
 	};
 
 }

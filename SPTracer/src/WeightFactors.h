@@ -6,8 +6,8 @@ namespace SPTracer
 
 	struct WeightFactors
 	{
-		float reflectance = 1.0f;
-		float bdrfPdf = 1.0f;
+		double reflectance = 1.0;
+		double bdrfPdf = 1.0;
 	};
 
 }

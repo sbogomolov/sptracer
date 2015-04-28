@@ -15,7 +15,7 @@ namespace SPTracer
 	{
 	}
 
-	void LambertianMaterial::GetNewRay(const Ray& ray, const Intersection& intersection, float waveLength, Ray& newRay, WeightFactors& weightFactors) const
+	void LambertianMaterial::GetNewRay(const Ray& ray, const Intersection& intersection, double waveLength, Ray& newRay, WeightFactors& weightFactors) const
 	{
 		// NOTE:
 		// BDRF is 1/pi * cos(theta), it will be used as PDF
@@ -25,9 +25,9 @@ namespace SPTracer
 		newRay.origin = intersection.point;
 
 		// generate random ray direction using BDRF as PDF
-		float phi = Util::RandFloat(0.0f, 2.0f * Util::Pi);
-		float rho = std::acos(std::sqrt(Util::RandFloat(0.0f, 1.0f)));
-		float theta = Util::Pi / 2.0f - rho;
+		double phi = Util::RandFloat(0.0, 2.0 * Util::Pi);
+		double rho = std::acos(std::sqrt(Util::RandFloat(0.0, 1.0)));
+		double theta = Util::Pi / 2.0 - rho;
 		newRay.direction = Vec3::FromPhiThetaNormal(phi, theta, intersection.normal);
 
 		// get reflectance
@@ -37,7 +37,7 @@ namespace SPTracer
 		// the choice of samples, we do not have to weight
 		// them again by applying the BDRF as a scaling
 		// factor to reflectance.
-		weightFactors.bdrfPdf = 1.0f;
+		weightFactors.bdrfPdf = 1.0;
 	}
 
 	bool LambertianMaterial::IsEmissive() const
@@ -45,9 +45,9 @@ namespace SPTracer
 		return false;
 	}
 
-	float LambertianMaterial::GetRadiance(const Ray & ray, const Intersection & intersection, float waveLength) const
+	double LambertianMaterial::GetRadiance(const Ray & ray, const Intersection & intersection, double waveLength) const
 	{
-		return 0.0f;
+		return 0.0;
 	}
 
 }

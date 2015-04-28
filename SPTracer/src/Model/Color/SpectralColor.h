@@ -12,18 +12,17 @@ namespace SPTracer
 	public:
 		struct Amplitude
 		{
-			float waveLength;	// length
-			float amplitude;	// amplitude
+			double waveLength;	// length
+			double amplitude;	// amplitude
 		};
 
 		SpectralColor();
 
-		void AddAmplitude(float waveLength, float amplitude);
+		void AddAmplitude(double waveLength, double amplitude);
 		void Init();
-		float GetAmplitude(float waveLength) const override;
+		double GetAmplitude(double waveLength) const override;
 
 	private:
-		static const float WaveLengthAccuracy;
 		std::vector<Amplitude> amplitudes_;
 		bool initialized_ = false;
 	};

@@ -123,7 +123,7 @@ namespace SPTracer {
 
 		// generate prefix
 		std::ostringstream oss;
-		for (unsigned int i = 0; i < prefixLen; i++)
+		for (size_t i = 0; i < prefixLen; i++)
 		{
 			oss << " ";
 		}

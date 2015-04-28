@@ -9,7 +9,7 @@ namespace SPTracer
 		*this /= this->EuclideanNorm();
 	}
 
-	float Vec3::EuclideanNorm() const
+	double Vec3::EuclideanNorm() const
 	{
 		return std::sqrt((*this) * (*this));
 	}
@@ -17,9 +17,9 @@ namespace SPTracer
 	Vec3 Vec3::RotateFromTo(const Vec3& fromDirection, const Vec3& toDirection)
 	{
 		// rotation angle
-		float theta = std::acos(fromDirection * toDirection);
+		double theta = std::acos(fromDirection * toDirection);
 		
-		float absTheta = std::abs(theta);
+		double absTheta = std::abs(theta);
 
 		// do not rotate if angle is too small
 		if (absTheta < Util::Eps)
@@ -30,7 +30,7 @@ namespace SPTracer
 		// if angle is PI - flip vector
 		if (std::abs(absTheta - Util::Pi) < Util::Eps)
 		{
-			return -1.0f * (*this);
+			return -1.0 * (*this);
 		}
 
 		// axis of rotation
@@ -43,13 +43,13 @@ namespace SPTracer
 		return (*this).RotateAboutAxis(rotAxis, theta);
 	}
 
-	Vec3 Vec3::RotateAboutAxis(const Vec3& rotationAxis, float theta)
+	Vec3 Vec3::RotateAboutAxis(const Vec3& rotationAxis, double theta)
 	{
 		Vec3& v = *this;
 		const Vec3& n = rotationAxis;
-		const float cosTheta = std::cos(theta);
-		const float sinTheta = std::sin(theta);
-		const float a = ((n.x * v.x) + (n.y * v.y) + (n.z * v.z)) * (1.0f - cosTheta);
+		const double cosTheta = std::cos(theta);
+		const double sinTheta = std::sin(theta);
+		const double a = ((n.x * v.x) + (n.y * v.y) + (n.z * v.z)) * (1.0 - cosTheta);
 
 		return Vec3{
 			n.x * a + v.x * cosTheta + (-n.z * v.y + n.y * v.z) * sinTheta,	// x
@@ -58,13 +58,13 @@ namespace SPTracer
 		};
 	}
 
-	Vec3 Vec3::FromPhiThetaNormal(float phi, float theta, const Vec3& n)
+	Vec3 Vec3::FromPhiThetaNormal(double phi, double theta, const Vec3& n)
 	{
 		// z axis
-		static const Vec3 zAxis{ 0.0f, 0.0f, 1.0f };
+		static const Vec3 zAxis{ 0.0, 0.0, 1.0 };
 
 		// get vector coordinates
-		float sinTheta = std::sin(theta);
+		double sinTheta = std::sin(theta);
 		return Vec3{
 			sinTheta * std::cos(phi),	// x
 			sinTheta * std::sin(phi),	// y
@@ -90,7 +90,7 @@ namespace SPTracer
 		};
 	}
 
-	Vec3 operator+(const Vec3& lhs, const float& rhs)
+	Vec3 operator+(const Vec3& lhs, const double& rhs)
 	{
 		return Vec3{
 			lhs.x + rhs,	// x
@@ -99,7 +99,7 @@ namespace SPTracer
 		};
 	}
 
-	Vec3 operator+(const float& lhs, const Vec3& rhs)
+	Vec3 operator+(const double& lhs, const Vec3& rhs)
 	{
 		return Vec3{
 			lhs + rhs.x,	// x
@@ -115,7 +115,7 @@ namespace SPTracer
 		lhs.z += rhs.z;		// z
 	}
 
-	void operator+=(Vec3& lhs, const float& rhs)
+	void operator+=(Vec3& lhs, const double& rhs)
 	{
 		lhs.x += rhs;		// x
 		lhs.y += rhs;		// y
@@ -131,7 +131,7 @@ namespace SPTracer
 		};
 	}
 
-	Vec3 operator-(const Vec3& lhs, const float& rhs)
+	Vec3 operator-(const Vec3& lhs, const double& rhs)
 	{
 		return Vec3{
 			lhs.x - rhs,	// x
@@ -140,7 +140,7 @@ namespace SPTracer
 		};
 	}
 
-	Vec3 operator-(const float& lhs, const Vec3& rhs)
+	Vec3 operator-(const double& lhs, const Vec3& rhs)
 	{
 		return Vec3{
 			lhs - rhs.x,	// x
@@ -156,19 +156,19 @@ namespace SPTracer
 		lhs.z -= rhs.z;		// z
 	}
 
-	void operator-=(Vec3& lhs, const float& rhs)
+	void operator-=(Vec3& lhs, const double& rhs)
 	{
 		lhs.x -= rhs;		// x
 		lhs.y -= rhs;		// y
 		lhs.z -= rhs;		// z
 	}
 
-	float operator*(const Vec3& lhs, const Vec3& rhs)
+	double operator*(const Vec3& lhs, const Vec3& rhs)
 	{
 		return (lhs.x * rhs.x) + (lhs.y * rhs.y) + (lhs.z * rhs.z);
 	}
 
-	Vec3 operator*(const Vec3& lhs, const float& rhs)
+	Vec3 operator*(const Vec3& lhs, const double& rhs)
 	{
 		return Vec3{
 			lhs.x * rhs,	// x
@@ -177,7 +177,7 @@ namespace SPTracer
 		};
 	}
 
-	Vec3 operator*(const float& lhs, const Vec3& rhs)
+	Vec3 operator*(const double& lhs, const Vec3& rhs)
 	{
 		return Vec3{
 			lhs * rhs.x,	// x
@@ -186,14 +186,14 @@ namespace SPTracer
 		};
 	}
 
-	void operator*=(Vec3& lhs, const float& rhs)
+	void operator*=(Vec3& lhs, const double& rhs)
 	{
 		lhs.x *= rhs;		// x
 		lhs.y *= rhs;		// y
 		lhs.z *= rhs;		// z
 	}
 
-	Vec3 operator/(const Vec3& lhs, const float& rhs)
+	Vec3 operator/(const Vec3& lhs, const double& rhs)
 	{
 		return Vec3{
 			lhs.x / rhs,	// x
@@ -202,7 +202,7 @@ namespace SPTracer
 		};
 	}
 
-	void operator/=(Vec3& lhs, const float& rhs)
+	void operator/=(Vec3& lhs, const double& rhs)
 	{
 		lhs.x /= rhs;		// x
 		lhs.y /= rhs;		// y

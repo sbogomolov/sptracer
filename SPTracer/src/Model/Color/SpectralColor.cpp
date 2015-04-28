@@ -7,13 +7,11 @@
 namespace SPTracer
 {
 
-	const float SpectralColor::WaveLengthAccuracy = 1e-2f;
-
 	SpectralColor::SpectralColor()
 	{
 	}
 
-	void SpectralColor::AddAmplitude(float waveLength, float amplitude)
+	void SpectralColor::AddAmplitude(double waveLength, double amplitude)
 	{
 		amplitudes_.push_back(Amplitude{ waveLength, amplitude });
 	}
@@ -34,8 +32,10 @@ namespace SPTracer
 		initialized_ = true;
 	}
 
-	float SpectralColor::GetAmplitude(float waveLength) const
+	double SpectralColor::GetAmplitude(double waveLength) const
 	{
+		static const double WaveLengthAccuracy = 1e-2;
+
 		// check that color is initialized
 		if (!initialized_)
 		{
@@ -46,7 +46,7 @@ namespace SPTracer
 
 		// get upper bound
 		auto upper = std::upper_bound(amplitudes_.begin(), amplitudes_.end(), waveLength,
-			[](const float& a, const Amplitude& b) { return a < b.waveLength; });
+			[](const double& a, const Amplitude& b) { return a < b.waveLength; });
 		
 		// check that we're not lower than the first wave legth
 		if (upper == amplitudes_.begin())
@@ -56,7 +56,7 @@ namespace SPTracer
 				<< waveLength << " < " << amplitudes_[0].waveLength;
 			Log::Warning(oss.str());
 
-			return 0.0f;
+			return 0.0;
 		}
 
 		// get lower bound
@@ -75,7 +75,7 @@ namespace SPTracer
 				<< waveLength << " > " << amplitudes_[amplitudes_.size() - 1].waveLength;
 			Log::Warning(oss.str());
 
-			return 0.0f;
+			return 0.0;
 		}
 
 		const Amplitude& upperAmp = *upper;

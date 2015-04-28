@@ -9,11 +9,11 @@ namespace SPTracer
 	class ScalarColor : public Color
 	{
 	public:
-		ScalarColor(float amplitude);
-		float GetAmplitude(float waveLength) const override;
+		ScalarColor(double amplitude);
+		double GetAmplitude(double waveLength) const override;
 
 	private:
-		float amplitude_;
+		double amplitude_;
 	};
 
 }

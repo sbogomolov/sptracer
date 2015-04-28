@@ -12,7 +12,6 @@ namespace SPTracer
 	{
 		Vec3 origin;
 		Vec3 direction;
-		float prevDistance = 1.0f;
 		bool refracted = false;
 	};
 

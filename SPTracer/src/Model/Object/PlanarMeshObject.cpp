@@ -32,7 +32,13 @@ namespace SPTracer
 				const Vec3& v2 = vertices_[hole[i + 1]];
 				const Vec3& v3 = vertices_[hole[i + 2]];
 				
-				Vec3 n = ComputeNormal(v1, v2, v3);
+				// Vertices order is reversed here. In the MDLA file vertices for a hole 
+				// are written in a clockwise order as oposed to the vertices of outline.
+				// Holes are checked for intersection in the same way as outline, so their 
+				// normals must point in the same direction as outline normals. That is why
+				// 2nd and 3rd vertices for every triangle are swapped.
+
+				Vec3 n = ComputeNormal(v1, v3, v2);
 				holeNormals.push_back(std::move(n));
 			}
 		}
@@ -64,7 +70,14 @@ namespace SPTracer
 			{
 				const Vec3& v2 = vertices_[hole[i + 1]];
 				const Vec3& v3 = vertices_[hole[i + 2]];
-				if (IntersectWithTriangle(ray, holeNormals[i], v1, v2, v3, intersection))
+				
+				// Vertices order is reversed here. In the MDLA file vertices for a hole 
+				// are written in a clockwise order as oposed to the vertices of outline.
+				// Holes are checked for intersection in the same way as outline, so their 
+				// normals must point in the same direction as outline normals. That is why
+				// 2nd and 3rd vertices for every triangle are swapped.
+
+				if (IntersectWithTriangle(ray, holeNormals[i], v1, v3, v2, intersection))
 				{
 					return false;
 				}
