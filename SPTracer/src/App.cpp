@@ -14,9 +14,9 @@ App::App(std::string fileName)
 #endif
 
 #ifdef _DEBUG
-	size_t numThreads = 1;
+	unsigned int numThreads = 1;
 #else
-	size_t numThreads = 6;
+	unsigned int numThreads = 6;
 #endif
 
 	unsigned int width = 500;

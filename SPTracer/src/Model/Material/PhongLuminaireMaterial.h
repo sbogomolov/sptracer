@@ -7,9 +7,6 @@
 namespace SPTracer
 {
 
-	struct Intersection;
-	struct Ray;
-	struct WeightFactors;
 	class Color;
 
 	class PhongLuminaireMaterial : public Material
@@ -20,14 +17,16 @@ namespace SPTracer
 			std::unique_ptr<Color> radiantExitance,
 			float phongExponent);
 
-		void GetNewRay(const Ray& ray, const Intersection& intersection, float waveLength, Ray& newRay, WeightFactors& weightFactors) const override;
+		void GetNewRay(const Ray& ray, const Intersection& intersection, const Spectrum& spectrum, Ray& newRay, std::vector<float>& reflectance) const override;
 		bool IsEmissive() const override;
-		float GetRadiance(const Ray& ray, const Intersection& intersection, float waveLength) const override;
+		void GetRadiance(const Ray& ray, const Intersection& intersection, const Spectrum& spectrum, std::vector<float>& radiance) const override;
 
 	private:
 		std::unique_ptr<Material> reflectiveMaterial_;
 		std::unique_ptr<Color> radiantExitance_;
 		float phongExponent_;
+		mutable bool initialized_;
+		mutable std::vector<float> precomputed_;
 	};
 
 }

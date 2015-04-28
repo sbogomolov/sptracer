@@ -2,6 +2,7 @@
 #define SPT_CIE1931_H
 
 #include <unordered_map>
+#include <vector>
 #include "XYZConverter.h"
 
 

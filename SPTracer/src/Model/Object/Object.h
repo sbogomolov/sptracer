@@ -2,12 +2,13 @@
 #define SPT_OBJECT_H
 
 #include <memory>
+#include <vector>
 
 namespace SPTracer
 {
 	struct Intersection;
 	struct Ray;
-	struct WeightFactors;
+	struct Spectrum;
 	class Material;
 
 	class Object
@@ -16,8 +17,8 @@ namespace SPTracer
 		virtual ~Object();
 
 		virtual bool Intersect(const Ray& ray, Intersection& intersection) const = 0;
-		void GetNewRay(const Ray& ray, const Intersection& intersection, float waveLength, Ray& newRay, WeightFactors& weightFactors) const;
-		float GetRadiance(const Ray& ray, const Intersection& intersection, float waveLength) const;
+		void GetNewRay(const Ray& ray, const Intersection& intersection, const Spectrum& spectrum, Ray& newRay, std::vector<float>& reflectance) const;
+		void GetRadiance(const Ray& ray, const Intersection& intersection, const Spectrum& spectrum, std::vector<float>& radiance) const;
 		bool IsEmissive() const;
 		
 	protected:

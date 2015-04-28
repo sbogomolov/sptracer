@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <chrono>
 #include <cmath>
 #include <iomanip>
 #include <numeric>
@@ -15,7 +16,7 @@
 
 namespace SPTracer {
 
-	SPTracer::SPTracer(std::string fileName, size_t numThreads, unsigned int width, unsigned int height)
+	SPTracer::SPTracer(std::string fileName, unsigned int numThreads, unsigned int width, unsigned int height)
 		: width_(width), height_(height), numThreads_(numThreads)
 	{
 		// create model from file
@@ -27,21 +28,25 @@ namespace SPTracer {
 		// prepare array of pixels
 		pixels_.resize((width_ * height_) * 3);
 
-		// wave length parameters
-		waveLengthMin_ = 400.0f;
-		waveLengthMax_ = 700.0f;
-		waveLengthStep_ = 20.0f;
+		// spectrum
+		spectrum_.min = 400.0f;
+		spectrum_.max = 700.0f;
+		spectrum_.step = 4.0f;
 
-#ifdef _DEBUG
-		waveLengthStep_ = 150.0f;
-#endif
+		// precompute count of wave lengths
+		spectrum_.count = static_cast<unsigned int>((spectrum_.max - spectrum_.min) / spectrum_.step) + 1;
 
-		waveLengthCount_ = static_cast<size_t>((waveLengthMax_ - waveLengthMin_) / waveLengthStep_) + 1;
+		// precompute wave length
+		spectrum_.values = std::vector<float>(spectrum_.count);
+		for (size_t i = 0; i < spectrum_.count; i++)
+		{
+			spectrum_.values[i] = spectrum_.min + spectrum_.step * static_cast<float>(i);
+		}
 
-		// color converter
+		// xyz color converter
 		xyzConverter_ = std::make_unique<CIE1931>();
 
-		// color system
+		// rgb color system
 		rgbConverter_ = std::make_unique<SRGB>();
 
 	}
@@ -65,27 +70,12 @@ namespace SPTracer {
 		return *taskScheduler_;
 	}
 
-	float SPTracer::GetWaveLengthMin() const
+	const Spectrum& SPTracer::GetSpectrum() const
 	{
-		return waveLengthMin_;
+		return spectrum_;
 	}
 
-	float SPTracer::GetWaveLengthMax() const
-	{
-		return waveLengthMax_;
-	}
-
-	float SPTracer::GetWaveLengthStep() const
-	{
-		return waveLengthStep_;
-	}
-
-	size_t SPTracer::GetWaveLengthCount() const
-	{
-		return waveLengthCount_;
-	}
-
-	size_t SPTracer::GetCompletedSamplesCount() const
+	unsigned long SPTracer::GetCompletedSamplesCount() const
 	{
 		return completedSamplesCount_;
 	}
@@ -128,16 +118,14 @@ namespace SPTracer {
 		// increase count of completed samples
 		completedSamplesCount_++;
 
-		// update image when all threads return samples
-		static size_t samples = 0;
-		samples++;
-		if (samples == numThreads_)
+		// update image approximately every 10 seconds
+		static const auto updateInterval = std::chrono::seconds(10);
+		static auto nextUpdate = std::chrono::steady_clock::now() + updateInterval;
+		auto now = std::chrono::steady_clock::now();
+		if (now >= nextUpdate)
 		{
-			// reset count
-			samples = 0;
-
-			// upadte image
 			UpdateImage();
+			nextUpdate = now + updateInterval;
 		}
 	}
 
@@ -205,15 +193,15 @@ namespace SPTracer {
 		}
 
 		// divide XYZ color in pixels on the number of samples
-		double num = static_cast<double>(completedSamplesCount_ * waveLengthCount_);
+		double samples = static_cast<double>(completedSamplesCount_);
 		std::vector<Vec3> xyzColor;
 		xyzColor.reserve(pixels_.size() / 3);
 		for (size_t i = 0; i < (pixels_.size() / 3); i++)
 		{
 			xyzColor.push_back(Vec3{
-				static_cast<float>(pixels_[i * 3] / num),
-				static_cast<float>(pixels_[i * 3 + 1] / num),
-				static_cast<float>(pixels_[i * 3 + 2] / num)
+				static_cast<float>(pixels_[i * 3] / samples),
+				static_cast<float>(pixels_[i * 3 + 1] / samples),
+				static_cast<float>(pixels_[i * 3 + 2] / samples)
 			});
 		}
 
@@ -223,12 +211,11 @@ namespace SPTracer {
 		// prepare title
 		auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(
 			std::chrono::high_resolution_clock::now() - start_);
-		size_t spp = completedSamplesCount_ * waveLengthCount_;
-		float sps = (static_cast<float>(spp * width_ * height_) / 
+		float sps = (static_cast<float>(completedSamplesCount_ * width_ * height_) /
 			(static_cast<float>(duration.count()) / 1000.0f));
 		
 		std::ostringstream oss;
-		oss << FormatNumber(static_cast<float>(spp)) << " SPP, " << FormatNumber(sps) << " SPS" ;
+		oss << FormatNumber(static_cast<float>(completedSamplesCount_)) << " SPP, " << FormatNumber(sps) << " SPS" ;
 
 		// call image updater
 		imageUpdater_->UpdateImage(rgbColor, oss.str());
@@ -239,7 +226,7 @@ namespace SPTracer {
 		std::ostringstream oss;
 		if (n < 1e3f)
 		{
-			oss << static_cast<size_t>(n);
+			oss << static_cast<unsigned long>(n);
 		}
 		else
 		{

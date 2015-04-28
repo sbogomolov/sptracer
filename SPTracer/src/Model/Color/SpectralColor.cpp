@@ -62,6 +62,8 @@ namespace SPTracer
 		// get lower bound
 		auto lower = upper - 1;
 		const Amplitude& lowerAmp = *lower;
+
+		// check if lower bound equals to require wave length with some accuracy
 		if ((waveLength - lowerAmp.waveLength) < WaveLengthAccuracy)
 		{
 			return lowerAmp.amplitude;

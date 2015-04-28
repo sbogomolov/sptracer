@@ -1,8 +1,13 @@
 #include "CIE1931.h"
+#include "../Spectrum.h"
 #include "../Vec3.h"
 
 namespace SPTracer
 {
+	
+	const float CIE1931::waveLengthMin_ = 360.0f;
+	const float CIE1931::waveLengthMax_ = 830.0f;
+	const float CIE1931::waveLengthStep_ = 1.0f;
 
 	Vec3 CIE1931::GetXYZ(float waveLength) const
 	{
@@ -23,10 +28,6 @@ namespace SPTracer
 	{
 		return waveLengthStep_;
 	}
-
-	const float CIE1931::waveLengthMin_ = 360.0f;
-	const float CIE1931::waveLengthMax_ = 830.0f;
-	const float CIE1931::waveLengthStep_ = 1.0f;
 
 	const Vec3 CIE1931::colorMap_[] = {
 		Vec3{ 0.000129900000f, 0.000003917000f, 0.000606100000f },	// 360 nm

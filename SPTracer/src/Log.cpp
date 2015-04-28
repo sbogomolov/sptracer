@@ -81,7 +81,7 @@ namespace SPTracer {
 	std::string Log::FormatMessage(std::string msg, size_t prefixLen)
 	{
 		// replace all "\r\n" with "\n"
-		std::string::size_type pos = 0;
+		size_t pos = 0;
 		while ((pos = msg.find("\r\n", pos)) != std::string::npos)
 		{
 			msg = msg.replace(pos, 2, "\n");

@@ -14,16 +14,16 @@ namespace SPTracer
 	class TaskScheduler
 	{
 	public:
-		TaskScheduler(SPTracer& tracer, size_t numThreads);
+		TaskScheduler(SPTracer& tracer, unsigned int numThreads);
 
 		void AddTask(std::unique_ptr<Task> task, bool highPriority = false);
 		std::unique_ptr<Task> GetTask();
 		size_t GetTasksCount();
 
 	private:
-		const size_t numThreads_;
 		SPTracer& tracer_;
-		size_t sleepingThreads_ = 0;
+		const unsigned int numThreads_;
+		unsigned int sleepingThreads_ = 0;
 		std::queue<std::unique_ptr<Task>> tasks_;
 		std::queue<std::unique_ptr<Task>> highPriorityTasks_;
 		std::mutex mutex_;

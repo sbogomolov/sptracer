@@ -196,6 +196,7 @@
     <ClInclude Include="src\Model\Object\Object.h" />
     <ClInclude Include="src\Model\Object\PlanarMeshObject.h" />
     <ClInclude Include="src\Ray.h" />
+    <ClInclude Include="src\Spectrum.h" />
     <ClInclude Include="src\Task\Task.h" />
     <ClInclude Include="src\Task\TaskScheduler.h" />
     <ClInclude Include="src\Task\TraceTask.h" />
@@ -203,7 +204,6 @@
     <ClInclude Include="src\Vec3.h" />
     <ClInclude Include="src\Exception.h" />
     <ClInclude Include="src\SPTracer.h" />
-    <ClInclude Include="src\WeightFactors.h" />
     <ClInclude Include="src\Window.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

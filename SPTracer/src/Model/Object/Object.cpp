@@ -1,6 +1,7 @@
 #include <cmath>
 #include "../../Intersection.h"
 #include "../../Ray.h"
+#include "../../Spectrum.h"
 #include "../../Util.h"
 #include "../Material/Material.h"
 #include "Object.h"
@@ -111,14 +112,14 @@ namespace SPTracer
 		return true;
 	}
 
-	void Object::GetNewRay(const Ray& ray, const Intersection& intersection, float waveLength, Ray& newRay, WeightFactors& weightFactors) const
+	void Object::GetNewRay(const Ray& ray, const Intersection& intersection, const Spectrum& spectrum, Ray& newRay, std::vector<float>& reflectance) const
 	{
-		material_->GetNewRay(ray, intersection, waveLength, newRay, weightFactors);
+		material_->GetNewRay(ray, intersection, spectrum, newRay, reflectance);
 	}
 
-	float Object::GetRadiance(const Ray& ray, const Intersection& intersection, float waveLength) const
+	void Object::GetRadiance(const Ray& ray, const Intersection& intersection, const Spectrum& spectrum, std::vector<float>& radiance) const
 	{
-		return material_->GetRadiance(ray, intersection, waveLength);
+		material_->GetRadiance(ray, intersection, spectrum, radiance);
 	}
 
 	bool Object::IsEmissive() const

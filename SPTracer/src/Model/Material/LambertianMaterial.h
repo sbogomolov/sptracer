@@ -5,22 +5,21 @@
 
 namespace SPTracer
 {
-	struct Intersection;
-	struct Ray;
-	struct WeightFactors;
 	class Color;
 
 	class LambertianMaterial : public Material
 	{
 	public:
-		LambertianMaterial(std::unique_ptr<Color> diffuseReflactance);
+		LambertianMaterial(std::unique_ptr<Color> diffuseReflectance);
 		
-		void GetNewRay(const Ray& ray, const Intersection& intersection, float waveLength, Ray& newRay, WeightFactors& weightFactors) const override;
+		void GetNewRay(const Ray& ray, const Intersection& intersection, const Spectrum& spectrum, Ray& newRay, std::vector<float>& reflectance) const override;
 		bool IsEmissive() const override;
-		float GetRadiance(const Ray& ray, const Intersection& intersection, float waveLength) const override;
+		void GetRadiance(const Ray& ray, const Intersection& intersection, const Spectrum& spectrum, std::vector<float>& radiance) const override;
 
 	private:
-		std::unique_ptr<Color> diffuseReflactance_;
+		std::unique_ptr<Color> diffuseReflectance_;
+		mutable std::vector<float> precomputed_;
+		mutable bool initialized_ = false;
 	};
 
 }

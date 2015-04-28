@@ -1,6 +1,7 @@
 #include <cmath>
 #include "../../Intersection.h"
 #include "../../Ray.h"
+#include "../../Spectrum.h"
 #include "../Color/Color.h"
 #include "PhongLuminaireMaterial.h"
 
@@ -23,23 +24,44 @@ namespace SPTracer
 		return true;
 	}
 
-	void PhongLuminaireMaterial::GetNewRay(const Ray& ray, const Intersection& intersection, float waveLength, Ray& newRay, WeightFactors& weightFactors) const
+	void PhongLuminaireMaterial::GetNewRay(const Ray& ray, const Intersection& intersection, const Spectrum& spectrum, Ray& newRay, std::vector<float>& reflectance) const
 	{
-		reflectiveMaterial_->GetNewRay(ray, intersection, waveLength, newRay, weightFactors);
+		reflectiveMaterial_->GetNewRay(ray, intersection, spectrum, newRay, reflectance);
 	}
 
-	float PhongLuminaireMaterial::GetRadiance(const Ray& ray, const Intersection& intersection, float waveLength) const
+	void PhongLuminaireMaterial::GetRadiance(const Ray& ray, const Intersection& intersection, const Spectrum& spectrum, std::vector<float>& radiance) const
 	{
-		// get radiant exitance for wave length
-		float radiance = radiantExitance_->GetAmplitude(waveLength);
+		// precompute array of radiances for spectrum
+		if (!initialized_)
+		{
+			precomputed_.resize(spectrum.count);
+			for (size_t i = 0; i < spectrum.count; i++)
+			{
+				precomputed_[i] = radiantExitance_->GetAmplitude(spectrum.values[i]);
+			}
+
+			initialized_ = true;
+		}
 
 		// angle between ray and normal
 		float theta = std::acos((-1 * ray.direction) * intersection.normal);
 
-		// scale according to phong exponent
-		radiance *= std::pow(std::cos(theta), phongExponent_);
+		// cos distribution with Phong exponent
+		float weight = std::pow(std::cos(theta), phongExponent_);
 
-		return radiance;
+		if (ray.monochromatic)
+		{
+			// get radiant exitance for wave length scaled according to cosine distribution with Phong exponent
+			radiance[0] = weight * precomputed_[ray.waveIndex];
+		}
+		else
+		{
+			// get radiant exitances for spectrum and scale according to cosine distribution with Phong exponent
+			for (size_t i = 0; i < spectrum.count; i++)
+			{
+				radiance[i] = weight * precomputed_[i];
+			}
+		}
 	}
 
 }

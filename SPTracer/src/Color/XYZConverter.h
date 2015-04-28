@@ -4,6 +4,7 @@
 namespace SPTracer
 {
 
+	struct Spectrum;
 	struct Vec3;
 
 	class XYZConverter

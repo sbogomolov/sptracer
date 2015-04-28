@@ -6,7 +6,7 @@
 namespace SPTracer
 {
 
-	TaskScheduler::TaskScheduler(SPTracer& tracer, size_t numThreads)
+	TaskScheduler::TaskScheduler(SPTracer& tracer, unsigned int numThreads)
 		: tracer_(tracer), numThreads_(numThreads)
 	{
 		// spawn threads

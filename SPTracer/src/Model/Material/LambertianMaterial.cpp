@@ -1,7 +1,7 @@
 #include <cmath>
 #include "../../Intersection.h"
 #include "../../Ray.h"
-#include "../../WeightFactors.h"
+#include "../../Spectrum.h"
 #include "../../Util.h"
 #include "../Model.h"
 #include "../Color/Color.h"
@@ -10,13 +10,25 @@
 namespace SPTracer
 {
 
-	LambertianMaterial::LambertianMaterial(std::unique_ptr<Color> diffuseReflactance)
-		: diffuseReflactance_(std::move(diffuseReflactance))
+	LambertianMaterial::LambertianMaterial(std::unique_ptr<Color> diffuseReflectance)
+		: diffuseReflectance_(std::move(diffuseReflectance))
 	{
 	}
 
-	void LambertianMaterial::GetNewRay(const Ray& ray, const Intersection& intersection, float waveLength, Ray& newRay, WeightFactors& weightFactors) const
+	void LambertianMaterial::GetNewRay(const Ray& ray, const Intersection& intersection, const Spectrum& spectrum, Ray& newRay, std::vector<float>& reflectance) const
 	{
+		// precompute array of reflectances for spectrum
+		if (!initialized_)
+		{
+			precomputed_.resize(spectrum.count);
+			for (size_t i = 0; i < spectrum.count; i++)
+			{
+				precomputed_[i] = diffuseReflectance_->GetAmplitude(spectrum.values[i]);
+			}
+
+			initialized_ = true;
+		}
+
 		// NOTE:
 		// BDRF is 1/pi * cos(theta), it will be used as PDF
 		// to prefer bright directions.
@@ -30,14 +42,26 @@ namespace SPTracer
 		float theta = Util::Pi / 2.0f - rho;
 		newRay.direction = Vec3::FromPhiThetaNormal(phi, theta, intersection.normal);
 
-		// get reflectance
-		weightFactors.reflectance = diffuseReflactance_->GetAmplitude(waveLength);
-
 		// Because the bright directions are preferred in 
 		// the choice of samples, we do not have to weight
 		// them again by applying the BDRF as a scaling
 		// factor to reflectance.
-		weightFactors.bdrfPdf = 1.0f;
+		static const float bdrfPdf = 1.0f;
+
+		// get reflectance
+		if (ray.monochromatic)
+		{
+			// one reflectance
+			reflectance[0] = bdrfPdf *  precomputed_[ray.waveIndex];
+		}
+		else
+		{
+			// all spectrum
+			for (size_t i = 0; i < spectrum.count; i++)
+			{
+				reflectance[i] = bdrfPdf * precomputed_[i];
+			}
+		}
 	}
 
 	bool LambertianMaterial::IsEmissive() const
@@ -45,9 +69,9 @@ namespace SPTracer
 		return false;
 	}
 
-	float LambertianMaterial::GetRadiance(const Ray & ray, const Intersection & intersection, float waveLength) const
+	void LambertianMaterial::GetRadiance(const Ray & ray, const Intersection & intersection, const Spectrum& spectrum, std::vector<float>& radiance) const
 	{
-		return 0.0f;
+		// no radiance
 	}
 
 }

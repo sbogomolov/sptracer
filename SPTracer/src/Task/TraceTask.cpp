@@ -1,7 +1,8 @@
+#include <numeric>
 #include "../Intersection.h"
+#include "../Spectrum.h"
 #include "../SPTracer.h"
 #include "../Util.h"
-#include "../WeightFactors.h"
 #include "../Model/Camera.h"
 #include "../Model/Model.h"
 #include "../Color/XYZConverter.h"
@@ -48,20 +49,13 @@ namespace SPTracer
 		static const float left = camera.icx - camera.iw / 2.0f;
 		static const float top = camera.icy + camera.ih / 2.0f;
 
-		// wave lengths
-		static const float min = tracer_.GetWaveLengthMin();
-		static const float max = tracer_.GetWaveLengthMax();
-		static const float step = tracer_.GetWaveLengthStep();
-		static const size_t count = tracer_.GetWaveLengthCount();
+		// spectrum
+		static const Spectrum& spectrum = tracer_.GetSpectrum();
 
-		Ray newRay;
-		Intersection intersection;
-		WeightFactors weightFactors;
+		std::vector<float> reflectance(spectrum.count);
+		std::vector<float> radiance(spectrum.count);
+		std::vector<float> weight(spectrum.count);
 		std::vector<Vec3> color(width * height);
-		
-		// ray origin is always COP
-		Ray generatedRay;
-		generatedRay.origin = origin;
 
 		for (size_t i = 0; i < height; i++)
 		{
@@ -90,85 +84,134 @@ namespace SPTracer
 				// rotate according to up direction
 				direction = direction.RotateFromTo(yAxis, camera.up);
 
-				// set generated ray direction
-				generatedRay.direction = direction;
+				// spawn new ray
+				Ray originalRay;
+				originalRay.origin = origin;
+				originalRay.direction = direction;
 
-				// go over all wave lengths
-				for (size_t w = 0; w < count; w++)
+				// generate random wave length in case ray will hit some materials
+				// with properties dependent on wave length (e.g. refraction)
+				originalRay.waveIndex = Util::RandInt(0, spectrum.count - 1);
+
+				// set current ray to the original ray
+				Ray* ray = &originalRay;
+
+				// set bounces to 0
+				unsigned int bounces = 0;
+
+				// set weight to 1
+				for (size_t t = 0; t < spectrum.count; t++)
 				{
-					float waveLength = min + step * static_cast<float>(w);
-					Ray* ray = &generatedRay;
-					float weight = 1.0f;
-					unsigned int bounces = 0;
+					weight[t] = 1.0f;
+				}
 
-					// trace ray
-					while (true)
+				// trace ray
+				while (true)
+				{
+					// try to find intersection
+					Intersection intersection;
+					if (!model.Intersect(*ray, intersection))
 					{
-						// try to find intersection
-						if (!model.Intersect(*ray, intersection))
-						{
-							// no intersection foubd
-							break;
-						}
+						// no intersection foubd
+						break;
+					}
 
-						// reflected (refracted) ray weight correction
-						float reflectionProbability = 1.0f;
+					// reflected (refracted) ray weight correction
+					float reflectionProbability = 1.0f;
 
-						// check if light should be emitted
-						if (intersection.object->IsEmissive())
+					// check if light should be emitted
+					if (intersection.object->IsEmissive())
+					{
+						if (Util::RandFloat(0.0f, 1.0f) < emissionProbability)
 						{
-							if (Util::RandFloat(0.0f, 1.0f) < emissionProbability)
+							// radiance
+							intersection.object->GetRadiance(*ray, intersection, spectrum, radiance);
+
+							if (ray->monochromatic)
 							{
-								// radiance
-								float radiance = intersection.object->GetRadiance(*ray, intersection, waveLength);
+								// only one radiance with applied weight and emission probability
+								float r = radiance[0] * weight[0] / emissionProbability;
 
-								// apply ray weight
-								radiance *= weight;
-
-								// weight with emission prpbability
-								radiance /= emissionProbability;
-
-								// store radiance
-								xyzColor += radiance * xyzConverter.GetXYZ(waveLength) / static_cast<float>(count);
-
-								// done
-								break;
+								// store radiance devided by the number of wave length in spectrum
+								xyzColor += r * xyzConverter.GetXYZ(spectrum.values[ray->waveIndex]) / static_cast<float>(spectrum.count);
 							}
 							else
 							{
-								// set reflection probability
-								reflectionProbability = 1.0f - emissionProbability;
+								// full spectrum
+								for (size_t t = 0; t < spectrum.count; t++)
+								{
+									// radiance with applied weight and emission probability
+									float r = radiance[t] * weight[t] / emissionProbability;
+
+									// store radiance devided by the count of wave lengths in spectrum
+									xyzColor += r * xyzConverter.GetXYZ(spectrum.values[t]) / static_cast<float>(spectrum.count);
+								}
 							}
+
+							// done
+							break;
 						}
-
-						// get new ray from non-emissive material
-						intersection.object->GetNewRay(*ray, intersection, waveLength, newRay, weightFactors);
-
-						// weight with reflectance and BDRF / PDF
-						weight *= weightFactors.bdrfPdf * weightFactors.reflectance;
-
-						// weight ray with the probability of reflaction
-						weight /= reflectionProbability;
-
-						// russian roulette
-						float absorptionProbability = 1.0f - weightFactors.reflectance;
-						if (bounces > minBounces)
+						else
 						{
-							if (Util::RandFloat(0.0f, 1.0f) < absorptionProbability)
-							{
-								// ray was absorped
-								break;
-							}
+							// set reflection probability
+							reflectionProbability = 1.0f - emissionProbability;
+						}
+					}
 
-							// ray was not absorped, increase its weight
-							weight /= (1.0f - absorptionProbability);
+					// get new ray from non-emissive material
+					Ray reflectedRay;
+					intersection.object->GetNewRay(*ray, intersection, spectrum, reflectedRay, reflectance);
+
+					// absorption probability for russian roulette
+					float absorptionProbability;
+
+					// check monochromaticity
+					if (ray->monochromatic)
+					{
+						// weight ray with the reflactance and reflection probability
+						weight[0] *= reflectance[0] / reflectionProbability;
+						absorptionProbability = 1.0f - reflectance[0];
+					}
+					else
+					{
+						// weight ray with the reflection probability
+						for (size_t t = 0; t < spectrum.count; t++)
+						{
+							weight[t] *= reflectance[t] / reflectionProbability;
 						}
 
-						// change current ray to new ray
-						ray = &newRay;
-
-						bounces++;
+						float meanReflectance = std::accumulate(reflectance.begin(), reflectance.end(), 0.0f) / spectrum.count;
+						absorptionProbability = 1.0f - meanReflectance;
 					}
+
+					// russian roulette
+					if (bounces > minBounces)
+					{
+						if (Util::RandFloat(0.0f, 1.0f) < absorptionProbability)
+						{
+							// ray was absorped
+							break;
+						}
+
+						// ray was not absorped, increase its weight
+						if (ray->monochromatic)
+						{
+							weight[0] /= (1.0f - absorptionProbability);
+						}
+						else
+						{
+							for (size_t t = 0; t < spectrum.count; t++)
+							{
+								weight[t] /= (1.0f - absorptionProbability);
+							}
+						}
+
+					}
+
+					// change current ray to reflected ray
+					ray = &reflectedRay;
+
+					bounces++;
 				}
 			}
 		}
