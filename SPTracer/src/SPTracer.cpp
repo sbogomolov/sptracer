@@ -208,7 +208,7 @@ namespace SPTracer {
 		double num = static_cast<double>(completedSamplesCount_ * waveLengthCount_);
 		std::vector<Vec3> xyzColor;
 		xyzColor.reserve(pixels_.size() / 3);
-		for (size_t i = 0; i < xyzColor.size(); i++)
+		for (size_t i = 0; i < (pixels_.size() / 3); i++)
 		{
 			xyzColor.push_back(Vec3{
 				static_cast<float>(pixels_[i * 3] / num),
