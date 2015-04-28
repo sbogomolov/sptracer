@@ -7,10 +7,10 @@ namespace SPTracer
 	class Util
 	{
 	public:
-		static const double Eps;
-		static const double Pi;
+		static const float Eps;
+		static const float Pi;
 
-		static double RandFloat(double min, double max);
+		static float RandFloat(float min, float max);
 
 	private:
 		Util();

@@ -30,7 +30,7 @@ namespace SPTracer
 		static void CheckKeyword(TokensIterator& it, TokensIterator& end, std::string keyword);
 			
 		static std::string GetString(TokensIterator& it, TokensIterator& end);
-		static double GetDouble(TokensIterator& it, TokensIterator& end);
+		static float GetFloat(TokensIterator& it, TokensIterator& end);
 		unsigned long GetInteger(TokensIterator& it, TokensIterator& end);
 
 		void ParseTokens(const TokensList& tokens);

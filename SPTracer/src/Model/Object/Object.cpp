@@ -42,7 +42,7 @@ namespace SPTracer
 		Vec3 e2 = v3 - v1;
 
 		Vec3 p = Vec3::CrossProduct(ray.direction, e2);
-		double det = e1 * p;
+		float det = e1 * p;
 
 		// check determinant
 		if (ray.refracted)
@@ -65,27 +65,27 @@ namespace SPTracer
 		}
 
 		// invert determinant
-		double invDet = 1.0 / det;
+		float invDet = 1.0f / det;
 
 		Vec3 s = ray.origin - v1;
-		double u = invDet * (s * p);
+		float u = invDet * (s * p);
 
-		if ((u < 0.0) || (u > 1.0))
+		if ((u < 0.0f) || (u > 1.0f))
 		{
 			return false;
 		}
 
 		Vec3 q = Vec3::CrossProduct(s, e1);
-		double v = invDet * (ray.direction * q);
+		float v = invDet * (ray.direction * q);
 
-		if ((v < 0.0) || ((u + v) > 1.0))
+		if ((v < 0.0f) || ((u + v) > 1.0f))
 		{
 			return false;
 		}
 
 		// at this stage we can compute t to find out where
 		// the intersection point is on the line
-		double t = invDet * (e2 * q);
+		float t = invDet * (e2 * q);
 
 		// check intersection
 		if (t < Util::Eps)
@@ -97,7 +97,7 @@ namespace SPTracer
 
 		// ray intersection point
 		Vec3 point = ray.origin + t * ray.direction;
-
+		
 		// Due to numerical error, intersection point might be
 		// slightly below the surface. In this case the secondary
 		// ray will intersect the same surface, which is wrong.
@@ -111,12 +111,12 @@ namespace SPTracer
 		return true;
 	}
 
-	void Object::GetNewRay(const Ray& ray, const Intersection& intersection, double waveLength, Ray& newRay, WeightFactors& weightFactors) const
+	void Object::GetNewRay(const Ray& ray, const Intersection& intersection, float waveLength, Ray& newRay, WeightFactors& weightFactors) const
 	{
 		material_->GetNewRay(ray, intersection, waveLength, newRay, weightFactors);
 	}
 
-	double Object::GetRadiance(const Ray& ray, const Intersection& intersection, double waveLength) const
+	float Object::GetRadiance(const Ray& ray, const Intersection& intersection, float waveLength) const
 	{
 		return material_->GetRadiance(ray, intersection, waveLength);
 	}

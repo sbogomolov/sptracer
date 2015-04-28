@@ -9,7 +9,7 @@ namespace SPTracer
 	public:
 		virtual ~Color() { };
 
-		virtual double GetAmplitude(double waveLength) const = 0;
+		virtual float GetAmplitude(float waveLength) const = 0;
 
 	protected:
 		Color() { };

@@ -117,7 +117,7 @@ std::string Window::NewWindowClassName()
 		"abcdefghijklmnopqrstuvwxyz";
 
 	std::ostringstream ss;
-	for (size_t i = 0; i < len; ++i) {
+	for (size_t i = 0; i < len; i++) {
 		ss << alphanum[std::rand() % (sizeof(alphanum) - 1)];
 	}
 

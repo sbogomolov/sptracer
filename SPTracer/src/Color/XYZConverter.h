@@ -11,10 +11,10 @@ namespace SPTracer
 	public:
 		virtual ~XYZConverter() { };
 
-		virtual Vec3 GetXYZ(double waveLength) const = 0;
-		virtual double GetWaveLengthMin() const = 0;
-		virtual double GetWaveLengthMax() const = 0;
-		virtual double GetWaveLengthStep() const = 0;
+		virtual Vec3 GetXYZ(float waveLength) const = 0;
+		virtual float GetWaveLengthMin() const = 0;
+		virtual float GetWaveLengthMax() const = 0;
+		virtual float GetWaveLengthStep() const = 0;
 
 	protected:
 		XYZConverter() { };

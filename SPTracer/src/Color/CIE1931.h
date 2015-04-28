@@ -13,15 +13,15 @@ namespace SPTracer
 	class CIE1931 : public XYZConverter
 	{
 	public:
-		Vec3 GetXYZ(double waveLength) const override;
-		double GetWaveLengthMin() const override;
-		double GetWaveLengthMax() const override;
-		double GetWaveLengthStep() const override;
+		Vec3 GetXYZ(float waveLength) const override;
+		float GetWaveLengthMin() const override;
+		float GetWaveLengthMax() const override;
+		float GetWaveLengthStep() const override;
 
 	private:
-		static const double waveLengthMin_;
-		static const double waveLengthMax_;
-		static const double waveLengthStep_;
+		static const float waveLengthMin_;
+		static const float waveLengthMax_;
+		static const float waveLengthStep_;
 		static const Vec3 colorMap_[];
 	};
 

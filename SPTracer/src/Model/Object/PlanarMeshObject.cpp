@@ -31,7 +31,7 @@ namespace SPTracer
 			{
 				const Vec3& v2 = vertices_[hole[i + 1]];
 				const Vec3& v3 = vertices_[hole[i + 2]];
-				
+
 				// Vertices order is reversed here. In the MDLA file vertices for a hole 
 				// are written in a clockwise order as oposed to the vertices of outline.
 				// Holes are checked for intersection in the same way as outline, so their 
@@ -70,7 +70,7 @@ namespace SPTracer
 			{
 				const Vec3& v2 = vertices_[hole[i + 1]];
 				const Vec3& v3 = vertices_[hole[i + 2]];
-				
+
 				// Vertices order is reversed here. In the MDLA file vertices for a hole 
 				// are written in a clockwise order as oposed to the vertices of outline.
 				// Holes are checked for intersection in the same way as outline, so their 
