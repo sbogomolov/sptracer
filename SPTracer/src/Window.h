@@ -39,7 +39,6 @@ private:
 
 	const unsigned int width_;
 	const unsigned int height_;
-	std::vector<SPTracer::Vec3> image_;
 	std::mutex mutex_;
 	std::shared_ptr<ImageUpdater> imageUpdater_;
 

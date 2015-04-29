@@ -7,8 +7,6 @@
 Window::Window(unsigned int width, unsigned int height, std::string title)
 	: width_(width), height_(height)
 {
-	image_.resize(width_ * height_);
-
 	// get HINSTANCE
 	auto hinstance = GetModuleHandle(nullptr);
 
