@@ -135,7 +135,7 @@ namespace SPTracer
 							if (ray->monochromatic)
 							{
 								// only one radiance with applied weight and emission probability
-								float r = radiance[0] * weight[0] / emissionProbability;
+								float r = radiance[ray->waveIndex] * weight[ray->waveIndex] / emissionProbability;
 
 								// store radiance devided by the number of wave length in spectrum
 								pd += r * xyzConverter.GetXYZ(spectrum.values[ray->waveIndex]);
@@ -174,8 +174,8 @@ namespace SPTracer
 					if (ray->monochromatic)
 					{
 						// weight ray with the reflactance and reflection probability
-						weight[0] *= reflectance[0] / reflectionProbability;
-						absorptionProbability = 1.0f - reflectance[0];
+						weight[ray->waveIndex] *= reflectance[ray->waveIndex] / reflectionProbability;
+						absorptionProbability = 1.0f - reflectance[ray->waveIndex];
 					}
 					else
 					{
@@ -201,7 +201,7 @@ namespace SPTracer
 						// ray was not absorped, increase its weight
 						if (ray->monochromatic)
 						{
-							weight[0] /= (1.0f - absorptionProbability);
+							weight[ray->waveIndex] /= (1.0f - absorptionProbability);
 						}
 						else
 						{

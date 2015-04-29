@@ -59,7 +59,7 @@ namespace SPTracer
 		if (ray.monochromatic)
 		{
 			// one reflectance
-			reflectance[0] = bdrfPdf *  precomputed_[ray.waveIndex];
+			reflectance[ray.waveIndex] = bdrfPdf *  precomputed_[ray.waveIndex];
 		}
 		else
 		{

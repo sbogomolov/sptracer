@@ -59,7 +59,7 @@ namespace SPTracer
 		if (ray.monochromatic)
 		{
 			// get radiant exitance for wave length scaled according to cosine distribution with Phong exponent
-			radiance[0] = weight * precomputed_[ray.waveIndex];
+			radiance[ray.waveIndex] = weight * precomputed_[ray.waveIndex];
 		}
 		else
 		{
