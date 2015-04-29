@@ -356,7 +356,6 @@ namespace SPTracer
 			color->AddAmplitude(l, a);
 		}
 
-		color->Init();
 		return color;
 	}
 

@@ -16,22 +16,6 @@ namespace SPTracer
 		amplitudes_.push_back(Amplitude{ waveLength, amplitude });
 	}
 
-	void SpectralColor::Init()
-	{
-		if (amplitudes_.size() == 0)
-		{
-			const char* s = "SpectralColor: Trying to get amplitude, but there are no amplitudes added";
-			Log::Error(s);
-			throw Exception(s);
-		}
-
-		// sort by wave length
-		std::sort(amplitudes_.begin(), amplitudes_.end(),
-			[](const Amplitude& a, const Amplitude& b) { return a.waveLength < b.waveLength; });
-
-		initialized_ = true;
-	}
-
 	float SpectralColor::GetAmplitude(float waveLength) const
 	{
 		static const float WaveLengthAccuracy = 1e-2f;
@@ -39,9 +23,25 @@ namespace SPTracer
 		// check that color is initialized
 		if (!initialized_)
 		{
-			const char* s = "SpectralColor: Trying to use not initialized spectral color";
-			Log::Error(s);
-			throw Exception(s);
+			// lock
+			std::lock_guard<std::mutex> lock(mutex_);
+			
+			// it may have been already initialized by another thread
+			if (!initialized_)
+			{
+				if (amplitudes_.size() == 0)
+				{
+					const char* s = "SpectralColor: Trying to get amplitude, but there are no amplitudes added";
+					Log::Error(s);
+					throw Exception(s);
+				}
+
+				// sort by wave length
+				std::sort(amplitudes_.begin(), amplitudes_.end(),
+					[](const Amplitude& a, const Amplitude& b) { return a.waveLength < b.waveLength; });
+
+				initialized_ = true;
+			}
 		}
 
 		// get upper bound
