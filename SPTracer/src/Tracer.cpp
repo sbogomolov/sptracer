@@ -104,7 +104,7 @@ namespace SPTracer {
 		}
 	}
 
-	void Tracer::AddSamples(std::vector<PixelData>& color)
+	void Tracer::AddSamples(std::vector<Vec3>& color)
 	{
 		// lock
 		std::lock_guard<std::mutex> lock(mutex_);
@@ -112,7 +112,9 @@ namespace SPTracer {
 		// for every pixel
 		for (size_t i = 0; i < pixels_.size(); i++)
 		{
-			pixels_[i] += color[i];
+			PixelData& pd = pixels_[i];
+			pd += color[i];
+			pd.samples++;
 		}
 
 		// increase count of completed samples
@@ -209,7 +211,8 @@ namespace SPTracer {
 		std::vector<Vec3> rgbColor = Tonemap(xyzColor);
 
 		// rays per pixel
-		float rpp = static_cast<float>(completedPasses_);
+		float spp = static_cast<float>(std::accumulate(pixels_.begin(), pixels_.end(), 0.0,
+			[](double sum, const PixelData& pd) { return sum + pd.samples; }) / pixelsCount_);
 
 		// rays per second
 		auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(
@@ -218,7 +221,7 @@ namespace SPTracer {
 			(static_cast<float>(duration.count()) / 1000.0f));
 		
 		std::ostringstream oss;
-		oss << "RPP: " << FormatNumber(rpp) << "  RPS: " << FormatNumber(rps);
+		oss << "SPP: " << FormatNumber(spp) << "  RPS: " << FormatNumber(rps);
 
 		// call image updater
 		imageUpdater_->UpdateImage(rgbColor, oss.str());

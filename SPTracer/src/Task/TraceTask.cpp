@@ -1,7 +1,6 @@
 #include <algorithm>
 #include <numeric>
 #include "../Intersection.h"
-#include "../PixelData.h"
 #include "../Spectrum.h"
 #include "../Tracer.h"
 #include "../Util.h"
@@ -57,18 +56,15 @@ namespace SPTracer
 		static thread_local std::vector<float> reflectance(spectrum.count);
 		static thread_local std::vector<float> radiance(spectrum.count);
 		static thread_local std::vector<float> weight(spectrum.count);
-		static thread_local std::vector<PixelData> color(width * height);
+		static thread_local std::vector<Vec3> color(width * height);
 
 		// reset all colors
-		std::fill(color.begin(), color.end(), PixelData{});
+		std::fill(color.begin(), color.end(), Vec3{});
 
 		for (size_t i = 0; i < height; i++)
 		{
 			for (size_t j = 0; j < width; j++)
 			{
-				// color
-				PixelData& pd = color[i * width + j];
-
 				// number of samples per pixel
 				unsigned int samples = spectrum.count;
 
@@ -129,6 +125,9 @@ namespace SPTracer
 					{
 						if (Util::RandFloat(0.0f, 1.0f) < emissionProbability)
 						{
+							// color
+							Vec3& c = color[i * width + j];
+
 							// radiance
 							intersection.object->GetRadiance(*ray, intersection, spectrum, radiance);
 
@@ -138,7 +137,7 @@ namespace SPTracer
 								float r = radiance[ray->waveIndex] * weight[ray->waveIndex] / emissionProbability;
 
 								// store radiance devided by the number of wave length in spectrum
-								pd += r * xyzConverter.GetXYZ(spectrum.values[ray->waveIndex]);
+								c += r * xyzConverter.GetXYZ(spectrum.values[ray->waveIndex]);
 							}
 							else
 							{
@@ -148,8 +147,8 @@ namespace SPTracer
 									// radiance with applied weight and emission probability
 									float r = radiance[t] * weight[t] / emissionProbability;
 
-									// store radiance devided by the count of wave lengths in spectrum
-									pd += r * xyzConverter.GetXYZ(spectrum.values[t]);
+									// store the mean radiance from all wave length
+									c += r * xyzConverter.GetXYZ(spectrum.values[t]) / static_cast<float>(spectrum.count);
 								}
 							}
 
@@ -218,8 +217,6 @@ namespace SPTracer
 
 					bounces++;
 				}
-
-				pd.samples = ray->monochromatic ? 1 : spectrum.count;
 			}
 		}
 

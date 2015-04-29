@@ -13,7 +13,6 @@ namespace SPTracer
 		double z;
 		unsigned long samples;
 
-		friend void operator+=(PixelData& lhs, const PixelData& rhs);
 		friend void operator+=(PixelData& lhs, const Vec3& rhs);
 	};
 

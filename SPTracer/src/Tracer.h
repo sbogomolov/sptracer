@@ -34,7 +34,7 @@ namespace SPTracer
 		unsigned long GetPixelsCount() const;
 
 		void Run();
-		void AddSamples(std::vector<PixelData>& color);
+		void AddSamples(std::vector<Vec3>& color);
 		void SetImageUpdater(std::shared_ptr<ImageUpdater> imageUpdater);
 		void UpdateImage();
 
