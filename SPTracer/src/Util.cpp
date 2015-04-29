@@ -10,14 +10,16 @@ namespace SPTracer
 
 	int Util::RandInt(int min, int max)
 	{
-		static thread_local std::mt19937 generator(static_cast<unsigned int>(std::chrono::high_resolution_clock::now().time_since_epoch().count()));
+		static unsigned int count = 1000;
+		static thread_local std::mt19937 generator(static_cast<unsigned int>(std::chrono::high_resolution_clock::now().time_since_epoch().count()) + ++count);
 		std::uniform_int_distribution<int> distribution(min, max);
 		return distribution(generator);
 	}
 
 	float Util::RandFloat(float min, float max)
 	{
-		static thread_local std::mt19937 generator(static_cast<unsigned int>(std::chrono::high_resolution_clock::now().time_since_epoch().count()));
+		static unsigned int count = 0;
+		static thread_local std::mt19937 generator(static_cast<unsigned int>(std::chrono::high_resolution_clock::now().time_since_epoch().count()) + ++count);
 		std::uniform_real_distribution<float> distribution(min, max);
 		return distribution(generator);
 	}
