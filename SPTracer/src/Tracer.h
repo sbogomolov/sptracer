@@ -6,6 +6,7 @@
 #include <string>
 #include <mutex>
 #include <vector>
+#include "PixelData.h"
 #include "Spectrum.h"
 
 namespace SPTracer
@@ -28,12 +29,12 @@ namespace SPTracer
 		const XYZConverter& GetXYZConverter() const;
 		TaskScheduler& GetTaskScheduler() const;
 		const Spectrum& GetSpectrum() const;
-		unsigned long GetCompletedSamplesCount() const;
 		unsigned int GetWidth() const;
 		unsigned int GetHeight() const;
+		unsigned long GetPixelsCount() const;
 
 		void Run();
-		void AddSamples(std::vector<Vec3>& radiances);
+		void AddSamples(std::vector<PixelData>& color);
 		void SetImageUpdater(std::shared_ptr<ImageUpdater> imageUpdater);
 		void UpdateImage();
 
@@ -42,15 +43,16 @@ namespace SPTracer
 		unsigned int numThreads_;
 		unsigned int width_;
 		unsigned int height_;
+		unsigned long pixelsCount_;
 		Spectrum spectrum_;
-		unsigned long completedSamplesCount_ = 0;
+		unsigned long completedPasses_ = 0;
 		std::unique_ptr<Model> model_;
 		std::unique_ptr<TaskScheduler> taskScheduler_;
 		std::unique_ptr<XYZConverter> xyzConverter_;
 		std::unique_ptr<RGBConverter> rgbConverter_;
 		std::shared_ptr<ImageUpdater> imageUpdater_;
 		std::chrono::high_resolution_clock::time_point start_;
-		std::vector<double> pixels_;
+		std::vector<PixelData> pixels_;
 
 		float FindExposure(const std::vector<Vec3>& xyzColor) const;
 		float Clamp(float c) const;

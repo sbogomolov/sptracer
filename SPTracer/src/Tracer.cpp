@@ -19,6 +19,8 @@ namespace SPTracer {
 	Tracer::Tracer(std::string fileName, unsigned int numThreads, unsigned int width, unsigned int height)
 		: width_(width), height_(height), numThreads_(numThreads)
 	{
+		pixelsCount_ = static_cast<unsigned long>(width_) * height_;
+
 		// create model from file
 		model_ = std::make_unique<MDLAModel>(std::move(fileName));
 
@@ -26,7 +28,7 @@ namespace SPTracer {
 		taskScheduler_ = std::make_unique<TaskScheduler>(*this, numThreads);
 
 		// prepare array of pixels
-		pixels_.resize((width_ * height_) * 3);
+		pixels_.resize(pixelsCount_);
 
 		// spectrum
 		spectrum_.min = 400.0f;
@@ -75,11 +77,6 @@ namespace SPTracer {
 		return spectrum_;
 	}
 
-	unsigned long Tracer::GetCompletedSamplesCount() const
-	{
-		return completedSamplesCount_;
-	}
-
 	unsigned int Tracer::GetWidth() const
 	{
 		return width_;
@@ -88,6 +85,11 @@ namespace SPTracer {
 	unsigned int Tracer::GetHeight() const
 	{
 		return height_;
+	}
+
+	unsigned long Tracer::GetPixelsCount() const
+	{
+		return pixelsCount_;
 	}
 
 	void Tracer::Run()
@@ -102,21 +104,25 @@ namespace SPTracer {
 		}
 	}
 
-	void Tracer::AddSamples(std::vector<Vec3>& color)
+	void Tracer::AddSamples(std::vector<PixelData>& color)
 	{
 		// lock
 		std::lock_guard<std::mutex> lock(mutex_);
 
 		// for every pixel
-		for (size_t i = 0; i < color.size(); i++)
+		for (size_t i = 0; i < pixels_.size(); i++)
 		{
-			pixels_[3 * i] += color[i].x;
-			pixels_[3 * i + 1] += color[i].y;
-			pixels_[3 * i + 2] += color[i].z;
+			PixelData& pd = pixels_[i];
+			PixelData& c = color[i];
+
+			pd.x += c.x;
+			pd.y += c.y;
+			pd.z += c.z;
+			pd.samples += c.samples;
 		}
 
 		// increase count of completed samples
-		completedSamplesCount_++;
+		completedPasses_++;
 
 		// update image approximately every 10 seconds
 		static const auto updateInterval = std::chrono::seconds(10);
@@ -136,7 +142,7 @@ namespace SPTracer {
 
 	float Tracer::FindExposure(const std::vector<Vec3>& xyzColor) const
 	{
-		float n = static_cast<float>(width_ * height_);
+		float n = static_cast<float>(pixelsCount_);
 
 		// Calculate the average intensity. Calculations are based
 		// on the CIE Y component, which corresponds to lightness.
@@ -193,29 +199,36 @@ namespace SPTracer {
 		}
 
 		// divide XYZ color in pixels on the number of samples
-		double samples = static_cast<double>(completedSamplesCount_);
 		std::vector<Vec3> xyzColor;
-		xyzColor.reserve(pixels_.size() / 3);
-		for (size_t i = 0; i < (pixels_.size() / 3); i++)
+		xyzColor.reserve(pixels_.size());
+		for (size_t i = 0; i < pixels_.size(); i++)
 		{
+			PixelData& pd = pixels_[i];
 			xyzColor.push_back(Vec3{
-				static_cast<float>(pixels_[i * 3] / samples),
-				static_cast<float>(pixels_[i * 3 + 1] / samples),
-				static_cast<float>(pixels_[i * 3 + 2] / samples)
+				static_cast<float>(pd.x / pd.samples),
+				static_cast<float>(pd.y / pd.samples),
+				static_cast<float>(pd.z / pd.samples)
 			});
 		}
 
 		// tonemap XYZ to RGB
 		std::vector<Vec3> rgbColor = Tonemap(xyzColor);
 
-		// prepare title
+		// samples per pixel
+		float spp = static_cast<float>(std::accumulate(pixels_.begin(), pixels_.end(), 0ull,
+			[this](unsigned long long sum, const PixelData& pd) { return sum + pd.samples; }) / pixelsCount_);
+
+		// rays per pixel
+		float rpp = static_cast<float>(completedPasses_);
+
+		// rays per second
 		auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(
 			std::chrono::high_resolution_clock::now() - start_);
-		float sps = (static_cast<float>(completedSamplesCount_ * width_ * height_) /
+		float rps = (static_cast<float>(completedPasses_ * pixelsCount_) /
 			(static_cast<float>(duration.count()) / 1000.0f));
 		
 		std::ostringstream oss;
-		oss << FormatNumber(static_cast<float>(completedSamplesCount_)) << " SPP, " << FormatNumber(sps) << " SPS" ;
+		oss << "SPP: " << FormatNumber(spp) << "  RPP: " << FormatNumber(rpp) << "  RPS: " << FormatNumber(rps);
 
 		// call image updater
 		imageUpdater_->UpdateImage(rgbColor, oss.str());

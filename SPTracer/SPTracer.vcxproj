@@ -168,6 +168,7 @@
     <ClCompile Include="src\Model\Model.cpp" />
     <ClCompile Include="src\Model\Object\Object.cpp" />
     <ClCompile Include="src\Model\Object\PlanarMeshObject.cpp" />
+    <ClCompile Include="src\PixelData.cpp" />
     <ClCompile Include="src\Tracer.cpp" />
     <ClCompile Include="src\Task\TaskScheduler.cpp" />
     <ClCompile Include="src\Task\TraceTask.cpp" />
@@ -176,6 +177,7 @@
     <ClCompile Include="src\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\PixelData.h" />
     <ClInclude Include="src\App.h" />
     <ClInclude Include="src\Color\RGBConverter.h" />
     <ClInclude Include="src\Color\SRGB.h" />
