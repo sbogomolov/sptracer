@@ -8,12 +8,12 @@ namespace SPTracer
 {
 	class XYZConverter;
 	class Model;
-	class SPTracer;
+	class Tracer;
 
 	class TraceTask : public Task
 	{
 	public:
-		TraceTask(SPTracer& tracer);
+		TraceTask(Tracer& tracer);
 		void Run() override;
 	};
 

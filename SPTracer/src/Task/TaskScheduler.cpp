@@ -1,12 +1,12 @@
 #include <thread>
 #include "../Ray.h"
-#include "../SPTracer.h"
+#include "../Tracer.h"
 #include "TaskScheduler.h"
 
 namespace SPTracer
 {
 
-	TaskScheduler::TaskScheduler(SPTracer& tracer, unsigned int numThreads)
+	TaskScheduler::TaskScheduler(Tracer& tracer, unsigned int numThreads)
 		: tracer_(tracer), numThreads_(numThreads)
 	{
 		// spawn threads

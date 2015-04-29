@@ -168,7 +168,7 @@
     <ClCompile Include="src\Model\Model.cpp" />
     <ClCompile Include="src\Model\Object\Object.cpp" />
     <ClCompile Include="src\Model\Object\PlanarMeshObject.cpp" />
-    <ClCompile Include="src\SPTracer.cpp" />
+    <ClCompile Include="src\Tracer.cpp" />
     <ClCompile Include="src\Task\TaskScheduler.cpp" />
     <ClCompile Include="src\Task\TraceTask.cpp" />
     <ClCompile Include="src\Util.cpp" />
@@ -203,7 +203,7 @@
     <ClInclude Include="src\Util.h" />
     <ClInclude Include="src\Vec3.h" />
     <ClInclude Include="src\Exception.h" />
-    <ClInclude Include="src\SPTracer.h" />
+    <ClInclude Include="src\Tracer.h" />
     <ClInclude Include="src\Window.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

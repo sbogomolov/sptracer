@@ -7,7 +7,7 @@
 
 namespace SPTracer
 {
-	class SPTracer;
+	class Tracer;
 }
 
 class Window;
@@ -23,7 +23,7 @@ public:
 
 private:
 	bool initialized_ = false;
-	std::unique_ptr<SPTracer::SPTracer> tracer_;
+	std::unique_ptr<SPTracer::Tracer> tracer_;
 	std::unique_ptr<Window> window_;
 };
 

@@ -4,7 +4,7 @@
 namespace SPTracer
 {
 
-	class SPTracer;
+	class Tracer;
 
 	class Task
 	{
@@ -13,9 +13,9 @@ namespace SPTracer
 		virtual void Run() = 0;
 
 	protected:
-		Task(SPTracer& tracer) : tracer_(tracer) { };
+		Task(Tracer& tracer) : tracer_(tracer) { };
 
-		SPTracer& tracer_;
+		Tracer& tracer_;
 	};
 
 }

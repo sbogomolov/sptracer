@@ -2,7 +2,7 @@
 #include "App.h"
 #include "Exception.h"
 #include "Log.h"
-#include "SPTracer.h"
+#include "Tracer.h"
 #include "Window.h"
 
 App::App(std::string fileName)
@@ -25,7 +25,7 @@ App::App(std::string fileName)
 	try
 	{
 		window_ = std::make_unique<Window>(width, height, title.c_str());
-		tracer_ = std::make_unique<SPTracer::SPTracer>(fileName, numThreads, width, height);
+		tracer_ = std::make_unique<SPTracer::Tracer>(fileName, numThreads, width, height);
 		tracer_->SetImageUpdater(window_->GetImageUpdater());
 	}
 	catch (SPTracer::Exception e)

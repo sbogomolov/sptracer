@@ -1,5 +1,5 @@
-#ifndef SPT_SPTRACER_H
-#define SPT_SPTRACER_H
+#ifndef SPT_TRACER_H
+#define SPT_TRACER_H
 
 #include <chrono>
 #include <memory>
@@ -18,11 +18,11 @@ namespace SPTracer
 	class Model;
 	class TaskScheduler;
 	
-	class SPTracer
+	class Tracer
 	{
 	public:
-		SPTracer(std::string fileName, unsigned int numThreads, unsigned int width, unsigned int height);
-		virtual ~SPTracer();
+		Tracer(std::string fileName, unsigned int numThreads, unsigned int width, unsigned int height);
+		virtual ~Tracer();
 
 		const Model& GetModel() const;
 		const XYZConverter& GetXYZConverter() const;

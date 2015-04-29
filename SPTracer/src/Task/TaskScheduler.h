@@ -9,19 +9,19 @@
 
 namespace SPTracer
 {
-	class SPTracer;
+	class Tracer;
 
 	class TaskScheduler
 	{
 	public:
-		TaskScheduler(SPTracer& tracer, unsigned int numThreads);
+		TaskScheduler(Tracer& tracer, unsigned int numThreads);
 
 		void AddTask(std::unique_ptr<Task> task, bool highPriority = false);
 		std::unique_ptr<Task> GetTask();
 		size_t GetTasksCount();
 
 	private:
-		SPTracer& tracer_;
+		Tracer& tracer_;
 		const unsigned int numThreads_;
 		unsigned int sleepingThreads_ = 0;
 		std::queue<std::unique_ptr<Task>> tasks_;

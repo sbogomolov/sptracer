@@ -12,11 +12,11 @@
 #include "Task/TraceTask.h"
 #include "ImageUpdater.h"
 #include "Ray.h"
-#include "SPTracer.h"
+#include "Tracer.h"
 
 namespace SPTracer {
 
-	SPTracer::SPTracer(std::string fileName, unsigned int numThreads, unsigned int width, unsigned int height)
+	Tracer::Tracer(std::string fileName, unsigned int numThreads, unsigned int width, unsigned int height)
 		: width_(width), height_(height), numThreads_(numThreads)
 	{
 		// create model from file
@@ -51,46 +51,46 @@ namespace SPTracer {
 
 	}
 
-	SPTracer::~SPTracer()
+	Tracer::~Tracer()
 	{
 	}
 
-	const Model& SPTracer::GetModel() const
+	const Model& Tracer::GetModel() const
 	{
 		return *model_;
 	}
 
-	const XYZConverter& SPTracer::GetXYZConverter() const
+	const XYZConverter& Tracer::GetXYZConverter() const
 	{
 		return *xyzConverter_;
 	}
 
-	TaskScheduler& SPTracer::GetTaskScheduler() const
+	TaskScheduler& Tracer::GetTaskScheduler() const
 	{
 		return *taskScheduler_;
 	}
 
-	const Spectrum& SPTracer::GetSpectrum() const
+	const Spectrum& Tracer::GetSpectrum() const
 	{
 		return spectrum_;
 	}
 
-	unsigned long SPTracer::GetCompletedSamplesCount() const
+	unsigned long Tracer::GetCompletedSamplesCount() const
 	{
 		return completedSamplesCount_;
 	}
 
-	unsigned int SPTracer::GetWidth() const
+	unsigned int Tracer::GetWidth() const
 	{
 		return width_;
 	}
 
-	unsigned int SPTracer::GetHeight() const
+	unsigned int Tracer::GetHeight() const
 	{
 		return height_;
 	}
 
-	void SPTracer::Run()
+	void Tracer::Run()
 	{
 		// record start time
 		start_ = std::chrono::high_resolution_clock::now();
@@ -102,7 +102,7 @@ namespace SPTracer {
 		}
 	}
 
-	void SPTracer::AddSamples(std::vector<Vec3>& color)
+	void Tracer::AddSamples(std::vector<Vec3>& color)
 	{
 		// lock
 		std::lock_guard<std::mutex> lock(mutex_);
@@ -129,12 +129,12 @@ namespace SPTracer {
 		}
 	}
 
-	void SPTracer::SetImageUpdater(std::shared_ptr<ImageUpdater> imageUpdater)
+	void Tracer::SetImageUpdater(std::shared_ptr<ImageUpdater> imageUpdater)
 	{
 		imageUpdater_ = std::move(imageUpdater);
 	}
 
-	float SPTracer::FindExposure(const std::vector<Vec3>& xyzColor) const
+	float Tracer::FindExposure(const std::vector<Vec3>& xyzColor) const
 	{
 		float n = static_cast<float>(width_ * height_);
 
@@ -153,12 +153,12 @@ namespace SPTracer {
 		return mean + std::sqrt(variance);
 	}
 
-	float SPTracer::Clamp(float c) const
+	float Tracer::Clamp(float c) const
 	{
 		return std::min(1.0f, std::max(0.0f, c));
 	}
 
-	std::vector<Vec3> SPTracer::Tonemap(const std::vector<Vec3>& xyzColor) const
+	std::vector<Vec3> Tracer::Tonemap(const std::vector<Vec3>& xyzColor) const
 	{
 		float maxIntensity = FindExposure(xyzColor);
 		std::vector<Vec3> rgbColor(xyzColor.size());
@@ -185,7 +185,7 @@ namespace SPTracer {
 		return rgbColor;
 	}
 
-	void SPTracer::UpdateImage()
+	void Tracer::UpdateImage()
 	{
 		if (imageUpdater_ == nullptr)
 		{
@@ -221,7 +221,7 @@ namespace SPTracer {
 		imageUpdater_->UpdateImage(rgbColor, oss.str());
 	}
 
-	std::string SPTracer::FormatNumber(float n) const
+	std::string Tracer::FormatNumber(float n) const
 	{
 		std::ostringstream oss;
 		if (n < 1e3f)

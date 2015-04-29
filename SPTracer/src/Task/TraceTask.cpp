@@ -1,7 +1,7 @@
 #include <numeric>
 #include "../Intersection.h"
 #include "../Spectrum.h"
-#include "../SPTracer.h"
+#include "../Tracer.h"
 #include "../Util.h"
 #include "../Model/Camera.h"
 #include "../Model/Model.h"
@@ -12,7 +12,7 @@
 namespace SPTracer
 {
 
-	TraceTask::TraceTask(SPTracer& tracer)
+	TraceTask::TraceTask(Tracer& tracer)
 		: Task(tracer)
 	{
 	}
