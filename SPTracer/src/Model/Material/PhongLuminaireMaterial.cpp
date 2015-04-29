@@ -34,13 +34,20 @@ namespace SPTracer
 		// precompute array of radiances for spectrum
 		if (!initialized_)
 		{
-			precomputed_.resize(spectrum.count);
-			for (size_t i = 0; i < spectrum.count; i++)
-			{
-				precomputed_[i] = radiantExitance_->GetAmplitude(spectrum.values[i]);
-			}
+			// lock
+			std::lock_guard<std::mutex> lock(mutex_);
 
-			initialized_ = true;
+			// may be it was initialized in another thread
+			if (!initialized_)
+			{
+				precomputed_.resize(spectrum.count);
+				for (size_t i = 0; i < spectrum.count; i++)
+				{
+					precomputed_[i] = radiantExitance_->GetAmplitude(spectrum.values[i]);
+				}
+
+				initialized_ = true;
+			}
 		}
 
 		// angle between ray and normal

@@ -2,6 +2,7 @@
 #define SPT_PHONG_LUMINAIRE_MATERIAL_H
 
 #include <memory>
+#include <mutex>
 #include "Material.h"
 
 namespace SPTracer
@@ -25,6 +26,7 @@ namespace SPTracer
 		std::unique_ptr<Material> reflectiveMaterial_;
 		std::unique_ptr<Color> radiantExitance_;
 		float phongExponent_;
+		mutable std::mutex mutex_;
 		mutable bool initialized_;
 		mutable std::vector<float> precomputed_;
 	};

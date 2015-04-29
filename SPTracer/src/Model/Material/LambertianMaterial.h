@@ -1,6 +1,7 @@
 #ifndef SPT_LAMBERTIAN_MATERIAL_H
 #define SPT_LAMBERTIAN_MATERIAL_H
 
+#include <mutex>
 #include "Material.h"
 
 namespace SPTracer
@@ -18,8 +19,9 @@ namespace SPTracer
 
 	private:
 		std::unique_ptr<Color> diffuseReflectance_;
-		mutable std::vector<float> precomputed_;
+		mutable std::mutex mutex_;
 		mutable bool initialized_ = false;
+		mutable std::vector<float> precomputed_;
 	};
 
 }
