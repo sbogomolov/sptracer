@@ -210,15 +210,14 @@ namespace SPTracer {
 		// tonemap XYZ to RGB
 		std::vector<Vec3> rgbColor = Tonemap(xyzColor);
 
-		// rays per pixel
+		// samples per pixel
 		float spp = static_cast<float>(std::accumulate(pixels_.begin(), pixels_.end(), 0.0,
 			[](double sum, const PixelData& pd) { return sum + pd.samples; }) / pixelsCount_);
 
 		// rays per second
 		auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(
 			std::chrono::high_resolution_clock::now() - start_);
-		float rps = (static_cast<float>(completedPasses_ * pixelsCount_) /
-			(static_cast<float>(duration.count()) / 1000.0f));
+		float rps = static_cast<float>(static_cast<double>(completedPasses_) * pixelsCount_ / duration.count() * 1000.0);
 		
 		std::ostringstream oss;
 		oss << "SPP: " << FormatNumber(spp) << "  RPS: " << FormatNumber(rps);
