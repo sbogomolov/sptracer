@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <numeric>
 #include "../Intersection.h"
 #include "../Spectrum.h"
@@ -52,10 +53,13 @@ namespace SPTracer
 		// spectrum
 		static const Spectrum& spectrum = tracer_.GetSpectrum();
 
-		std::vector<float> reflectance(spectrum.count);
-		std::vector<float> radiance(spectrum.count);
-		std::vector<float> weight(spectrum.count);
-		std::vector<Vec3> color(width * height);
+		static thread_local std::vector<float> reflectance(spectrum.count);
+		static thread_local std::vector<float> radiance(spectrum.count);
+		static thread_local std::vector<float> weight(spectrum.count);
+		static thread_local std::vector<Vec3> color(width * height);
+
+		// reset all colors
+		std::fill(color.begin(), color.end(), Vec3{});
 
 		for (size_t i = 0; i < height; i++)
 		{
@@ -100,10 +104,7 @@ namespace SPTracer
 				unsigned int bounces = 0;
 
 				// set weight to 1
-				for (size_t t = 0; t < spectrum.count; t++)
-				{
-					weight[t] = 1.0f;
-				}
+				std::fill(weight.begin(), weight.end(), 1.0f);
 
 				// trace ray
 				while (true)
