@@ -5,24 +5,25 @@
 #include <numeric>
 #include <sstream>
 #include <thread>
-#include "Model/MDLAModel.h"
+#include "Model/Model.h"
 #include "Color/CIE1931.h"
 #include "Color/SRGB.h"
 #include "Task/TaskScheduler.h"
 #include "Task/TraceTask.h"
+#include "Camera.h"
 #include "ImageUpdater.h"
 #include "Ray.h"
 #include "Tracer.h"
 
 namespace SPTracer {
 
-	Tracer::Tracer(std::string fileName, unsigned int numThreads, unsigned int width, unsigned int height)
-		: width_(width), height_(height), numThreads_(numThreads)
+	Tracer::Tracer(std::unique_ptr<Model> model, std::unique_ptr<Camera> camera,
+		unsigned int width, unsigned int height, unsigned int numThreads,
+		float waveLengthMin = 400.0f, float waveLengthMax = 700.0f, float waveLengthStep = 5.0f)
+		: model_(std::move(model)), camera_(std::move(camera)),
+		  width_(width), height_(height), numThreads_(numThreads)
 	{
 		pixelsCount_ = static_cast<unsigned long>(width_) * height_;
-
-		// create model from file
-		model_ = std::make_unique<MDLAModel>(std::move(fileName));
 
 		// create task scheduler that will spawn threads
 		taskScheduler_ = std::make_unique<TaskScheduler>(*this, numThreads);
@@ -31,9 +32,9 @@ namespace SPTracer {
 		pixels_.resize(pixelsCount_);
 
 		// spectrum
-		spectrum_.min = 400.0f;
-		spectrum_.max = 700.0f;
-		spectrum_.step = 4.0f;
+		spectrum_.min = waveLengthMin;
+		spectrum_.max = waveLengthMax;
+		spectrum_.step = waveLengthStep;
 
 		// precompute count of wave lengths
 		spectrum_.count = static_cast<unsigned int>((spectrum_.max - spectrum_.min) / spectrum_.step) + 1;
@@ -55,6 +56,11 @@ namespace SPTracer {
 
 	Tracer::~Tracer()
 	{
+	}
+
+	const Camera& Tracer::GetCamera() const
+	{
+		return *camera_;
 	}
 
 	const Model& Tracer::GetModel() const

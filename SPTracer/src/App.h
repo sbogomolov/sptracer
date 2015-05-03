@@ -4,6 +4,7 @@
 #include <memory>
 #include <string>
 #include <windows.h>
+#include "Config.h"
 
 namespace SPTracer
 {
@@ -15,7 +16,7 @@ class Window;
 class App
 {
 public:
-	App(std::string fileName);
+	App(std::string configFile);
 	virtual ~App();
 	int Run();
 
@@ -25,6 +26,9 @@ private:
 	bool initialized_ = false;
 	std::unique_ptr<SPTracer::Tracer> tracer_;
 	std::unique_ptr<Window> window_;
+
+	Config ReadConfig(std::string configFile) const;
+
 };
 
 #endif

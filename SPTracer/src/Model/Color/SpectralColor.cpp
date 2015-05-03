@@ -7,10 +7,6 @@
 namespace SPTracer
 {
 
-	SpectralColor::SpectralColor()
-	{
-	}
-
 	void SpectralColor::AddAmplitude(float waveLength, float amplitude)
 	{
 		amplitudes_.push_back(Amplitude{ waveLength, amplitude });

@@ -4,7 +4,7 @@
 #include "../Spectrum.h"
 #include "../Tracer.h"
 #include "../Util.h"
-#include "../Model/Camera.h"
+#include "../Camera.h"
 #include "../Model/Model.h"
 #include "../Color/XYZConverter.h"
 #include "TaskScheduler.h"
@@ -33,7 +33,7 @@ namespace SPTracer
 		static const XYZConverter& xyzConverter = tracer_.GetXYZConverter();
 		
 		// camera
-		static const Camera& camera = model.GetCamera();
+		static const Camera& camera = tracer_.GetCamera();
 		static const Vec3& origin = camera.p;
 		
 		// y-axis

@@ -2,6 +2,7 @@
 #include <fstream>
 #include <sstream>
 #include <vector>
+#include "../Camera.h"
 #include "../Exception.h"
 #include "../Log.h"
 #include "MDLAModel.h"
@@ -14,7 +15,7 @@
 namespace SPTracer
 {
 
-	MDLAModel::MDLAModel(std::string fileName)
+	MDLAModel::MDLAModel(std::string fileName, Camera& camera)
 	{
 		// open file
 		std::ifstream file(fileName);
@@ -33,7 +34,7 @@ namespace SPTracer
 		auto tokens = GetTokens(ss.str());
 
 		// parse tokens
-		ParseTokens(tokens);
+		ParseTokens(tokens, camera);
 
 		// check model
 		if (objects_.size() == 0)
@@ -239,7 +240,7 @@ namespace SPTracer
 		}
 	}
 
-	void MDLAModel::ParseTokens(const TokensList& tokens)
+	void MDLAModel::ParseTokens(const TokensList& tokens, Camera& camera)
 	{
 		auto it = tokens.begin();
 
@@ -259,7 +260,7 @@ namespace SPTracer
 			if (token == "cmr")
 			{
 				// camera
-				ParseCamera(it, end);
+				ParseCamera(it, end, camera);
 			}
 			else if (token == "nmdMtrl")
 			{
@@ -281,37 +282,37 @@ namespace SPTracer
 		}
 	}
 
-	void MDLAModel::ParseCamera(TokensIterator& it, TokensIterator& end)
+	void MDLAModel::ParseCamera(TokensIterator& it, TokensIterator& end, Camera& camera)
 	{
 		// check keyword
 		CheckKeyword(it, end, "cmr");
 
-		camera_.name = GetString(++it, end);	// camera name
+		camera.name = GetString(++it, end);	// camera name
 
-		camera_.p.x = GetFloat(++it, end);		// center of projection x
-		camera_.p.y = GetFloat(++it, end);		// center of projection y
-		camera_.p.z = GetFloat(++it, end);		// center of projection z
+		camera.p.x = GetFloat(++it, end);		// center of projection x
+		camera.p.y = GetFloat(++it, end);		// center of projection y
+		camera.p.z = GetFloat(++it, end);		// center of projection z
 
-		camera_.n.x = GetFloat(++it, end);		// image plane normal x
-		camera_.n.y = GetFloat(++it, end);		// image plane normal y
-		camera_.n.z = GetFloat(++it, end);		// image plane normal z
+		camera.n.x = GetFloat(++it, end);		// image plane normal x
+		camera.n.y = GetFloat(++it, end);		// image plane normal y
+		camera.n.z = GetFloat(++it, end);		// image plane normal z
 
-		camera_.up.x = GetFloat(++it, end);	// up direction x
-		camera_.up.y = GetFloat(++it, end);	// up direction y
-		camera_.up.z = GetFloat(++it, end);	// up direction z
+		camera.up.x = GetFloat(++it, end);	// up direction x
+		camera.up.y = GetFloat(++it, end);	// up direction y
+		camera.up.z = GetFloat(++it, end);	// up direction z
 
-		camera_.f = GetFloat(++it, end);		// distance to image plane
-		camera_.iw = GetFloat(++it, end);		// image width
-		camera_.ih = GetFloat(++it, end);		// image height
-		camera_.icx = GetFloat(++it, end);		// image center x
-		camera_.icy = GetFloat(++it, end);		// image center y
-		camera_.t = GetFloat(++it, end);		// time of exposure
+		camera.f = GetFloat(++it, end);		// distance to image plane
+		camera.iw = GetFloat(++it, end);		// image width
+		camera.ih = GetFloat(++it, end);		// image height
+		camera.icx = GetFloat(++it, end);		// image center x
+		camera.icy = GetFloat(++it, end);		// image center y
+		camera.t = GetFloat(++it, end);		// time of exposure
 		
 		MustBeEndToken(++it, end);				// check end token
 
 		// normalize vectors
-		camera_.n.Normalize();
-		camera_.up.Normalize();
+		camera.n.Normalize();
+		camera.up.Normalize();
 	}
 
 	std::unique_ptr<Color> MDLAModel::ParseColorType(TokensIterator& it, TokensIterator& end)

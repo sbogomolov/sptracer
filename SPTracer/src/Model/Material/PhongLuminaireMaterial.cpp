@@ -15,7 +15,6 @@ namespace SPTracer
 			: reflectiveMaterial_(std::move(reflectiveMaterial)),
 			  radiantExitance_(std::move(radiantExitance)),
 		      phongExponent_(phongExponent)
-
 	{
 	}
 

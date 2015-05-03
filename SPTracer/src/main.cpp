@@ -7,22 +7,12 @@ int main(int argc, char **argv)
 {
 	SPTracer::Log::Info("SPTracer started");
 
-	if (argc != 2)
-	{
-		// show help message
-		std::ostringstream oss;
-		oss << "Model file was not specified, default model will be used." << std::endl
-		   << "Usage:" << std::endl
-		   << "sptracer model_file.mdla";
-		SPTracer::Log::Info(oss.str());
-	}
-
-	// model file
-	std::string fileName = argc == 2 ? argv[1] : "box.mdla";
-	SPTracer::Log::Info("Model file: " + fileName);
+	// config file
+	std::string configFile = argc > 2 ? argv[1] : "sptracer.cfg";
+	SPTracer::Log::Info("Config file: " + configFile);
 
 	// create application
-	App app(fileName);
+	App app(configFile);
 	
 	// check that application is initialized
 	if (!app.IsInitialized())

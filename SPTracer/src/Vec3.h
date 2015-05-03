@@ -1,5 +1,5 @@
-#ifndef SPT_POINT_H
-#define SPT_POINT_H
+#ifndef SPT_VEC3_H
+#define SPT_VEC3_H
 
 namespace SPTracer
 {

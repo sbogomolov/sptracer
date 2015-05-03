@@ -17,8 +17,6 @@ namespace SPTracer
 			float amplitude;	// amplitude
 		};
 
-		SpectralColor();
-
 		void AddAmplitude(float waveLength, float amplitude);
 		float GetAmplitude(float waveLength) const override;
 

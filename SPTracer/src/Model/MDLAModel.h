@@ -1,12 +1,14 @@
-#ifndef MDLA_MODEL_H
-#define MDLA_MODEL_H
+#ifndef SPT_MDLA_MODEL_H
+#define SPT_MDLA_MODEL_H
 
+#include <memory>
 #include <string>
 #include <vector>
 #include "Model.h"
 
 namespace SPTracer
 {
+	struct Camera;
 	class Color;
 	class SpectralColor;
 	class ScalarColor;
@@ -17,7 +19,7 @@ namespace SPTracer
 	class MDLAModel : public Model
 	{
 	public:
-		MDLAModel(std::string fileName);
+		MDLAModel(std::string fileName, Camera& camera);
 
 	private:
 		typedef std::vector<std::string> TokensList;
@@ -33,8 +35,8 @@ namespace SPTracer
 		static float GetFloat(TokensIterator& it, TokensIterator& end);
 		unsigned long GetInteger(TokensIterator& it, TokensIterator& end);
 
-		void ParseTokens(const TokensList& tokens);
-		void ParseCamera(TokensIterator& it, TokensIterator& end);
+		void ParseTokens(const TokensList& tokens, Camera& camera);
+		void ParseCamera(TokensIterator& it, TokensIterator& end, Camera& camera);
 
 		std::unique_ptr<Color> ParseColorType(TokensIterator& it, TokensIterator& end);
 		std::unique_ptr<SpectralColor> ParseSpectralColor(TokensIterator& it, TokensIterator& end);

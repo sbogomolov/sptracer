@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <vector>
+#include "../../Vec3.h"
 
 namespace SPTracer
 {

@@ -3,7 +3,6 @@
 
 #include <string>
 #include <unordered_map>
-#include "Camera.h"
 #include "Material/Material.h"
 #include "Object/Object.h"
 
@@ -17,11 +16,9 @@ namespace SPTracer
 	public:
 		virtual ~Model();
 
-		const Camera& GetCamera() const;
 		bool Intersect(const Ray& ray, Intersection& intersection) const;
 
 	protected:
-		Camera camera_;
 		std::unordered_map<std::string, std::shared_ptr<Material>> materials_;
 		std::vector<std::shared_ptr<Object>> objects_;
 

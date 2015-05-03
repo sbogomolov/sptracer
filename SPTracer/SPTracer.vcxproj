@@ -70,17 +70,21 @@
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
+    <TargetName>sptracer</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
+    <TargetName>sptracer</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
+    <TargetName>sptracer</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
+    <TargetName>sptracer</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -159,6 +163,7 @@
     <ClCompile Include="src\Color\SRGB.cpp" />
     <ClCompile Include="src\Log.cpp" />
     <ClCompile Include="src\Color\CIE1931.cpp" />
+    <ClCompile Include="src\Model\Color\RGBColor.cpp" />
     <ClCompile Include="src\Model\Color\ScalarColor.cpp" />
     <ClCompile Include="src\Model\Color\SpectralColor.cpp" />
     <ClCompile Include="src\Model\Material\LambertianMaterial.cpp" />
@@ -168,7 +173,9 @@
     <ClCompile Include="src\Model\Model.cpp" />
     <ClCompile Include="src\Model\Object\Object.cpp" />
     <ClCompile Include="src\Model\Object\PlanarMeshObject.cpp" />
+    <ClCompile Include="src\Model\OBJModel.cpp" />
     <ClCompile Include="src\PixelData.cpp" />
+    <ClCompile Include="src\StringUtil.cpp" />
     <ClCompile Include="src\Tracer.cpp" />
     <ClCompile Include="src\Task\TaskScheduler.cpp" />
     <ClCompile Include="src\Task\TraceTask.cpp" />
@@ -177,13 +184,16 @@
     <ClCompile Include="src\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Config.h" />
+    <ClInclude Include="src\Model\Color\RGBColor.h" />
+    <ClInclude Include="src\Model\OBJModel.h" />
     <ClInclude Include="src\PixelData.h" />
     <ClInclude Include="src\App.h" />
     <ClInclude Include="src\Color\RGBConverter.h" />
     <ClInclude Include="src\Color\SRGB.h" />
     <ClInclude Include="src\ImageUpdater.h" />
     <ClInclude Include="src\Log.h" />
-    <ClInclude Include="src\Model\Camera.h" />
+    <ClInclude Include="src\Camera.h" />
     <ClInclude Include="src\Color\CIE1931.h" />
     <ClInclude Include="src\Model\Color\Color.h" />
     <ClInclude Include="src\Color\XYZConverter.h" />
@@ -199,6 +209,7 @@
     <ClInclude Include="src\Model\Object\PlanarMeshObject.h" />
     <ClInclude Include="src\Ray.h" />
     <ClInclude Include="src\Spectrum.h" />
+    <ClInclude Include="src\StringUtil.h" />
     <ClInclude Include="src\Task\Task.h" />
     <ClInclude Include="src\Task\TaskScheduler.h" />
     <ClInclude Include="src\Task\TraceTask.h" />

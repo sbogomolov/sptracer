@@ -27,7 +27,7 @@ namespace SPTracer
 		std::unique_ptr<Color> radiantExitance_;
 		float phongExponent_;
 		mutable std::mutex mutex_;
-		mutable bool initialized_;
+		mutable bool initialized_ = false;
 		mutable std::vector<float> precomputed_;
 	};
 

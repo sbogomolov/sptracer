@@ -11,6 +11,7 @@
 
 namespace SPTracer
 {
+	struct Camera;
 	struct Ray;
 	struct Vec3;
 	class XYZConverter;
@@ -22,9 +23,12 @@ namespace SPTracer
 	class Tracer
 	{
 	public:
-		Tracer(std::string fileName, unsigned int numThreads, unsigned int width, unsigned int height);
+		Tracer(std::unique_ptr<Model> model, std::unique_ptr<Camera> camera,
+			unsigned int width, unsigned int height, unsigned int numThreads,
+			float waveLengthMin, float waveLengthMax, float waveLengthStep);
 		virtual ~Tracer();
 
+		const Camera& GetCamera() const;
 		const Model& GetModel() const;
 		const XYZConverter& GetXYZConverter() const;
 		TaskScheduler& GetTaskScheduler() const;
@@ -47,6 +51,7 @@ namespace SPTracer
 		Spectrum spectrum_;
 		unsigned long completedPasses_ = 0;
 		std::unique_ptr<Model> model_;
+		std::unique_ptr<Camera> camera_;
 		std::unique_ptr<TaskScheduler> taskScheduler_;
 		std::unique_ptr<XYZConverter> xyzConverter_;
 		std::unique_ptr<RGBConverter> rgbConverter_;

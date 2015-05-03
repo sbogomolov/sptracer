@@ -12,11 +12,6 @@ namespace SPTracer
 	{
 	}
 
-	const Camera & Model::GetCamera() const
-	{
-		return camera_;
-	}
-
 	bool Model::Intersect(const Ray& ray, Intersection& intersection) const
 	{
 		bool found = false;
