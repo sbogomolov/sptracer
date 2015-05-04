@@ -45,6 +45,7 @@ namespace SPTracer
 		}
 	}
 
+	// Splits the text on tokens skipping comments.
 	std::vector<std::string> MDLAModel::GetTokens(std::string text)
 	{
 		TokensList tokens;
@@ -140,6 +141,7 @@ namespace SPTracer
 		return tokens;
 	}
 
+	// Checks if iterator is pointing to a token.
 	void MDLAModel::CheckToken(TokensIterator& it, TokensIterator& end)
 	{
 		// check if there is a token
@@ -151,6 +153,7 @@ namespace SPTracer
 		}
 	}
 
+	// Returns true if iterator is pointing at the "end" token.
 	bool MDLAModel::IsEndToken(TokensIterator& it, TokensIterator& end)
 	{
 		// check if there is a token
@@ -158,6 +161,7 @@ namespace SPTracer
 		return *it == "end";
 	}
 
+	// Checks that iterator is pointing at the "end" token.
 	void MDLAModel::MustBeEndToken(TokensIterator& it, TokensIterator& end)
 	{
 		if (!IsEndToken(it, end))
@@ -168,6 +172,7 @@ namespace SPTracer
 		}
 	}
 
+	// Checks that iterator is pointing at the token with the required keyword.
 	void MDLAModel::CheckKeyword(TokensIterator& it, TokensIterator& end, std::string keyword)
 	{
 		// check if there is a token
@@ -183,6 +188,7 @@ namespace SPTracer
 		}
 	}
 
+	// Gets string from token pointed by iterator.
 	std::string MDLAModel::GetString(TokensIterator& it, TokensIterator& end)
 	{
 		// check if there is a token
@@ -202,6 +208,7 @@ namespace SPTracer
 		return token.substr(1, len - 2);
 	}
 
+	// Gets floating point number from token pointed by iterator.
 	float MDLAModel::GetFloat(TokensIterator& it, TokensIterator& end)
 	{
 		// check if there is a token
@@ -221,6 +228,7 @@ namespace SPTracer
 		}
 	}
 
+	// Gets integer number from token pointed by iterator.
 	unsigned long MDLAModel::GetInteger(TokensIterator& it, TokensIterator& end)
 	{
 		// check if there is a token
@@ -240,6 +248,7 @@ namespace SPTracer
 		}
 	}
 
+	// Parses the list of tokens to build a model.
 	void MDLAModel::ParseTokens(const TokensList& tokens, Camera& camera)
 	{
 		auto it = tokens.begin();

@@ -2,6 +2,10 @@
 
 namespace SPTracer
 {
+	RGBColor::RGBColor(float r, float g, float b)
+		: r_(r), g_(g), b_(b)
+	{
+	}
 
 	float RGBColor::GetAmplitude(float waveLength) const
 	{

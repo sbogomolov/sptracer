@@ -4,7 +4,6 @@
 
 namespace SPTracer
 {
-	
 	const float CIE1931::waveLengthMin_ = 360.0f;
 	const float CIE1931::waveLengthMax_ = 830.0f;
 	const float CIE1931::waveLengthStep_ = 1.0f;

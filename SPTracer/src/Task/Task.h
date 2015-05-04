@@ -10,6 +10,8 @@ namespace SPTracer
 	{
 	public:
 		virtual ~Task() { };
+
+		// Method that will be called when task is supposed to run.
 		virtual void Run() = 0;
 
 	protected:

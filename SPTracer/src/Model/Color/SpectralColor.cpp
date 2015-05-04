@@ -14,6 +14,7 @@ namespace SPTracer
 
 	float SpectralColor::GetAmplitude(float waveLength) const
 	{
+		// wave length accuracy
 		static const float WaveLengthAccuracy = 1e-2f;
 
 		// check that color is initialized
@@ -76,6 +77,7 @@ namespace SPTracer
 			return 0.0f;
 		}
 
+		// upper bound amplitude
 		const Amplitude& upperAmp = *upper;
 
 		// return linear interpolation of amplitude

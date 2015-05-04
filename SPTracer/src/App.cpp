@@ -68,11 +68,13 @@ App::App(std::string configFile)
 	}
 	catch (SPTracer::Exception e)
 	{
+		// show message box with error
 		MessageBoxA(window_->GetHwnd(), e.what(), "Error", MB_ICONERROR | MB_OK);
 		std::terminate();
 		return;
 	}
 
+	// application is initialized
 	initialized_ = true;
 }
 
@@ -82,6 +84,7 @@ App::~App()
 
 int App::Run()
 {
+	// check if application is initialized
 	if (!initialized_)
 	{
 		auto s = "Trying to run not initialized application";
@@ -89,8 +92,10 @@ int App::Run()
 		throw std::exception(s);
 	}
 
+	// run tracer
 	tracer_->Run();
 
+	// windows message loop
 	MSG msg;
 	while (GetMessage(&msg, nullptr, 0, 0) > 0)
 	{

@@ -5,7 +5,6 @@
 #include <vector>
 #include "XYZConverter.h"
 
-
 namespace SPTracer
 {
 
