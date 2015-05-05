@@ -186,7 +186,9 @@
   <ItemGroup>
     <ClInclude Include="src\Config.h" />
     <ClInclude Include="src\Model\Color\RGBColor.h" />
+    <ClInclude Include="src\Model\Face.h" />
     <ClInclude Include="src\Model\OBJModel.h" />
+    <ClInclude Include="src\Model\Vertex.h" />
     <ClInclude Include="src\PixelData.h" />
     <ClInclude Include="src\App.h" />
     <ClInclude Include="src\Color\RGBConverter.h" />
