@@ -40,7 +40,7 @@ App::App(std::string configFile)
 		else if (config.modelType == Config::ModelType::OBJ)
 		{
 			// load OBJ model
-			model = std::make_unique<SPTracer::OBJModel>(config.modelFile);
+			model = std::make_unique<SPTracer::OBJModel>(config.modelFile, config.spectrum);
 			
 			// camera data must be present in config file
 			if (!config.cameraLoaded)
@@ -132,7 +132,7 @@ Config App::ReadConfig(std::string configFile) const
 			std::string originalLine(line);
 
 			// skip all white spaces and tab characters
-			StringUtil::TrimBegin(line, " \t");
+			SPTracer::StringUtil::TrimBegin(line, " \t");
 
 			// trim comment if any
 			size_t pos = line.find('#');
@@ -158,8 +158,8 @@ Config App::ReadConfig(std::string configFile) const
 			std::string value = line.substr(pos + 1);
 
 			// trim spaces
-			StringUtil::Trim(parameter, " \t");
-			StringUtil::Trim(value, " \t");
+			SPTracer::StringUtil::Trim(parameter, " \t");
+			SPTracer::StringUtil::Trim(value, " \t");
 
 			// check that parameter and value are not an empty string
 			if ((parameter.length() == 0) || (value.length() == 0))
@@ -168,13 +168,13 @@ Config App::ReadConfig(std::string configFile) const
 			}
 
 			// convert parameter name to lower
-			StringUtil::ToLower(parameter);
+			SPTracer::StringUtil::ToLower(parameter);
 
 			if (parameter == "modeltype")
 			{
 				// model type
 				// convert value to lower
-				StringUtil::ToLower(value);
+				SPTracer::StringUtil::ToLower(value);
 				if (value == "mdla")
 				{
 					// MDLA model type
@@ -206,7 +206,7 @@ Config App::ReadConfig(std::string configFile) const
 			{
 				// camera eye point
 				config.cameraLoaded = true;
-				std::vector<float> values = StringUtil::GetFloatArray(value, 3);
+				std::vector<float> values = SPTracer::StringUtil::GetFloatArray(value, 3, ';');
 				config.camera.p = SPTracer::Vec3{
 					values[0],
 					values[1],
@@ -217,7 +217,7 @@ Config App::ReadConfig(std::string configFile) const
 			{
 				// camera view direction
 				config.cameraLoaded = true;
-				std::vector<float> values = StringUtil::GetFloatArray(value, 3);
+				std::vector<float> values = SPTracer::StringUtil::GetFloatArray(value, 3, ';');
 				config.camera.n = SPTracer::Vec3{
 					values[0],
 					values[1],
@@ -228,7 +228,7 @@ Config App::ReadConfig(std::string configFile) const
 			{
 				// camera up direction
 				config.cameraLoaded = true;
-				std::vector<float> values = StringUtil::GetFloatArray(value, 3);
+				std::vector<float> values = SPTracer::StringUtil::GetFloatArray(value, 3, ';');
 				config.camera.up = SPTracer::Vec3{
 					values[0],
 					values[1],
@@ -239,57 +239,57 @@ Config App::ReadConfig(std::string configFile) const
 			{
 				// camera focal distance
 				config.cameraLoaded = true;
-				config.camera.f = StringUtil::GetFloat(value);
+				config.camera.f = SPTracer::StringUtil::GetFloat(value);
 			}
 			else if (parameter == "cameraimagewidth")
 			{
 				// camera image width
 				config.cameraLoaded = true;
-				config.camera.iw = StringUtil::GetFloat(value);
+				config.camera.iw = SPTracer::StringUtil::GetFloat(value);
 			}
 			else if (parameter == "cameraimageheight")
 			{
 				// camera image height
 				config.cameraLoaded = true;
-				config.camera.ih = StringUtil::GetFloat(value);
+				config.camera.ih = SPTracer::StringUtil::GetFloat(value);
 			}
 			else if (parameter == "cameraimagecenter")
 			{
 				// camera image center
 				config.cameraLoaded = true;
-				std::vector<float> values = StringUtil::GetFloatArray(value, 2);
+				std::vector<float> values = SPTracer::StringUtil::GetFloatArray(value, 2, ';');
 				config.camera.icx = values[0];
 				config.camera.icy = values[1];
 			}
 			else if (parameter == "width")
 			{
 				// width
-				config.width = StringUtil::GetInt(value);
+				config.width = SPTracer::StringUtil::GetInt(value);
 			}
 			else if (parameter == "height")
 			{
 				// height
-				config.height = StringUtil::GetInt(value);
+				config.height = SPTracer::StringUtil::GetInt(value);
 			}
 			else if (parameter == "numthreads")
 			{
 				// number of threads
-				config.numThreads = StringUtil::GetInt(value);
+				config.numThreads = SPTracer::StringUtil::GetInt(value);
 			}
 			else if (parameter == "wavelengthmin")
 			{
 				// wave length minimum
-				config.spectrum.min = StringUtil::GetFloat(value);
+				config.spectrum.min = SPTracer::StringUtil::GetFloat(value);
 			}
 			else if (parameter == "wavelengthmax")
 			{
 				// wave length maximum
-				config.spectrum.max = StringUtil::GetFloat(value);
+				config.spectrum.max = SPTracer::StringUtil::GetFloat(value);
 			}
 			else if (parameter == "wavelengthstep")
 			{
 				// wave length step
-				config.spectrum.step = StringUtil::GetFloat(value);
+				config.spectrum.step = SPTracer::StringUtil::GetFloat(value);
 			}
 		}
 	}
