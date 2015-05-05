@@ -11,11 +11,18 @@ namespace SPTracer
 	PhongLuminaireMaterial::PhongLuminaireMaterial(
 		std::unique_ptr<Material> reflectiveMaterial,
 		std::unique_ptr<Color> radiantExitance,
-		float phongExponent)
+		float phongExponent,
+		const Spectrum& spectrum)
 			: reflectiveMaterial_(std::move(reflectiveMaterial)),
 			  radiantExitance_(std::move(radiantExitance)),
 		      phongExponent_(phongExponent)
 	{
+		// precompute radiances
+		precomputed_.resize(spectrum.count);
+		for (size_t i = 0; i < spectrum.count; i++)
+		{
+			precomputed_[i] = radiantExitance_->GetAmplitude(spectrum.values[i]);
+		}
 	}
 
 	bool PhongLuminaireMaterial::IsEmissive() const
@@ -23,32 +30,13 @@ namespace SPTracer
 		return true;
 	}
 
-	void PhongLuminaireMaterial::GetNewRay(const Ray& ray, const Intersection& intersection, const Spectrum& spectrum, Ray& newRay, std::vector<float>& reflectance) const
+	void PhongLuminaireMaterial::GetNewRay(const Ray& ray, const Intersection& intersection, Ray& newRay, std::vector<float>& reflectance) const
 	{
-		reflectiveMaterial_->GetNewRay(ray, intersection, spectrum, newRay, reflectance);
+		reflectiveMaterial_->GetNewRay(ray, intersection, newRay, reflectance);
 	}
 
-	void PhongLuminaireMaterial::GetRadiance(const Ray& ray, const Intersection& intersection, const Spectrum& spectrum, std::vector<float>& radiance) const
+	void PhongLuminaireMaterial::GetRadiance(const Ray& ray, const Intersection& intersection, std::vector<float>& radiance) const
 	{
-		// precompute array of radiances for spectrum
-		if (!initialized_)
-		{
-			// lock
-			std::lock_guard<std::mutex> lock(mutex_);
-
-			// may be it was initialized in another thread
-			if (!initialized_)
-			{
-				precomputed_.resize(spectrum.count);
-				for (size_t i = 0; i < spectrum.count; i++)
-				{
-					precomputed_[i] = radiantExitance_->GetAmplitude(spectrum.values[i]);
-				}
-
-				initialized_ = true;
-			}
-		}
-
 		// angle between ray and normal
 		float theta = std::acos((-1 * ray.direction) * intersection.normal);
 
@@ -63,11 +51,21 @@ namespace SPTracer
 		else
 		{
 			// get radiant exitances for spectrum and scale according to cosine distribution with Phong exponent
-			for (size_t i = 0; i < spectrum.count; i++)
+			for (size_t i = 0; i < precomputed_.size(); i++)
 			{
 				radiance[i] = weight * precomputed_[i];
 			}
 		}
+	}
+
+	float PhongLuminaireMaterial::GetDiffuseReflectivity(int waveIndex) const
+	{
+		return reflectiveMaterial_->GetDiffuseReflectivity(waveIndex);
+	}
+
+	float PhongLuminaireMaterial::GetSpecularReflectivity(int waveIndex) const
+	{
+		return reflectiveMaterial_->GetSpecularReflectivity(waveIndex);
 	}
 
 }

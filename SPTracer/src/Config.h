@@ -4,6 +4,7 @@
 #include <memory>
 #include <string>
 #include "Camera.h"
+#include "Spectrum.h"
 
 struct Config
 {
@@ -15,14 +16,12 @@ struct Config
 
 	ModelType modelType;
 	std::string modelFile;
-	std::unique_ptr<SPTracer::Camera> camera;
+	SPTracer::Camera camera;
 	bool cameraLoaded;
 	unsigned int width;
 	unsigned int height;
 	unsigned int numThreads;
-	unsigned int waveLengthMin;
-	unsigned int waveLengthMax;
-	unsigned int waveLengthStep;
+	SPTracer::Spectrum spectrum;
 };
 
 #endif

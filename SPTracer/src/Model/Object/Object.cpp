@@ -112,19 +112,29 @@ namespace SPTracer
 		return true;
 	}
 
-	void Object::GetNewRay(const Ray& ray, const Intersection& intersection, const Spectrum& spectrum, Ray& newRay, std::vector<float>& reflectance) const
+	void Object::GetNewRay(const Ray& ray, const Intersection& intersection, Ray& newRay, std::vector<float>& reflectance) const
 	{
-		material_->GetNewRay(ray, intersection, spectrum, newRay, reflectance);
+		material_->GetNewRay(ray, intersection, newRay, reflectance);
 	}
 
-	void Object::GetRadiance(const Ray& ray, const Intersection& intersection, const Spectrum& spectrum, std::vector<float>& radiance) const
+	void Object::GetRadiance(const Ray& ray, const Intersection& intersection, std::vector<float>& radiance) const
 	{
-		material_->GetRadiance(ray, intersection, spectrum, radiance);
+		material_->GetRadiance(ray, intersection, radiance);
 	}
 
 	bool Object::IsEmissive() const
 	{
 		return material_->IsEmissive();
+	}
+
+	float Object::GetDiffuseReflectivity(int waveIndex) const
+	{
+		return material_->GetDiffuseReflectivity(waveIndex);
+	}
+
+	float Object::GetSpecularReflectivity(int waveIndex) const
+	{
+		return material_->GetSpecularReflectivity(waveIndex);
 	}
 
 }

@@ -1,7 +1,6 @@
 #ifndef SPT_SPECTRAL_COLOR_H
 #define SPT_SPECTRAL_COLOR_H
 
-#include <mutex>
 #include <vector>
 #include "Color.h"
 
@@ -17,13 +16,11 @@ namespace SPTracer
 			float amplitude;	// amplitude
 		};
 
-		void AddAmplitude(float waveLength, float amplitude);
+		SpectralColor(std::vector<Amplitude> amplitudes);
 		float GetAmplitude(float waveLength) const override;
 
 	private:
-		mutable std::mutex mutex_;
-		mutable std::vector<Amplitude> amplitudes_;
-		mutable bool initialized_ = false;
+		std::vector<Amplitude> amplitudes_;
 	};
 
 }

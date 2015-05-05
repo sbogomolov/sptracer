@@ -6,12 +6,12 @@
 #include <string>
 #include <mutex>
 #include <vector>
+#include "Camera.h"
 #include "PixelData.h"
 #include "Spectrum.h"
 
 namespace SPTracer
 {
-	struct Camera;
 	struct Ray;
 	struct Vec3;
 	class XYZConverter;
@@ -23,9 +23,9 @@ namespace SPTracer
 	class Tracer
 	{
 	public:
-		Tracer(std::unique_ptr<Model> model, std::unique_ptr<Camera> camera,
+		Tracer(std::unique_ptr<Model> model, Camera camera,
 			unsigned int width, unsigned int height, unsigned int numThreads,
-			float waveLengthMin, float waveLengthMax, float waveLengthStep);
+			Spectrum spectrum);
 		virtual ~Tracer();
 
 		const Camera& GetCamera() const;
@@ -48,10 +48,10 @@ namespace SPTracer
 		unsigned int width_;
 		unsigned int height_;
 		unsigned long pixelsCount_;
-		Spectrum spectrum_;
 		unsigned long completedPasses_ = 0;
+		Spectrum spectrum_;
+		Camera camera_;
 		std::unique_ptr<Model> model_;
-		std::unique_ptr<Camera> camera_;
 		std::unique_ptr<TaskScheduler> taskScheduler_;
 		std::unique_ptr<XYZConverter> xyzConverter_;
 		std::unique_ptr<RGBConverter> rgbConverter_;

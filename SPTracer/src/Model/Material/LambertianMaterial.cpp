@@ -10,32 +10,19 @@
 namespace SPTracer
 {
 
-	LambertianMaterial::LambertianMaterial(std::unique_ptr<Color> diffuseReflectance)
+	LambertianMaterial::LambertianMaterial(std::unique_ptr<Color> diffuseReflectance, const Spectrum& spectrum)
 		: diffuseReflectance_(std::move(diffuseReflectance))
 	{
+		// precompute reflectances for spectrum
+		precomputed_.resize(spectrum.count);
+		for (size_t i = 0; i < spectrum.count; i++)
+		{
+			precomputed_[i] = diffuseReflectance_->GetAmplitude(spectrum.values[i]);
+		}
 	}
 
-	void LambertianMaterial::GetNewRay(const Ray& ray, const Intersection& intersection, const Spectrum& spectrum, Ray& newRay, std::vector<float>& reflectance) const
+	void LambertianMaterial::GetNewRay(const Ray& ray, const Intersection& intersection, Ray& newRay, std::vector<float>& reflectance) const
 	{
-		// precompute array of reflectances for spectrum
-		if (!initialized_)
-		{
-			// lock
-			std::lock_guard<std::mutex> lock(mutex_);
-
-			// may be it was initialized in another thread
-			if (!initialized_)
-			{
-				precomputed_.resize(spectrum.count);
-				for (size_t i = 0; i < spectrum.count; i++)
-				{
-					precomputed_[i] = diffuseReflectance_->GetAmplitude(spectrum.values[i]);
-				}
-
-				initialized_ = true;
-			}
-		}
-
 		// NOTE:
 		// BDRF is 1/pi * cos(theta), it will be used as PDF
 		// to prefer bright directions.
@@ -64,7 +51,7 @@ namespace SPTracer
 		else
 		{
 			// all spectrum
-			for (size_t i = 0; i < spectrum.count; i++)
+			for (size_t i = 0; i < precomputed_.size(); i++)
 			{
 				reflectance[i] = bdrfPdf * precomputed_[i];
 			}
@@ -76,9 +63,19 @@ namespace SPTracer
 		return false;
 	}
 
-	void LambertianMaterial::GetRadiance(const Ray & ray, const Intersection & intersection, const Spectrum& spectrum, std::vector<float>& radiance) const
+	void LambertianMaterial::GetRadiance(const Ray & ray, const Intersection & intersection, std::vector<float>& radiance) const
 	{
 		// no radiance
+	}
+
+	float LambertianMaterial::GetDiffuseReflectivity(int waveIndex) const
+	{
+		return 0.0f;
+	}
+
+	float LambertianMaterial::GetSpecularReflectivity(int waveIndex) const
+	{
+		return 0.0f;
 	}
 
 }

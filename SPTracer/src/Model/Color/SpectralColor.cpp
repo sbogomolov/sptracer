@@ -7,39 +7,28 @@
 namespace SPTracer
 {
 
-	void SpectralColor::AddAmplitude(float waveLength, float amplitude)
+	SpectralColor::SpectralColor(std::vector<Amplitude> amplitudes)
 	{
-		amplitudes_.push_back(Amplitude{ waveLength, amplitude });
+		// check that vector is not empty
+		if (amplitudes.size() == 0)
+		{
+			const char* s = "SpectralColor: Trying to create spectral color with no amplitudes";
+			Log::Error(s);
+			throw Exception(s);
+		}
+
+		// move vector to member variable
+		amplitudes_ = std::move(amplitudes);
+
+		// sort by wave length
+		std::sort(amplitudes_.begin(), amplitudes_.end(),
+			[](const Amplitude& a, const Amplitude& b) { return a.waveLength < b.waveLength; });
 	}
 
 	float SpectralColor::GetAmplitude(float waveLength) const
 	{
 		// wave length accuracy
 		static const float WaveLengthAccuracy = 1e-2f;
-
-		// check that color is initialized
-		if (!initialized_)
-		{
-			// lock
-			std::lock_guard<std::mutex> lock(mutex_);
-			
-			// it may have been already initialized by another thread
-			if (!initialized_)
-			{
-				if (amplitudes_.size() == 0)
-				{
-					const char* s = "SpectralColor: Trying to get amplitude, but there are no amplitudes added";
-					Log::Error(s);
-					throw Exception(s);
-				}
-
-				// sort by wave length
-				std::sort(amplitudes_.begin(), amplitudes_.end(),
-					[](const Amplitude& a, const Amplitude& b) { return a.waveLength < b.waveLength; });
-
-				initialized_ = true;
-			}
-		}
 
 		// get upper bound
 		auto upper = std::upper_bound(amplitudes_.begin(), amplitudes_.end(), waveLength,

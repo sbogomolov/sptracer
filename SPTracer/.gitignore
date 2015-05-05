@@ -2,4 +2,6 @@ Win32
 x64
 *.log
 *.mdla
+*.mtl
+*.obj
 *.vcxproj.user

@@ -17,11 +17,12 @@
 
 namespace SPTracer {
 
-	Tracer::Tracer(std::unique_ptr<Model> model, std::unique_ptr<Camera> camera,
+	Tracer::Tracer(std::unique_ptr<Model> model, Camera camera,
 		unsigned int width, unsigned int height, unsigned int numThreads,
-		float waveLengthMin = 400.0f, float waveLengthMax = 700.0f, float waveLengthStep = 5.0f)
+		Spectrum spectrum)
 		: model_(std::move(model)), camera_(std::move(camera)),
-		  width_(width), height_(height), numThreads_(numThreads)
+		  width_(width), height_(height), numThreads_(numThreads),
+		  spectrum_(std::move(spectrum))
 	{
 		pixelsCount_ = static_cast<unsigned long>(width_) * height_;
 
@@ -30,21 +31,6 @@ namespace SPTracer {
 
 		// prepare array of pixels
 		pixels_.resize(pixelsCount_);
-
-		// spectrum
-		spectrum_.min = waveLengthMin;
-		spectrum_.max = waveLengthMax;
-		spectrum_.step = waveLengthStep;
-
-		// precompute count of wave lengths
-		spectrum_.count = static_cast<unsigned int>((spectrum_.max - spectrum_.min) / spectrum_.step) + 1;
-
-		// precompute wave length
-		spectrum_.values = std::vector<float>(spectrum_.count);
-		for (size_t i = 0; i < spectrum_.count; i++)
-		{
-			spectrum_.values[i] = spectrum_.min + spectrum_.step * static_cast<float>(i);
-		}
 
 		// xyz color converter
 		xyzConverter_ = std::make_unique<CIE1931>();
@@ -60,7 +46,7 @@ namespace SPTracer {
 
 	const Camera& Tracer::GetCamera() const
 	{
-		return *camera_;
+		return camera_;
 	}
 
 	const Model& Tracer::GetModel() const

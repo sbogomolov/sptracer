@@ -30,15 +30,12 @@ App::App(std::string configFile)
 	try
 	{
 		std::unique_ptr<SPTracer::Model> model;
-		std::unique_ptr<SPTracer::Camera> camera;
+		SPTracer::Camera camera{};
 		
 		if (config.modelType == Config::ModelType::MDLA)
 		{
-			// camera to load from MDLA model
-			camera = std::make_unique<SPTracer::Camera>();
-
 			// load MDLA model
-			model = std::make_unique<SPTracer::MDLAModel>(config.modelFile, *camera);			
+			model = std::make_unique<SPTracer::MDLAModel>(config.modelFile, config.spectrum, camera);			
 		}
 		else if (config.modelType == Config::ModelType::OBJ)
 		{
@@ -61,7 +58,7 @@ App::App(std::string configFile)
 		// create tracer
 		tracer_ = std::make_unique<SPTracer::Tracer>(std::move(model), std::move(camera),
 			config.width, config.height, config.numThreads,
-			config.waveLengthMin, config.waveLengthMax, config.waveLengthStep);
+			config.spectrum);
 
 		// assign image updater
 		tracer_->SetImageUpdater(window_->GetImageUpdater());
@@ -115,7 +112,6 @@ Config App::ReadConfig(std::string configFile) const
 {
 	// prepare config
 	Config config{};
-	config.camera = std::make_unique<SPTracer::Camera>();
 
 	// open config file
 	std::ifstream file(configFile);
@@ -204,14 +200,14 @@ Config App::ReadConfig(std::string configFile) const
 			{
 				// model file
 				config.cameraLoaded = true;
-				config.camera->name = value;
+				config.camera.name = value;
 			}
 			else if (parameter == "cameraeyepoint")
 			{
 				// camera eye point
 				config.cameraLoaded = true;
 				std::vector<float> values = StringUtil::GetFloatArray(value, 3);
-				config.camera->p = SPTracer::Vec3{
+				config.camera.p = SPTracer::Vec3{
 					values[0],
 					values[1],
 					values[2]
@@ -222,7 +218,7 @@ Config App::ReadConfig(std::string configFile) const
 				// camera view direction
 				config.cameraLoaded = true;
 				std::vector<float> values = StringUtil::GetFloatArray(value, 3);
-				config.camera->n = SPTracer::Vec3{
+				config.camera.n = SPTracer::Vec3{
 					values[0],
 					values[1],
 					values[2]
@@ -233,7 +229,7 @@ Config App::ReadConfig(std::string configFile) const
 				// camera up direction
 				config.cameraLoaded = true;
 				std::vector<float> values = StringUtil::GetFloatArray(value, 3);
-				config.camera->up = SPTracer::Vec3{
+				config.camera.up = SPTracer::Vec3{
 					values[0],
 					values[1],
 					values[2]
@@ -243,57 +239,57 @@ Config App::ReadConfig(std::string configFile) const
 			{
 				// camera focal distance
 				config.cameraLoaded = true;
-				config.camera->f = StringUtil::GetFloat(value);
+				config.camera.f = StringUtil::GetFloat(value);
 			}
 			else if (parameter == "cameraimagewidth")
 			{
 				// camera image width
 				config.cameraLoaded = true;
-				config.camera->iw = StringUtil::GetFloat(value);
+				config.camera.iw = StringUtil::GetFloat(value);
 			}
 			else if (parameter == "cameraimageheight")
 			{
 				// camera image height
 				config.cameraLoaded = true;
-				config.camera->ih = StringUtil::GetFloat(value);
+				config.camera.ih = StringUtil::GetFloat(value);
 			}
 			else if (parameter == "cameraimagecenter")
 			{
 				// camera image center
 				config.cameraLoaded = true;
 				std::vector<float> values = StringUtil::GetFloatArray(value, 2);
-				config.camera->icx = values[0];
-				config.camera->icy = values[1];
+				config.camera.icx = values[0];
+				config.camera.icy = values[1];
 			}
 			else if (parameter == "width")
 			{
 				// width
-				config.width = StringUtil::GetFloat(value);
+				config.width = StringUtil::GetInt(value);
 			}
 			else if (parameter == "height")
 			{
 				// height
-				config.height = StringUtil::GetFloat(value);
+				config.height = StringUtil::GetInt(value);
 			}
 			else if (parameter == "numthreads")
 			{
 				// number of threads
-				config.numThreads = StringUtil::GetFloat(value);
+				config.numThreads = StringUtil::GetInt(value);
 			}
 			else if (parameter == "wavelengthmin")
 			{
 				// wave length minimum
-				config.waveLengthMin = StringUtil::GetFloat(value);
+				config.spectrum.min = StringUtil::GetFloat(value);
 			}
 			else if (parameter == "wavelengthmax")
 			{
 				// wave length maximum
-				config.waveLengthMax = StringUtil::GetFloat(value);
+				config.spectrum.max = StringUtil::GetFloat(value);
 			}
 			else if (parameter == "wavelengthstep")
 			{
 				// wave length step
-				config.waveLengthStep = StringUtil::GetFloat(value);
+				config.spectrum.step = StringUtil::GetFloat(value);
 			}
 		}
 	}
@@ -302,6 +298,16 @@ Config App::ReadConfig(std::string configFile) const
 		std::string msg = "Error in configuration file: " + std::string(e.what());
 		SPTracer::Log::Error(msg);
 		throw;
+	}
+
+	// compute spectrum wave lengths count
+	config.spectrum.count = static_cast<unsigned int>((config.spectrum.max - config.spectrum.min) / config.spectrum.step) + 1;
+
+	// precompute wave length
+	config.spectrum.values = std::vector<float>(config.spectrum.count);
+	for (size_t i = 0; i < config.spectrum.count; i++)
+	{
+		config.spectrum.values[i] = config.spectrum.min + config.spectrum.step * static_cast<float>(i);
 	}
 
 	return config;

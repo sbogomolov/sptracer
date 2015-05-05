@@ -5,6 +5,7 @@
 #include "../Camera.h"
 #include "../Exception.h"
 #include "../Log.h"
+#include "../Spectrum.h"
 #include "MDLAModel.h"
 #include "Color/ScalarColor.h"
 #include "Color/SpectralColor.h"
@@ -15,7 +16,7 @@
 namespace SPTracer
 {
 
-	MDLAModel::MDLAModel(std::string fileName, Camera& camera)
+	MDLAModel::MDLAModel(std::string fileName, const Spectrum& spectrum, Camera& camera)
 	{
 		// open file
 		std::ifstream file(fileName);
@@ -34,7 +35,7 @@ namespace SPTracer
 		auto tokens = GetTokens(ss.str());
 
 		// parse tokens
-		ParseTokens(tokens, camera);
+		ParseTokens(tokens, spectrum, camera);
 
 		// check model
 		if (objects_.size() == 0)
@@ -249,7 +250,7 @@ namespace SPTracer
 	}
 
 	// Parses the list of tokens to build a model.
-	void MDLAModel::ParseTokens(const TokensList& tokens, Camera& camera)
+	void MDLAModel::ParseTokens(const TokensList& tokens, const Spectrum& spectrum, Camera& camera)
 	{
 		auto it = tokens.begin();
 
@@ -274,12 +275,12 @@ namespace SPTracer
 			else if (token == "nmdMtrl")
 			{
 				// material
-				ParseMaterial(it, end);
+				ParseMaterial(it, end, spectrum);
 			}
 			else if (token == "plnrMsh")
 			{
 				// planar mesh object
-				ParsePlanarMeshObject(it, end);
+				ParsePlanarMeshObject(it, end, spectrum);
 			}
 			else
 			{
@@ -357,16 +358,16 @@ namespace SPTracer
 		// check keyword
 		CheckKeyword(it, end, "spctrl");
 
-		auto color = std::make_unique<SpectralColor>();
+		std::vector<SpectralColor::Amplitude> amplitudes;
 		while (!IsEndToken(++it, end))
 		{
 			// add amplitude
 			float l = GetFloat(it, end);
 			float a = GetFloat(++it, end);
-			color->AddAmplitude(l, a);
+			amplitudes.push_back(SpectralColor::Amplitude{ l, a });
 		}
 
-		return color;
+		return std::make_unique<SpectralColor>(amplitudes);
 	}
 
 	std::unique_ptr<ScalarColor> MDLAModel::ParseScalarColor(TokensIterator & it, TokensIterator & end)
@@ -379,7 +380,7 @@ namespace SPTracer
 		return std::make_unique<ScalarColor>(amplitude);
 	}
 
-	std::string MDLAModel::ParseMaterial(TokensIterator& it, TokensIterator& end)
+	std::string MDLAModel::ParseMaterial(TokensIterator& it, TokensIterator& end, const Spectrum& spectrum)
 	{
 		// check keyword
 		CheckKeyword(it, end, "nmdMtrl");
@@ -388,7 +389,7 @@ namespace SPTracer
 		std::string name = GetString(++it, end);
 
 		// parse material of some type
-		auto material = ParseMaterialType(++it, end);
+		auto material = ParseMaterialType(++it, end, spectrum);
 
 		// check end token
 		MustBeEndToken(++it, end);
@@ -399,7 +400,7 @@ namespace SPTracer
 		return name;
 	}
 
-	std::unique_ptr<Material> MDLAModel::ParseMaterialType(TokensIterator& it, TokensIterator& end)
+	std::unique_ptr<Material> MDLAModel::ParseMaterialType(TokensIterator& it, TokensIterator& end, const Spectrum& spectrum)
 	{
 		// material type
 		CheckToken(it, end);
@@ -409,12 +410,12 @@ namespace SPTracer
 		if (type == "lmbrtn")
 		{
 			// Lambertian meterial
-			material = ParseLambertianMaterial(it, end);
+			material = ParseLambertianMaterial(it, end, spectrum);
 		}
 		else if (type == "pLmnr")
 		{
 			// Phong luminaire material
-			material = ParsePhongLuminaireMaterial(it, end);
+			material = ParsePhongLuminaireMaterial(it, end, spectrum);
 		}
 		else
 		{
@@ -427,7 +428,7 @@ namespace SPTracer
 		return material;
 	}
 
-	std::shared_ptr<Material> MDLAModel::ParseEmbeddedMaterial(TokensIterator& it, TokensIterator& end)
+	std::shared_ptr<Material> MDLAModel::ParseEmbeddedMaterial(TokensIterator& it, TokensIterator& end, const Spectrum& spectrum)
 	{
 		// material type
 		CheckToken(it, end);
@@ -455,10 +456,10 @@ namespace SPTracer
 		}
 
 		// new material
-		return std::shared_ptr<Material>(ParseMaterialType(it, end));
+		return std::shared_ptr<Material>(ParseMaterialType(it, end, spectrum));
 	}
 
-	std::unique_ptr<LambertianMaterial> MDLAModel::ParseLambertianMaterial(TokensIterator& it, TokensIterator& end)
+	std::unique_ptr<LambertianMaterial> MDLAModel::ParseLambertianMaterial(TokensIterator& it, TokensIterator& end, const Spectrum& spectrum)
 	{
 		// check keyword
 		CheckKeyword(it, end, "lmbrtn");
@@ -466,16 +467,16 @@ namespace SPTracer
 		// parse color
 		auto color = ParseColorType(++it, end);
 		MustBeEndToken(++it, end);
-		return std::make_unique<LambertianMaterial>(std::move(color));
+		return std::make_unique<LambertianMaterial>(std::move(color), spectrum);
 	}
 
-	std::unique_ptr<PhongLuminaireMaterial> MDLAModel::ParsePhongLuminaireMaterial(TokensIterator& it, TokensIterator& end)
+	std::unique_ptr<PhongLuminaireMaterial> MDLAModel::ParsePhongLuminaireMaterial(TokensIterator& it, TokensIterator& end, const Spectrum& spectrum)
 	{
 		// check keyword
 		CheckKeyword(it, end, "pLmnr");
 
 		// parse reflective material
-		auto reflectiveMaterial = ParseMaterialType(++it, end);
+		auto reflectiveMaterial = ParseMaterialType(++it, end, spectrum);
 
 		// parse radiant exitance
 		auto radiantExitance = ParseColorType(++it, end);
@@ -495,7 +496,7 @@ namespace SPTracer
 
 		MustBeEndToken(++it, end);
 		return std::make_unique<PhongLuminaireMaterial>(
-			std::move(reflectiveMaterial), std::move(radiantExitance), phongExponent->GetAmplitude(0.0f));
+			std::move(reflectiveMaterial), std::move(radiantExitance), phongExponent->GetAmplitude(0.0f), spectrum);
 	}
 
 	void MDLAModel::ParseVertexPositions(TokensIterator& it, TokensIterator& end, std::vector<Vec3>& vertices)
@@ -542,7 +543,7 @@ namespace SPTracer
 		}
 	}
 
-	void MDLAModel::ParsePlanarMeshObject(TokensIterator& it, TokensIterator& end)
+	void MDLAModel::ParsePlanarMeshObject(TokensIterator& it, TokensIterator& end, const Spectrum& spectrum)
 	{
 		// check keyword
 		CheckKeyword(it, end, "plnrMsh");
@@ -551,7 +552,7 @@ namespace SPTracer
 		std::string name = GetString(++it, end);
 
 		// get material
-		auto material = ParseEmbeddedMaterial(++it, end);
+		auto material = ParseEmbeddedMaterial(++it, end, spectrum);
 		std::vector<Vec3> vertices;
 		std::vector<unsigned long> outline;
 		std::vector<std::vector<unsigned long>> holes;

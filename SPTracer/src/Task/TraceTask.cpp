@@ -65,9 +65,6 @@ namespace SPTracer
 		{
 			for (size_t j = 0; j < width; j++)
 			{
-				// number of samples per pixel
-				unsigned int samples = spectrum.count;
-
 				// sample pixel
 				float u = left + (static_cast<float>(j) + Util::RandFloat(0.0f, 1.0f)) * pixelWidth;
 				float v = top - (static_cast<float>(i) + Util::RandFloat(0.0f, 1.0f)) * pixelHeight;
@@ -129,7 +126,7 @@ namespace SPTracer
 							Vec3& c = color[i * width + j];
 
 							// radiance
-							intersection.object->GetRadiance(*ray, intersection, spectrum, radiance);
+							intersection.object->GetRadiance(*ray, intersection, radiance);
 
 							if (ray->monochromatic)
 							{
@@ -164,7 +161,7 @@ namespace SPTracer
 
 					// get new ray from non-emissive material
 					Ray reflectedRay;
-					intersection.object->GetNewRay(*ray, intersection, spectrum, reflectedRay, reflectance);
+					intersection.object->GetNewRay(*ray, intersection, reflectedRay, reflectance);
 
 					// absorption probability for russian roulette
 					float absorptionProbability;

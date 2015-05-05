@@ -11,17 +11,17 @@ namespace SPTracer
 	class LambertianMaterial : public Material
 	{
 	public:
-		LambertianMaterial(std::unique_ptr<Color> diffuseReflectance);
+		LambertianMaterial(std::unique_ptr<Color> diffuseReflectance, const Spectrum& spectrum);
 		
-		void GetNewRay(const Ray& ray, const Intersection& intersection, const Spectrum& spectrum, Ray& newRay, std::vector<float>& reflectance) const override;
 		bool IsEmissive() const override;
-		void GetRadiance(const Ray& ray, const Intersection& intersection, const Spectrum& spectrum, std::vector<float>& radiance) const override;
+		void GetNewRay(const Ray& ray, const Intersection& intersection, Ray& newRay, std::vector<float>& reflectance) const override;
+		void GetRadiance(const Ray& ray, const Intersection& intersection, std::vector<float>& radiance) const override;
+		float GetDiffuseReflectivity(int waveIndex) const override;		// use index -1 for average reflectivity
+		float GetSpecularReflectivity(int waveIndex) const override;	// use index -1 for average reflectivity
 
 	private:
 		std::unique_ptr<Color> diffuseReflectance_;
-		mutable std::mutex mutex_;
-		mutable bool initialized_ = false;
-		mutable std::vector<float> precomputed_;
+		std::vector<float> precomputed_;
 	};
 
 }

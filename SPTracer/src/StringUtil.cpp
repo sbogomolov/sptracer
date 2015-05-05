@@ -35,6 +35,19 @@ std::string& StringUtil::Trim(std::string& str, const std::string& chars)
 	return TrimEnd(TrimBegin(str, chars), chars);
 }
 
+int StringUtil::GetInt(const std::string & str)
+{
+	try
+	{
+		// try to get integer value
+		return std::stoi(str.c_str());
+	}
+	catch (std::invalid_argument e)
+	{
+		throw std::exception(("Expected float, got: " + str).c_str());
+	}
+}
+
 float StringUtil::GetFloat(const std::string& str)
 {
 	try
