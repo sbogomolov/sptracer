@@ -22,8 +22,8 @@ namespace SPTracer
 		void GetRadiance(const Ray& ray, const Intersection& intersection, std::vector<float>& radiance) const;
 		
 		bool IsEmissive() const;
-		float GetDiffuseReflectivity(int waveIndex) const;		// use index -1 for average reflectivity
-		float GetSpecularReflectivity(int waveIndex) const;		// use index -1 for average reflectivity
+		float GetDiffuseReflectance(int waveIndex) const;		// use index -1 for average reflectivity
+		float GetSpecularReflectance(int waveIndex) const;		// use index -1 for average reflectivity
 		
 	protected:
 		Object(std::string name, std::shared_ptr<Material> material);

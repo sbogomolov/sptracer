@@ -1,4 +1,5 @@
 #include <cmath>
+#include <numeric>
 #include "../../Intersection.h"
 #include "../../Ray.h"
 #include "../../Spectrum.h"
@@ -14,11 +15,14 @@ namespace SPTracer
 		: diffuseReflectance_(std::move(diffuseReflectance))
 	{
 		// precompute reflectances for spectrum
-		precomputed_.resize(spectrum.count);
+		precomputedDiffuseReflectance_.resize(spectrum.count);
 		for (size_t i = 0; i < spectrum.count; i++)
 		{
-			precomputed_[i] = diffuseReflectance_->GetAmplitude(spectrum.values[i]);
+			precomputedDiffuseReflectance_[i] = diffuseReflectance_->GetAmplitude(spectrum.values[i]);
 		}
+
+		// average reflectance
+		avgDiffuseReflectance_ = std::accumulate(precomputedDiffuseReflectance_.begin(), precomputedDiffuseReflectance_.end(), 0.0f) / precomputedDiffuseReflectance_.size();
 	}
 
 	void LambertianMaterial::GetNewRay(const Ray& ray, const Intersection& intersection, Ray& newRay, std::vector<float>& reflectance) const
@@ -46,14 +50,14 @@ namespace SPTracer
 		if (ray.monochromatic)
 		{
 			// one reflectance
-			reflectance[ray.waveIndex] = bdrfPdf *  precomputed_[ray.waveIndex];
+			reflectance[ray.waveIndex] = bdrfPdf *  precomputedDiffuseReflectance_[ray.waveIndex];
 		}
 		else
 		{
 			// all spectrum
-			for (size_t i = 0; i < precomputed_.size(); i++)
+			for (size_t i = 0; i < precomputedDiffuseReflectance_.size(); i++)
 			{
-				reflectance[i] = bdrfPdf * precomputed_[i];
+				reflectance[i] = bdrfPdf * precomputedDiffuseReflectance_[i];
 			}
 		}
 	}
@@ -68,12 +72,12 @@ namespace SPTracer
 		// no radiance
 	}
 
-	float LambertianMaterial::GetDiffuseReflectivity(int waveIndex) const
+	float LambertianMaterial::GetDiffuseReflectance(int waveIndex) const
 	{
-		return 0.0f;
+		return waveIndex == -1 ? avgDiffuseReflectance_ : precomputedDiffuseReflectance_[waveIndex];
 	}
 
-	float LambertianMaterial::GetSpecularReflectivity(int waveIndex) const
+	float LambertianMaterial::GetSpecularReflectance(int waveIndex) const
 	{
 		return 0.0f;
 	}

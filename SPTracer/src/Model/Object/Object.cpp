@@ -127,14 +127,14 @@ namespace SPTracer
 		return material_->IsEmissive();
 	}
 
-	float Object::GetDiffuseReflectivity(int waveIndex) const
+	float Object::GetDiffuseReflectance(int waveIndex) const
 	{
-		return material_->GetDiffuseReflectivity(waveIndex);
+		return material_->GetDiffuseReflectance(waveIndex);
 	}
 
-	float Object::GetSpecularReflectivity(int waveIndex) const
+	float Object::GetSpecularReflectance(int waveIndex) const
 	{
-		return material_->GetSpecularReflectivity(waveIndex);
+		return material_->GetSpecularReflectance(waveIndex);
 	}
 
 }

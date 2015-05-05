@@ -18,10 +18,10 @@ namespace SPTracer
 		      phongExponent_(phongExponent)
 	{
 		// precompute radiances
-		precomputed_.resize(spectrum.count);
+		precomputedRadiance_.resize(spectrum.count);
 		for (size_t i = 0; i < spectrum.count; i++)
 		{
-			precomputed_[i] = radiantExitance_->GetAmplitude(spectrum.values[i]);
+			precomputedRadiance_[i] = radiantExitance_->GetAmplitude(spectrum.values[i]);
 		}
 	}
 
@@ -46,26 +46,26 @@ namespace SPTracer
 		if (ray.monochromatic)
 		{
 			// get radiant exitance for wave length scaled according to cosine distribution with Phong exponent
-			radiance[ray.waveIndex] = weight * precomputed_[ray.waveIndex];
+			radiance[ray.waveIndex] = weight * precomputedRadiance_[ray.waveIndex];
 		}
 		else
 		{
 			// get radiant exitances for spectrum and scale according to cosine distribution with Phong exponent
-			for (size_t i = 0; i < precomputed_.size(); i++)
+			for (size_t i = 0; i < precomputedRadiance_.size(); i++)
 			{
-				radiance[i] = weight * precomputed_[i];
+				radiance[i] = weight * precomputedRadiance_[i];
 			}
 		}
 	}
 
-	float PhongLuminaireMaterial::GetDiffuseReflectivity(int waveIndex) const
+	float PhongLuminaireMaterial::GetDiffuseReflectance(int waveIndex) const
 	{
-		return reflectiveMaterial_->GetDiffuseReflectivity(waveIndex);
+		return reflectiveMaterial_->GetDiffuseReflectance(waveIndex);
 	}
 
-	float PhongLuminaireMaterial::GetSpecularReflectivity(int waveIndex) const
+	float PhongLuminaireMaterial::GetSpecularReflectance(int waveIndex) const
 	{
-		return reflectiveMaterial_->GetSpecularReflectivity(waveIndex);
+		return reflectiveMaterial_->GetSpecularReflectance(waveIndex);
 	}
 
 }
