@@ -4,6 +4,7 @@
 #include <memory>
 #include <vector>
 #include "../../Vec3.h"
+#include "../Vertex.h"
 #include "Object.h"
 
 namespace SPTracer
@@ -16,14 +17,14 @@ namespace SPTracer
 		PlanarMeshObject(
 			std::string name,
 			std::shared_ptr<Material> material, 
-			std::vector<Vec3> vertices,
+			std::vector<Vertex>& vertices,
 			std::vector<unsigned long> outline,
 			std::vector<std::vector<unsigned long>> holes);
 
 		bool Intersect(const Ray& ray, Intersection& intersection) const override;
 
 	private:
-		std::vector<Vec3> vertices_;
+		std::vector<Vertex>& vertices_;
 		std::vector<unsigned long> outline_;
 		std::vector<std::vector<unsigned long>> holes_;
 		

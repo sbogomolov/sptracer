@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <exception>
 #include <fstream>
 #include <sstream>
@@ -24,7 +25,7 @@ namespace SPTracer
 		{
 			std::string s("MDLAModel: Cannot open file: " + fileName);
 			Log::Error(s);
-			throw Exception(s.c_str());
+			throw Exception(s);
 		}
 
 		// read file
@@ -169,7 +170,7 @@ namespace SPTracer
 		{
 			std::string s = "MDLAModel: Bad token, expected end, got: " + *it;
 			Log::Error(s);
-			throw Exception(s.c_str());
+			throw Exception(s);
 		}
 	}
 
@@ -185,7 +186,7 @@ namespace SPTracer
 			// wrong keyword
 			std::string s = "MDLAModel: Wrong keyword, expected: " + keyword + " got: " + type;
 			Log::Error(s);
-			throw Exception(s.c_str());
+			throw Exception(s);
 		}
 	}
 
@@ -203,7 +204,7 @@ namespace SPTracer
 		{
 			std::string s = "MDLAModel: Bad token, expected string, got: " + token;
 			Log::Error(s);
-			throw Exception(s.c_str());
+			throw Exception(s);
 		}
 
 		return token.substr(1, len - 2);
@@ -225,7 +226,7 @@ namespace SPTracer
 		{
 			std::string s = "MDLAModel: Bad token, expected float, got: " + token;
 			Log::Error(s);
-			throw Exception(s.c_str());
+			throw Exception(s);
 		}
 	}
 
@@ -245,7 +246,7 @@ namespace SPTracer
 		{
 			std::string s = "MDLAModel: Bad token, expected integer, got: " + token;
 			Log::Error(s);
-			throw Exception(s.c_str());
+			throw Exception(s);
 		}
 	}
 
@@ -287,7 +288,7 @@ namespace SPTracer
 				// unknown keyword
 				std::string s = "MDLAModel: Unknown keyword: " + token;
 				Log::Error(s);
-				throw Exception(s.c_str());
+				throw Exception(s);
 			}
 		}
 	}
@@ -347,7 +348,7 @@ namespace SPTracer
 			// unknown color type
 			std::string s = "MDLAModel: Unknown color type: " + colorType;
 			Log::Error(s);
-			throw Exception(s.c_str());
+			throw Exception(s);
 		}
 
 		return color;
@@ -422,7 +423,7 @@ namespace SPTracer
 			// unknown material type
 			std::string s = "MDLAModel: Unknown material type: " + type;
 			Log::Error(s);
-			throw Exception(s.c_str());
+			throw Exception(s);
 		}
 
 		return material;
@@ -448,7 +449,7 @@ namespace SPTracer
 				// material does not exist
 				std::string s = "MDLAModel: Material with name \"" + name + "\" does not exist";
 				Log::Error(s);
-				throw Exception(s.c_str());
+				throw Exception(s);
 			}
 
 			MustBeEndToken(++it, end);
@@ -489,7 +490,7 @@ namespace SPTracer
 			// wrong keywork
 			std::string s = "MDLAModel: Wrong keyword for Phong exponent, expected sclr, got " + token;
 			Log::Error(s);
-			throw Exception(s.c_str());
+			throw Exception(s);
 		}
 
 		auto phongExponent = ParseScalarColor(it, end);
@@ -499,18 +500,21 @@ namespace SPTracer
 			std::move(reflectiveMaterial), std::move(radiantExitance), phongExponent->GetAmplitude(0.0f), spectrum);
 	}
 
-	void MDLAModel::ParseVertexPositions(TokensIterator& it, TokensIterator& end, std::vector<Vec3>& vertices)
+	void MDLAModel::ParseVertexPositions(TokensIterator& it, TokensIterator& end)
 	{
 		// check keyword
 		CheckKeyword(it, end, "vrtxPstn");
 
 		while (!IsEndToken(++it, end))
 		{
-			vertices.push_back(Vec3{
+			Vertex v{};
+			v.v = Vec3{
 				GetFloat(it, end),		// x
 				GetFloat(++it, end),	// y
 				GetFloat(++it, end)		// z
-			});
+			};
+
+			vertices_.push_back(std::move(v));
 		}
 	}
 
@@ -553,9 +557,10 @@ namespace SPTracer
 
 		// get material
 		auto material = ParseEmbeddedMaterial(++it, end, spectrum);
-		std::vector<Vec3> vertices;
 		std::vector<unsigned long> outline;
 		std::vector<std::vector<unsigned long>> holes;
+
+		unsigned long verticesStartIndex = static_cast<unsigned long>(vertices_.size());
 
 		while (!IsEndToken(++it, end))
 		{
@@ -563,7 +568,7 @@ namespace SPTracer
 			if (type == "vrtxPstn")
 			{
 				// get vertices
-				ParseVertexPositions(it, end, vertices);
+				ParseVertexPositions(it, end);
 			}
 			else if (type == "plygn")
 			{
@@ -596,7 +601,7 @@ namespace SPTracer
 				// unknown keyword
 				std::string s = "MDLAModel: Unknown keyword: " + type;
 				Log::Error(s);
-				throw Exception(s.c_str());
+				throw Exception(s);
 			}
 		}
 
@@ -621,11 +626,21 @@ namespace SPTracer
 			}
 		}
 
+		// shift outline and holes indices
+		std::transform(outline.begin(), outline.end(), outline.begin(),
+			std::bind(std::plus<unsigned long>(), verticesStartIndex, std::placeholders::_1));
+
+		for (auto& hole : holes)
+		{
+			std::transform(hole.begin(), hole.end(), hole.begin(),
+				std::bind(std::plus<unsigned long>(), verticesStartIndex, std::placeholders::_1));
+		}
+
 		// add object
 		objects_.push_back(std::make_shared<PlanarMeshObject>(
 			std::move(name),
 			std::move(material),
-			std::move(vertices),
+			vertices_,
 			std::move(outline),
 			std::move(holes)));
 	}

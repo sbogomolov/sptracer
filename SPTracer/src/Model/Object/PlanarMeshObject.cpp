@@ -8,11 +8,11 @@ namespace SPTracer
 	PlanarMeshObject::PlanarMeshObject(
 		std::string name,
 		std::shared_ptr<Material> material,
-		std::vector<Vec3> vertices,
+		std::vector<Vertex>& vertices,
 		std::vector<unsigned long> outline,
 		std::vector<std::vector<unsigned long>> holes)
 		: Object(std::move(name), std::move(material)),
-		  vertices_(std::move(vertices)),
+		  vertices_(vertices),
 		  outline_(std::move(outline)),
 		  holes_(std::move(holes))
 	{
@@ -26,11 +26,11 @@ namespace SPTracer
 			
 			holeNormals.reserve(hole.size() - 2);
 
-			const Vec3& v1 = vertices_[hole[0]];
+			const Vec3& v1 = vertices_[hole[0]].v;
 			for (size_t i = 0; i < hole.size() - 2; i++)
 			{
-				const Vec3& v2 = vertices_[hole[i + 1]];
-				const Vec3& v3 = vertices_[hole[i + 2]];
+				const Vec3& v2 = vertices_[hole[i + 1]].v;
+				const Vec3& v3 = vertices_[hole[i + 2]].v;
 
 				// Vertices order is reversed here. In the MDLA file vertices for a hole 
 				// are written in a clockwise order as oposed to the vertices of outline.
@@ -46,11 +46,11 @@ namespace SPTracer
 		// compute outline normals and d
 		outlineNormals_.reserve(outline_.size() - 2);
 
-		const Vec3& v1 = vertices_[outline_[0]];
+		const Vec3& v1 = vertices_[outline_[0]].v;
 		for (size_t i = 0; i < outline_.size() - 2; i++)
 		{
-			const Vec3& v2 = vertices_[outline_[i + 1]];
-			const Vec3& v3 = vertices_[outline_[i + 2]];
+			const Vec3& v2 = vertices_[outline_[i + 1]].v;
+			const Vec3& v3 = vertices_[outline_[i + 2]].v;
 			
 			Vec3 n = ComputeNormal(v1, v2, v3);
 			outlineNormals_.push_back(std::move(n));
@@ -65,11 +65,11 @@ namespace SPTracer
 			const auto& hole = holes_[j];
 			const auto& holeNormals = holesNormals_[j];
 
-			const Vec3& v1 = vertices_[hole[0]];
+			const Vec3& v1 = vertices_[hole[0]].v;
 			for (size_t i = 0; i < hole.size() - 2; i++)
 			{
-				const Vec3& v2 = vertices_[hole[i + 1]];
-				const Vec3& v3 = vertices_[hole[i + 2]];
+				const Vec3& v2 = vertices_[hole[i + 1]].v;
+				const Vec3& v3 = vertices_[hole[i + 2]].v;
 
 				// Vertices order is reversed here. In the MDLA file vertices for a hole 
 				// are written in a clockwise order as oposed to the vertices of outline.
@@ -85,11 +85,11 @@ namespace SPTracer
 		}
 
 		// check intersection with object
-		const Vec3& v1 = vertices_[outline_[0]];
+		const Vec3& v1 = vertices_[outline_[0]].v;
 		for (size_t i = 0; i < outline_.size() - 2; i++)
 		{
-			const Vec3& v2 = vertices_[outline_[i + 1]];
-			const Vec3& v3 = vertices_[outline_[i + 2]];
+			const Vec3& v2 = vertices_[outline_[i + 1]].v;
+			const Vec3& v3 = vertices_[outline_[i + 2]].v;
 			if (IntersectWithTriangle(ray, outlineNormals_[i], v1, v2, v3, intersection))
 			{
 				return true;
