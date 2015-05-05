@@ -112,9 +112,14 @@ namespace SPTracer
 		return true;
 	}
 
-	void Object::GetNewRay(const Ray& ray, const Intersection& intersection, Ray& newRay, std::vector<float>& reflectance) const
+	void Object::GetNewRayDiffuse(const Ray& ray, const Intersection& intersection, Ray& newRay, std::vector<float>& reflectance) const
 	{
-		material_->GetNewRay(ray, intersection, newRay, reflectance);
+		material_->GetNewRayDiffuse(ray, intersection, newRay, reflectance);
+	}
+
+	void Object::GetNewRaySpecular(const Ray& ray, const Intersection& intersection, Ray& newRay, std::vector<float>& reflectance) const
+	{
+		material_->GetNewRaySpecular(ray, intersection, newRay, reflectance);
 	}
 
 	void Object::GetRadiance(const Ray& ray, const Intersection& intersection, std::vector<float>& radiance) const
@@ -127,14 +132,14 @@ namespace SPTracer
 		return material_->IsEmissive();
 	}
 
-	float Object::GetDiffuseReflectance(int waveIndex) const
+	float Object::GetDiffuseReflectionProbability(int waveIndex) const
 	{
-		return material_->GetDiffuseReflectance(waveIndex);
+		return material_->GetDiffuseReflectionProbability(waveIndex);
 	}
 
-	float Object::GetSpecularReflectance(int waveIndex) const
+	float Object::GetSpecularReflectionProbability(int waveIndex) const
 	{
-		return material_->GetSpecularReflectance(waveIndex);
+		return material_->GetSpecularReflectionProbability(waveIndex);
 	}
 
 }

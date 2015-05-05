@@ -6,11 +6,12 @@
 
 namespace SPTracer
 {
+	struct Spectrum;
 
 	class OBJModel : public Model
 	{
 	public:
-		OBJModel(std::string filename);
+		OBJModel(std::string fileName, const Spectrum& spectrum);
 	};
 
 }

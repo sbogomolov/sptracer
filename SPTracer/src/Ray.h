@@ -14,7 +14,6 @@ namespace SPTracer
 		Vec3 direction;
 		unsigned int waveIndex;
 		bool refracted = false;
-		bool monochromatic = false;
 	};
 
 }

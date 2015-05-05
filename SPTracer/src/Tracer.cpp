@@ -24,6 +24,7 @@ namespace SPTracer {
 		  width_(width), height_(height), numThreads_(numThreads),
 		  spectrum_(std::move(spectrum))
 	{
+		// total pixels count
 		pixelsCount_ = static_cast<unsigned long>(width_) * height_;
 
 		// create task scheduler that will spawn threads

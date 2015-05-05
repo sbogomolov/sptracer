@@ -18,10 +18,11 @@ namespace SPTracer
 		virtual ~Material() { };
 
 		virtual bool IsEmissive() const = 0;
-		virtual void GetNewRay(const Ray& ray, const Intersection& intersection, Ray& newRay, std::vector<float>& reflectance) const = 0;
+		virtual void GetNewRayDiffuse(const Ray& ray, const Intersection& intersection, Ray& newRay, std::vector<float>& reflectance) const = 0;
+		virtual void GetNewRaySpecular(const Ray& ray, const Intersection& intersection, Ray& newRay, std::vector<float>& reflectance) const = 0;
 		virtual void GetRadiance(const Ray& ray, const Intersection& intersection, std::vector<float>& radiance) const = 0;
-		virtual float GetDiffuseReflectance(int waveIndex) const = 0;		// use index -1 for average reflectivity
-		virtual float GetSpecularReflectance(int waveIndex) const = 0;		// use index -1 for average reflectivity
+		virtual float GetDiffuseReflectionProbability(int waveIndex) const = 0;		// use index -1 for average reflectivity
+		virtual float GetSpecularReflectionProbability(int waveIndex) const = 0;		// use index -1 for average reflectivity
 
 	protected:
 		Material() { };

@@ -1,6 +1,9 @@
+#include <algorithm>
 #include <cmath>
-#include <numeric>
+#include <string>
+#include "../../Exception.h"
 #include "../../Intersection.h"
+#include "../../Log.h"
 #include "../../Ray.h"
 #include "../../Spectrum.h"
 #include "../../Util.h"
@@ -14,18 +17,16 @@ namespace SPTracer
 	LambertianMaterial::LambertianMaterial(std::unique_ptr<Color> diffuseReflectance, const Spectrum& spectrum)
 		: diffuseReflectance_(std::move(diffuseReflectance))
 	{
-		// precompute reflectances for spectrum
+		// precompute reflectances  and absorp probabilities for spectrum
 		precomputedDiffuseReflectance_.resize(spectrum.count);
-		for (size_t i = 0; i < spectrum.count; i++)
-		{
-			precomputedDiffuseReflectance_[i] = diffuseReflectance_->GetAmplitude(spectrum.values[i]);
-		}
+		std::transform(spectrum.values.begin(), spectrum.values.end(), precomputedDiffuseReflectance_.begin(),
+			std::bind(&Color::GetAmplitude, diffuseReflectance_.get(), std::placeholders::_1));
 
-		// average reflectance
-		avgDiffuseReflectance_ = std::accumulate(precomputedDiffuseReflectance_.begin(), precomputedDiffuseReflectance_.end(), 0.0f) / precomputedDiffuseReflectance_.size();
+		// diffuse reflectance probability for full spectrum ray
+		diffuseReflectionProbability_ = *std::max_element(precomputedDiffuseReflectance_.begin(), precomputedDiffuseReflectance_.end());
 	}
 
-	void LambertianMaterial::GetNewRay(const Ray& ray, const Intersection& intersection, Ray& newRay, std::vector<float>& reflectance) const
+	void LambertianMaterial::GetNewRayDiffuse(const Ray& ray, const Intersection& intersection, Ray& newRay, std::vector<float>& reflectance) const
 	{
 		// NOTE:
 		// BDRF is 1/pi * cos(theta), it will be used as PDF
@@ -40,26 +41,31 @@ namespace SPTracer
 		float theta = Util::Pi / 2.0f - rho;
 		newRay.direction = Vec3::FromPhiThetaNormal(phi, theta, intersection.normal);
 
+		// NOTE: Importance sampling.
 		// Because the bright directions are preferred in 
 		// the choice of samples, we do not have to weight
 		// them again by applying the BDRF as a scaling
 		// factor to reflectance.
-		static const float bdrfPdf = 1.0f;
+		// Scaling factor in this case is: BDRF/PDF = 1
 
 		// get reflectance
-		if (ray.monochromatic)
+		if (ray.waveIndex == -1)
 		{
-			// one reflectance
-			reflectance[ray.waveIndex] = bdrfPdf *  precomputedDiffuseReflectance_[ray.waveIndex];
+			// all spectrum
+			std::copy(precomputedDiffuseReflectance_.begin(), precomputedDiffuseReflectance_.end(), reflectance.begin());
 		}
 		else
 		{
-			// all spectrum
-			for (size_t i = 0; i < precomputedDiffuseReflectance_.size(); i++)
-			{
-				reflectance[i] = bdrfPdf * precomputedDiffuseReflectance_[i];
-			}
+			// one reflectance
+			reflectance[ray.waveIndex] = precomputedDiffuseReflectance_[ray.waveIndex];
 		}
+	}
+
+	void LambertianMaterial::GetNewRaySpecular(const Ray& ray, const Intersection& intersection, Ray& newRay, std::vector<float>& reflectance) const
+	{
+		std::string msg = "Lambertian material does not support specular reflections";
+		Log::Error(msg);
+		throw Exception(msg);
 	}
 
 	bool LambertianMaterial::IsEmissive() const
@@ -69,15 +75,17 @@ namespace SPTracer
 
 	void LambertianMaterial::GetRadiance(const Ray & ray, const Intersection & intersection, std::vector<float>& radiance) const
 	{
-		// no radiance
+		std::string msg = "Lambertian material does not have radiance";
+		Log::Error("Lambertian material does not have radiance");
+		throw Exception(msg);
 	}
 
-	float LambertianMaterial::GetDiffuseReflectance(int waveIndex) const
+	float LambertianMaterial::GetDiffuseReflectionProbability(int waveIndex) const
 	{
-		return waveIndex == -1 ? avgDiffuseReflectance_ : precomputedDiffuseReflectance_[waveIndex];
+		return waveIndex == -1 ? diffuseReflectionProbability_ : precomputedDiffuseReflectance_[waveIndex];
 	}
 
-	float LambertianMaterial::GetSpecularReflectance(int waveIndex) const
+	float LambertianMaterial::GetSpecularReflectionProbability(int waveIndex) const
 	{
 		return 0.0f;
 	}

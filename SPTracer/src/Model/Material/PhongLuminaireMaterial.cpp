@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <cmath>
 #include "../../Intersection.h"
 #include "../../Ray.h"
@@ -19,10 +20,8 @@ namespace SPTracer
 	{
 		// precompute radiances
 		precomputedRadiance_.resize(spectrum.count);
-		for (size_t i = 0; i < spectrum.count; i++)
-		{
-			precomputedRadiance_[i] = radiantExitance_->GetAmplitude(spectrum.values[i]);
-		}
+		std::transform(spectrum.values.begin(), spectrum.values.end(), precomputedRadiance_.begin(),
+			std::bind(&Color::GetAmplitude, radiantExitance_.get(), std::placeholders::_1));
 	}
 
 	bool PhongLuminaireMaterial::IsEmissive() const
@@ -30,9 +29,14 @@ namespace SPTracer
 		return true;
 	}
 
-	void PhongLuminaireMaterial::GetNewRay(const Ray& ray, const Intersection& intersection, Ray& newRay, std::vector<float>& reflectance) const
+	void PhongLuminaireMaterial::GetNewRayDiffuse(const Ray& ray, const Intersection& intersection, Ray& newRay, std::vector<float>& reflectance) const
 	{
-		reflectiveMaterial_->GetNewRay(ray, intersection, newRay, reflectance);
+		return reflectiveMaterial_->GetNewRayDiffuse(ray, intersection, newRay, reflectance);
+	}
+
+	void PhongLuminaireMaterial::GetNewRaySpecular(const Ray& ray, const Intersection& intersection, Ray& newRay, std::vector<float>& reflectance) const
+	{
+		return reflectiveMaterial_->GetNewRaySpecular(ray, intersection, newRay, reflectance);
 	}
 
 	void PhongLuminaireMaterial::GetRadiance(const Ray& ray, const Intersection& intersection, std::vector<float>& radiance) const
@@ -43,29 +47,27 @@ namespace SPTracer
 		// cos distribution with Phong exponent
 		float weight = std::pow(std::cos(theta), phongExponent_);
 
-		if (ray.monochromatic)
+		if (ray.waveIndex == -1)
+		{
+			// get radiant exitances for spectrum and scale according to cosine distribution with Phong exponent
+			std::transform(precomputedRadiance_.begin(), precomputedRadiance_.end(), radiance.begin(),
+				std::bind(std::multiplies<float>(), weight, std::placeholders::_1));
+		}
+		else
 		{
 			// get radiant exitance for wave length scaled according to cosine distribution with Phong exponent
 			radiance[ray.waveIndex] = weight * precomputedRadiance_[ray.waveIndex];
 		}
-		else
-		{
-			// get radiant exitances for spectrum and scale according to cosine distribution with Phong exponent
-			for (size_t i = 0; i < precomputedRadiance_.size(); i++)
-			{
-				radiance[i] = weight * precomputedRadiance_[i];
-			}
-		}
 	}
 
-	float PhongLuminaireMaterial::GetDiffuseReflectance(int waveIndex) const
+	float PhongLuminaireMaterial::GetDiffuseReflectionProbability(int waveIndex) const
 	{
-		return reflectiveMaterial_->GetDiffuseReflectance(waveIndex);
+		return reflectiveMaterial_->GetDiffuseReflectionProbability(waveIndex);
 	}
 
-	float PhongLuminaireMaterial::GetSpecularReflectance(int waveIndex) const
+	float PhongLuminaireMaterial::GetSpecularReflectionProbability(int waveIndex) const
 	{
-		return reflectiveMaterial_->GetSpecularReflectance(waveIndex);
+		return reflectiveMaterial_->GetSpecularReflectionProbability(waveIndex);
 	}
 
 }
