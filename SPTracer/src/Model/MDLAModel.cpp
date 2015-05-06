@@ -507,8 +507,8 @@ namespace SPTracer
 
 		while (!IsEndToken(++it, end))
 		{
-			Vertex v{};
-			v.v = Vec3{
+			std::shared_ptr<Vertex> v = std::make_shared<Vertex>();
+			v->v = Vec3{
 				GetFloat(it, end),		// x
 				GetFloat(++it, end),	// y
 				GetFloat(++it, end)		// z
@@ -627,22 +627,27 @@ namespace SPTracer
 		}
 
 		// shift outline and holes indices
-		std::transform(outline.begin(), outline.end(), outline.begin(),
-			std::bind(std::plus<unsigned long>(), verticesStartIndex, std::placeholders::_1));
+		std::vector<std::shared_ptr<Vertex>> outlinePtr(outline.size());
+		std::vector<std::vector<std::shared_ptr<Vertex>>> holesPtr;
+
+		std::transform(outline.begin(), outline.end(), outlinePtr.begin(),
+			[&](unsigned long i) { return vertices_[verticesStartIndex + i]; });
 
 		for (auto& hole : holes)
 		{
-			std::transform(hole.begin(), hole.end(), hole.begin(),
-				std::bind(std::plus<unsigned long>(), verticesStartIndex, std::placeholders::_1));
+			std::vector<std::shared_ptr<Vertex>> holePtr(hole.size());
+			std::transform(hole.begin(), hole.end(), holePtr.begin(),
+				[&](unsigned long i) { return vertices_[verticesStartIndex + i]; });
+			
+			holesPtr.push_back(std::move(holePtr));
 		}
 
 		// add object
 		objects_.push_back(std::make_shared<PlanarMeshObject>(
 			std::move(name),
 			std::move(material),
-			vertices_,
-			std::move(outline),
-			std::move(holes)));
+			std::move(outlinePtr),
+			std::move(holesPtr)));
 	}
 
 }

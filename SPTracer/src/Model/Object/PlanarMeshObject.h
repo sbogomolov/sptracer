@@ -17,16 +17,14 @@ namespace SPTracer
 		PlanarMeshObject(
 			std::string name,
 			std::shared_ptr<Material> material, 
-			std::vector<Vertex>& vertices,
-			std::vector<unsigned long> outline,
-			std::vector<std::vector<unsigned long>> holes);
+			std::vector<std::shared_ptr<Vertex>> outline,
+			std::vector<std::vector<std::shared_ptr<Vertex>>> holes);
 
 		bool Intersect(const Ray& ray, Intersection& intersection) const override;
 
 	private:
-		std::vector<Vertex>& vertices_;
-		std::vector<unsigned long> outline_;
-		std::vector<std::vector<unsigned long>> holes_;
+		std::vector<std::shared_ptr<Vertex>> outline_;
+		std::vector<std::vector<std::shared_ptr<Vertex>>> holes_;
 		
 		std::vector<Vec3> outlineNormals_;
 		std::vector<std::vector<Vec3>> holesNormals_;

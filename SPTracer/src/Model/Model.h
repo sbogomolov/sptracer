@@ -21,7 +21,7 @@ namespace SPTracer
 
 	protected:
 		std::unordered_map<std::string, std::shared_ptr<Material>> materials_;
-		std::vector<Vertex> vertices_;
+		std::vector<std::shared_ptr<Vertex>> vertices_;
 		std::vector<std::shared_ptr<Object>> objects_;
 
 		Model();
