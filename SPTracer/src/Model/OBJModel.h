@@ -12,6 +12,11 @@ namespace SPTracer
 	{
 	public:
 		OBJModel(std::string fileName, const Spectrum& spectrum);
+
+	private:
+		void GetKeywordAndValue(std::string line, std::string& keyword, std::string& value);
+		void ParseModelFile(const std::string& fileName, const Spectrum& spectrum);
+		void ParseMaterialsLibFile(const std::string& fileName, const Spectrum& spectrum);
 	};
 
 }

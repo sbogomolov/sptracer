@@ -18,7 +18,7 @@ namespace SPTracer
 	LambertianMaterial::LambertianMaterial(std::unique_ptr<Color> diffuseReflectance, const Spectrum& spectrum)
 		: diffuseReflectance_(std::move(diffuseReflectance))
 	{
-		// precompute reflectances  and absorp probabilities for spectrum
+		// precompute reflectances for spectrum
 		precomputedDiffuseReflectance_.resize(spectrum.count);
 		std::transform(spectrum.values.begin(), spectrum.values.end(), precomputedDiffuseReflectance_.begin(),
 			std::bind(&Color::GetAmplitude, diffuseReflectance_.get(), std::placeholders::_1));
@@ -38,8 +38,7 @@ namespace SPTracer
 
 		// generate random ray direction using BDRF as PDF
 		float phi = Util::RandFloat(0.0f, 2.0f * Util::Pi);
-		float rho = std::acos(std::sqrt(Util::RandFloat(0.0f, 1.0f)));
-		float theta = Util::Pi / 2.0f - rho;
+		float theta = std::acos(std::sqrt(Util::RandFloat(0.0f, 1.0f)));
 		newRay.direction = Vec3::FromPhiThetaNormal(phi, theta, intersection.normal);
 
 		// NOTE: Importance sampling.

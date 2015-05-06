@@ -167,7 +167,9 @@
     <ClCompile Include="src\Model\Color\ScalarColor.cpp" />
     <ClCompile Include="src\Model\Color\SpectralColor.cpp" />
     <ClCompile Include="src\Model\Material\LambertianMaterial.cpp" />
+    <ClCompile Include="src\Model\Material\OBJMaterial.cpp" />
     <ClCompile Include="src\Model\Material\PhongLuminaireMaterial.cpp" />
+    <ClCompile Include="src\Model\Material\PhongMaterial.cpp" />
     <ClCompile Include="src\Model\MDLAModel.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Model\Model.cpp" />
@@ -187,6 +189,9 @@
     <ClInclude Include="src\Config.h" />
     <ClInclude Include="src\Model\Color\RGBColor.h" />
     <ClInclude Include="src\Model\Face.h" />
+    <ClInclude Include="src\Model\Material\OBJMaterial.h" />
+    <ClInclude Include="src\Model\Material\PhongMaterial.h" />
+    <ClInclude Include="src\Model\Object\MeshObject.h" />
     <ClInclude Include="src\Model\OBJModel.h" />
     <ClInclude Include="src\Model\Vertex.h" />
     <ClInclude Include="src\PixelData.h" />
