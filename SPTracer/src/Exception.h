@@ -2,6 +2,7 @@
 #define SPT_EXCEPTION_H
 
 #include <exception>
+#include <string>
 
 namespace SPTracer
 {
