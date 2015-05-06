@@ -5,3 +5,4 @@ x64
 *.mtl
 *.obj
 *.vcxproj.user
+*.TMP
