@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <cmath>
+#include <functional>
 #include "../../Intersection.h"
 #include "../../Ray.h"
 #include "../../Spectrum.h"

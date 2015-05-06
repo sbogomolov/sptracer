@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <cmath>
+#include <functional>
 #include <string>
 #include "../../Exception.h"
 #include "../../Intersection.h"

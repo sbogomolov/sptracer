@@ -2,7 +2,6 @@
 #define SPT_PHONG_LUMINAIRE_MATERIAL_H
 
 #include <memory>
-#include <mutex>
 #include "Material.h"
 
 namespace SPTracer
