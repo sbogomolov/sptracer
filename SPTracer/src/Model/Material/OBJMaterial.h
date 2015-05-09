@@ -7,7 +7,7 @@ namespace SPTracer
 {
 	class Color;
 
-	class OBJMaterial : public PhongMaterial
+	class OBJMaterial : public Material
 	{
 	public:
 		OBJMaterial(std::unique_ptr<Color> diffuseReflectance, std::unique_ptr<Color> specularReflectance, float specularExponent, const Spectrum& spectrum);

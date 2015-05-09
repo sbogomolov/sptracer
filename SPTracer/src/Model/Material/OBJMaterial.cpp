@@ -12,7 +12,6 @@ namespace SPTracer
 {
 
 	OBJMaterial::OBJMaterial(std::unique_ptr<Color> diffuseReflectance, std::unique_ptr<Color> specularReflectance, float specularExponent, const Spectrum& spectrum)
-		: PhongMaterial(std::move(diffuseReflectance), std::move(specularReflectance), specularExponent, spectrum)
 	{
 	}
 
@@ -40,17 +39,17 @@ namespace SPTracer
 
 	float OBJMaterial::GetSpecularExponent() const
 	{
-		return PhongMaterial::GetSpecularExponent();
+		return 0.0f;
 	}
 
 	float OBJMaterial::GetDiffuseReflectionProbability(int waveIndex) const
 	{
-		return PhongMaterial::GetDiffuseReflectionProbability(waveIndex);
+		return 0.0f;
 	}
 
 	float OBJMaterial::GetSpecularReflectionProbability(int waveIndex) const
 	{
-		return PhongMaterial::GetSpecularReflectionProbability(waveIndex);
+		return 0.0f;
 	}
 
 }
