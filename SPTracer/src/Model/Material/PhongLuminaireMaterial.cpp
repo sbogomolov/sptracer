@@ -30,14 +30,19 @@ namespace SPTracer
 		return true;
 	}
 
-	void PhongLuminaireMaterial::GetNewRayDiffuse(const Ray& ray, const Intersection& intersection, Ray& newRay, std::vector<float>& reflectance) const
+	void PhongLuminaireMaterial::GetDiffuseReflectance(const Ray& ray, const Intersection& intersection, const Ray& newRay, std::vector<float>& reflectance) const
 	{
-		return reflectiveMaterial_->GetNewRayDiffuse(ray, intersection, newRay, reflectance);
+		return reflectiveMaterial_->GetDiffuseReflectance(ray, intersection, newRay, reflectance);
 	}
 
-	void PhongLuminaireMaterial::GetNewRaySpecular(const Ray& ray, const Intersection& intersection, Ray& newRay, std::vector<float>& reflectance) const
+	void PhongLuminaireMaterial::GetSpecularReflectance(const Ray& ray, const Intersection& intersection, const Ray& newRay, std::vector<float>& reflectance) const
 	{
-		return reflectiveMaterial_->GetNewRaySpecular(ray, intersection, newRay, reflectance);
+		return reflectiveMaterial_->GetSpecularReflectance(ray, intersection, newRay, reflectance);
+	}
+
+	float PhongLuminaireMaterial::GetSpecularExponent() const
+	{
+		return reflectiveMaterial_->GetSpecularExponent();
 	}
 
 	void PhongLuminaireMaterial::GetRadiance(const Ray& ray, const Intersection& intersection, std::vector<float>& radiance) const

@@ -27,28 +27,9 @@ namespace SPTracer
 		diffuseReflectionProbability_ = *std::max_element(precomputedDiffuseReflectance_.begin(), precomputedDiffuseReflectance_.end());
 	}
 
-	void LambertianMaterial::GetNewRayDiffuse(const Ray& ray, const Intersection& intersection, Ray& newRay, std::vector<float>& reflectance) const
+	void LambertianMaterial::GetDiffuseReflectance(const Ray& ray, const Intersection& intersection, const Ray& newRay, std::vector<float>& reflectance) const
 	{
-		// NOTE:
-		// BDRF is 1/pi * cos(theta), it will be used as PDF
-		// to prefer bright directions.
-
-		// new ray origin is intersection point
-		newRay.origin = intersection.point;
-
-		// generate random ray direction using BDRF as PDF
-		float phi = Util::RandFloat(0.0f, 2.0f * Util::Pi);
-		float theta = std::acos(std::sqrt(Util::RandFloat(0.0f, 1.0f)));
-		newRay.direction = Vec3::FromPhiThetaNormal(phi, theta, intersection.normal);
-
-		// NOTE: Importance sampling.
-		// Because the bright directions are preferred in 
-		// the choice of samples, we do not have to weight
-		// them again by applying the BDRF as a scaling
-		// factor to reflectance.
-		// Scaling factor in this case is: BDRF/PDF = 1
-
-		// get reflectance
+		// get diffuse reflectance
 		if (ray.waveIndex == -1)
 		{
 			// all spectrum
@@ -61,9 +42,16 @@ namespace SPTracer
 		}
 	}
 
-	void LambertianMaterial::GetNewRaySpecular(const Ray& ray, const Intersection& intersection, Ray& newRay, std::vector<float>& reflectance) const
+	void LambertianMaterial::GetSpecularReflectance(const Ray& ray, const Intersection& intersection, const Ray& newRay, std::vector<float>& reflectance) const
 	{
 		std::string msg = "Lambertian material does not support specular reflections";
+		Log::Error(msg);
+		throw Exception(msg);
+	}
+
+	float LambertianMaterial::GetSpecularExponent() const
+	{
+		std::string msg = "Lambertian material does not support specular exponent";
 		Log::Error(msg);
 		throw Exception(msg);
 	}

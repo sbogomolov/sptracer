@@ -16,8 +16,8 @@
 namespace SPTracer
 {
 
-	PhongMaterial::PhongMaterial(std::unique_ptr<Color> diffuseReflectance, std::unique_ptr<Color> specularReflectance, const Spectrum& spectrum)
-		: diffuseReflectance_(std::move(diffuseReflectance)), specularReflectance_(std::move(specularReflectance))
+	PhongMaterial::PhongMaterial(std::unique_ptr<Color> diffuseReflectance, std::unique_ptr<Color> specularReflectance, float specularExponent, const Spectrum& spectrum)
+		: diffuseReflectance_(std::move(diffuseReflectance)), specularReflectance_(std::move(specularReflectance)), specularExponent_(specularExponent)
 	{
 		// precompute diffuse reflectances for spectrum
 		precomputedDiffuseReflectance_.resize(spectrum.count);
@@ -58,28 +58,9 @@ namespace SPTracer
 		return false;
 	}
 
-	void PhongMaterial::GetNewRayDiffuse(const Ray& ray, const Intersection& intersection, Ray& newRay, std::vector<float>& reflectance) const
+	void PhongMaterial::GetDiffuseReflectance(const Ray& ray, const Intersection& intersection, const Ray& newRay, std::vector<float>& reflectance) const
 	{
-		// NOTE:
-		// BDRF is 1/pi * cos(theta), it will be used as PDF
-		// to prefer bright directions.
-
-		// new ray origin is intersection point
-		newRay.origin = intersection.point;
-
-		// generate random ray direction using BDRF as PDF
-		float phi = Util::RandFloat(0.0f, 2.0f * Util::Pi);
-		float theta = std::acos(std::sqrt(Util::RandFloat(0.0f, 1.0f)));
-		newRay.direction = Vec3::FromPhiThetaNormal(phi, theta, intersection.normal);
-
-		// NOTE: Importance sampling.
-		// Because the bright directions are preferred in 
-		// the choice of samples, we do not have to weight
-		// them again by applying the BDRF as a scaling
-		// factor to reflectance.
-		// Scaling factor in this case is: BDRF/PDF = 1
-
-		// get reflectance
+		// get diffuse reflectance
 		if (ray.waveIndex == -1)
 		{
 			// all spectrum
@@ -92,8 +73,24 @@ namespace SPTracer
 		}
 	}
 
-	void PhongMaterial::GetNewRaySpecular(const Ray& ray, const Intersection& intersection, Ray& newRay, std::vector<float>& reflectance) const
+	void PhongMaterial::GetSpecularReflectance(const Ray& ray, const Intersection& intersection, const Ray& newRay, std::vector<float>& reflectance) const
 	{
+		// get specular reflectance
+		if (ray.waveIndex == -1)
+		{
+			// all spectrum
+			std::copy(precomputedSpecularReflectance_.begin(), precomputedSpecularReflectance_.end(), reflectance.begin());
+		}
+		else
+		{
+			// one reflectance
+			reflectance[ray.waveIndex] = precomputedSpecularReflectance_[ray.waveIndex];
+		}
+	}
+
+	float PhongMaterial::GetSpecularExponent() const
+	{
+		return specularExponent_;
 	}
 
 	void PhongMaterial::GetRadiance(const Ray& ray, const Intersection& intersection, std::vector<float>& radiance) const

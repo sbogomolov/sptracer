@@ -114,12 +114,60 @@ namespace SPTracer
 
 	void Object::GetNewRayDiffuse(const Ray& ray, const Intersection& intersection, Ray& newRay, std::vector<float>& reflectance) const
 	{
-		material_->GetNewRayDiffuse(ray, intersection, newRay, reflectance);
+		// NOTE:
+		// BDRF is 1/pi * cos(theta), it will be used as PDF
+		// to prefer bright directions.
+
+		// new ray origin is intersection point
+		newRay.origin = intersection.point;
+
+		// generate random ray direction using BDRF as PDF
+		float phi = Util::RandFloat(0.0f, 2.0f * Util::Pi);
+		float theta = std::acos(std::sqrt(Util::RandFloat(0.0f, 1.0f)));
+		newRay.direction = Vec3::FromPhiThetaNormal(phi, theta, intersection.normal);
+
+		// NOTE: Importance sampling.
+		// Because the bright directions are preferred in 
+		// the choice of samples, we do not have to weight
+		// them again by applying the BDRF as a scaling
+		// factor to reflectance.
+		// Scaling factor in this case is: BDRF/PDF = 1
+
+		// get diffuse reflectance
+		material_->GetDiffuseReflectance(ray, intersection, newRay, reflectance);
 	}
 
 	void Object::GetNewRaySpecular(const Ray& ray, const Intersection& intersection, Ray& newRay, std::vector<float>& reflectance) const
 	{
-		material_->GetNewRaySpecular(ray, intersection, newRay, reflectance);
+		// NOTE:
+		// PDF here is (n+1)/(2*pi) * cos(alpha)^n,
+		// where alpha is the angle between the incoming ray
+		// and the perfect specular reflection direction
+
+		// new ray origin is intersection point
+		newRay.origin = intersection.point;
+
+		// incoming ray theta
+		float thetaIncoming = Util::Pi - std::acos(ray.direction * intersection.normal);
+
+		// specular exponent
+		float n = material_->GetSpecularExponent();
+
+		// generate random ray direction using PDF
+		float phi = Util::RandFloat(0.0f, 2.0f * Util::Pi);
+		float alpha = std::acos(std::pow(Util::RandFloat(0.0f, 1.0f), 1.0f / (n + 1.0f)));
+		float theta = alpha - thetaIncoming;
+		newRay.direction = Vec3::FromPhiThetaNormal(phi, theta, intersection.normal);
+
+		// NOTE: Importance sampling.
+		// Because the bright directions are preferred in 
+		// the choice of samples, we do not have to weight
+		// them again by applying the BDRF as a scaling
+		// factor to reflectance.
+		// Scaling factor in this case is: BDRF/PDF = 1
+
+		// get specular reflectance
+		material_->GetSpecularReflectance(ray, intersection, newRay, reflectance);
 	}
 
 	void Object::GetRadiance(const Ray& ray, const Intersection& intersection, std::vector<float>& radiance) const

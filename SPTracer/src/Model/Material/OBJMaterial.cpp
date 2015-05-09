@@ -11,8 +11,8 @@
 namespace SPTracer
 {
 
-	OBJMaterial::OBJMaterial(std::unique_ptr<Color> diffuseReflectance, std::unique_ptr<Color> specularReflectance, const Spectrum& spectrum)
-		: PhongMaterial(std::move(diffuseReflectance), std::move(specularReflectance), spectrum)
+	OBJMaterial::OBJMaterial(std::unique_ptr<Color> diffuseReflectance, std::unique_ptr<Color> specularReflectance, float specularExponent, const Spectrum& spectrum)
+		: PhongMaterial(std::move(diffuseReflectance), std::move(specularReflectance), specularExponent, spectrum)
 	{
 	}
 
@@ -21,11 +21,11 @@ namespace SPTracer
 		return false;
 	}
 
-	void OBJMaterial::GetNewRayDiffuse(const Ray& ray, const Intersection& intersection, Ray& newRay, std::vector<float>& reflectance) const
+	void OBJMaterial::GetDiffuseReflectance(const Ray& ray, const Intersection& intersection, const Ray& newRay, std::vector<float>& reflectance) const
 	{
 	}
 
-	void OBJMaterial::GetNewRaySpecular(const Ray& ray, const Intersection& intersection, Ray& newRay, std::vector<float>& reflectance) const
+	void OBJMaterial::GetSpecularReflectance(const Ray& ray, const Intersection& intersection, const Ray& newRay, std::vector<float>& reflectance) const
 	{
 	}
 
