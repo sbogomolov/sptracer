@@ -21,6 +21,11 @@ namespace SPTracer
 		return false;
 	}
 
+	bool OBJMaterial::IsReflective() const
+	{
+		return true;
+	}
+
 	void OBJMaterial::GetDiffuseReflectance(const Ray& ray, const Intersection& intersection, const Ray& newRay, std::vector<float>& reflectance) const
 	{
 	}
@@ -33,14 +38,19 @@ namespace SPTracer
 	{
 	}
 
+	float OBJMaterial::GetSpecularExponent() const
+	{
+		return PhongMaterial::GetSpecularExponent();
+	}
+
 	float OBJMaterial::GetDiffuseReflectionProbability(int waveIndex) const
 	{
-		return 0.0f;
+		return PhongMaterial::GetDiffuseReflectionProbability(waveIndex);
 	}
 
 	float OBJMaterial::GetSpecularReflectionProbability(int waveIndex) const
 	{
-		return 0.0f;
+		return PhongMaterial::GetSpecularReflectionProbability(waveIndex);
 	}
 
 }

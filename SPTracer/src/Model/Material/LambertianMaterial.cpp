@@ -61,6 +61,11 @@ namespace SPTracer
 		return false;
 	}
 
+	bool LambertianMaterial::IsReflective() const
+	{
+		return true;
+	}
+
 	void LambertianMaterial::GetRadiance(const Ray & ray, const Intersection & intersection, std::vector<float>& radiance) const
 	{
 		std::string msg = "Lambertian material does not have radiance";

@@ -58,6 +58,11 @@ namespace SPTracer
 		return false;
 	}
 
+	bool PhongMaterial::IsReflective() const
+	{
+		return false;
+	}
+
 	void PhongMaterial::GetDiffuseReflectance(const Ray& ray, const Intersection& intersection, const Ray& newRay, std::vector<float>& reflectance) const
 	{
 		// get diffuse reflectance

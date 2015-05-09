@@ -18,6 +18,7 @@ namespace SPTracer
 		virtual ~Material() { };
 
 		virtual bool IsEmissive() const = 0;
+		virtual bool IsReflective() const = 0;
 		virtual void GetDiffuseReflectance(const Ray& ray, const Intersection& intersection, const Ray& newRay, std::vector<float>& reflectance) const = 0;
 		virtual void GetSpecularReflectance(const Ray& ray, const Intersection& intersection, const Ray& newRay, std::vector<float>& reflectance) const = 0;
 		virtual float GetSpecularExponent() const = 0;
