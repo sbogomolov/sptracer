@@ -39,6 +39,23 @@ namespace SPTracer
 		return TrimEnd(TrimBegin(str, chars), chars);
 	}
 
+	// Replaces all occurences of substring with another string
+	std::string& StringUtil::Replace(std::string& str, const std::string& replace, const std::string& with)
+	{
+		size_t pos;
+		size_t start = 0;
+		size_t replaceLen = replace.length();
+		size_t withLen = with.length();
+		
+		while ((pos = str.find(replace, start)) != str.npos)
+		{
+			str.replace(pos, replaceLen, with);
+			start = pos + withLen;
+		}
+
+		return str;
+	}
+
 	int StringUtil::GetInt(const std::string & str)
 	{
 		try
@@ -65,7 +82,12 @@ namespace SPTracer
 		}
 	}
 
-	std::vector<float> StringUtil::GetFloatArray(const std::string& str, int count, char delim)
+	std::vector<float> StringUtil::GetFloatArray(const std::string& str, size_t count, char delim)
+	{
+		return GetFloatArray(str, count, 0, delim);
+	}
+
+	std::vector<float> StringUtil::GetFloatArray(const std::string & str, size_t minCount, size_t maxCount, char delim)
 	{
 		std::vector<float> values;
 		size_t prev = 0;
@@ -91,14 +113,28 @@ namespace SPTracer
 			}
 		}
 
-		if ((count > 0) && (values.size() != count))
+		// check that there was correct number of values
+		if (((maxCount == 0) && (values.size() != minCount)) ||
+			((maxCount > 0) && ((values.size() < minCount) || (values.size() > maxCount))))
 		{
 			std::ostringstream oss;
-			oss << "Wrong number of values, expected " << count << ", got " << values.size();
+			oss << "Wrong number of values, expected ";
+			if (maxCount == 0)
+			{
+				oss << minCount;
+			}
+			else
+			{
+				oss << "from " << minCount << " to " << maxCount;
+			}
+
+			oss << ", got " << values.size();
 			throw Exception(oss.str().c_str());
 		}
 
 		return values;
 	}
+
+
 
 }

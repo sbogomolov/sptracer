@@ -7,6 +7,7 @@
 namespace SPTracer
 {
 	struct Spectrum;
+	class Color;
 
 	class OBJModel : public Model
 	{
@@ -17,6 +18,14 @@ namespace SPTracer
 		void GetKeywordAndValue(std::string line, std::string& keyword, std::string& value);
 		void ParseModelFile(const std::string& fileName, const Spectrum& spectrum);
 		void ParseMaterialsLibFile(const std::string& fileName, const Spectrum& spectrum);
+		void AddMaterial(
+			std::string materialName,
+			std::unique_ptr<Color> diffuseReflectance,
+			std::unique_ptr<Color> specularReflectance,
+			std::unique_ptr<Color> radiance,
+			float specularExponent,
+			float opticalDensity,
+			const Spectrum& spectrum);
 	};
 
 }

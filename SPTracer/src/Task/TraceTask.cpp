@@ -20,9 +20,6 @@ namespace SPTracer
 
 	void TraceTask::Run()
 	{
-		// emission probability for emissive material
-		static const float emissionProbability = 0.9f;
-
 		// model
 		static const Model& model = tracer_.GetModel();
 
@@ -113,7 +110,13 @@ namespace SPTracer
 					// check if light should be emitted
 					if (intersection.object->IsEmissive())
 					{
-						if (Util::RandFloat(0.0f, 1.0f) < emissionProbability)
+						// check if material is reflective
+						bool reflective = intersection.object->IsReflective();
+
+						// emission probability for emissive material
+						float emissionProbability = reflective ? 0.9f : 1.0f;
+
+						if (!reflective || (Util::RandFloat(0.0f, 1.0f) < emissionProbability))
 						{
 							// color
 							Vec3& c = color[i * width + j];

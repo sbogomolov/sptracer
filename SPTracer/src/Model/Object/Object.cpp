@@ -180,6 +180,11 @@ namespace SPTracer
 		return material_->IsEmissive();
 	}
 
+	bool Object::IsReflective() const
+	{
+		return material_->IsReflective();
+	}
+
 	float Object::GetDiffuseReflectionProbability(int waveIndex) const
 	{
 		return material_->GetDiffuseReflectionProbability(waveIndex);

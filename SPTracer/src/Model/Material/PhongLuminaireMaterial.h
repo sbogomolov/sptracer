@@ -14,7 +14,7 @@ namespace SPTracer
 	public:
 		PhongLuminaireMaterial(
 			std::unique_ptr<Material> reflectiveMaterial,
-			std::unique_ptr<Color> radiantExitance,
+			std::unique_ptr<Color> radiance,
 			float phongExponent,
 			const Spectrum& spectrum);
 
@@ -29,9 +29,11 @@ namespace SPTracer
 
 	private:
 		std::unique_ptr<Material> reflectiveMaterial_;
-		std::unique_ptr<Color> radiantExitance_;
+		std::unique_ptr<Color> radiance_;
 		float phongExponent_;
 		std::vector<float> precomputedRadiance_;
+		bool reflective_;
+		bool phongExponentUsed_;
 	};
 
 }
