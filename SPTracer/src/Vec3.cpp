@@ -43,6 +43,23 @@ namespace SPTracer
 		return (*this).RotateAboutAxis(rotAxis, theta);
 	}
 
+	Vec3 Vec3::RotateFromTo(const Vec3& fromDirection, const Vec3& toDirection, const Vec3& rotationAxis)
+	{
+		// rotation angle
+		float theta = std::acos(fromDirection * toDirection);
+
+		float absTheta = std::abs(theta);
+
+		// do not rotate if angle is too small
+		if (absTheta < Util::Eps)
+		{
+			return *this;
+		}
+
+		// rotate about axis
+		return (*this).RotateAboutAxis(rotationAxis, theta);
+	}
+
 	Vec3 Vec3::RotateAboutAxis(const Vec3& rotationAxis, float theta)
 	{
 		Vec3& v = *this;

@@ -39,6 +39,9 @@ namespace SPTracer {
 		// rgb color system
 		rgbConverter_ = std::make_unique<SRGB>();
 
+		// normalize camera directions
+		camera_.n.Normalize();
+		camera_.up.Normalize();
 	}
 
 	Tracer::~Tracer()

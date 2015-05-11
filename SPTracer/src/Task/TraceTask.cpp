@@ -34,7 +34,7 @@ namespace SPTracer
 		static const Vec3 yAxis{ 0.0f, 1.0f, 0.0f };
 
 		// z-axis
-		static const Vec3 zAxis{ 0.0f, 0.0f, 1.0f };
+		static const Vec3 zAxisReversed{ 0.0f, 0.0f, -1.0f };
 
 		// width and height
 		static const unsigned int width = tracer_.GetWidth();
@@ -65,19 +65,19 @@ namespace SPTracer
 
 				// direction
 				Vec3 direction{
-					-u,			// x
+					u,			// x
 					v,			// y
-					camera.f	// z
+					-camera.f	// z
 				};
 
 				// normalize direction
 				direction.Normalize();
 
-				// rotate direction
-				direction = direction.RotateFromTo(zAxis, camera.n);
+				// rotate direction according ti view direction around up axis
+				direction = direction.RotateFromTo(zAxisReversed, camera.n, camera.up);
 
-				// rotate according to up direction
-				direction = direction.RotateFromTo(yAxis, camera.up);
+				// rotate direction according to up direction around view direction
+				direction = direction.RotateFromTo(yAxis, camera.up, camera.n);
 
 				// spawn new ray
 				Ray originalRay;

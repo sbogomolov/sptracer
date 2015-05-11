@@ -13,6 +13,7 @@ namespace SPTracer
 		void Normalize();
 		float EuclideanNorm() const;
 		Vec3 RotateFromTo(const Vec3& fromDirection, const Vec3& toDirection);
+		Vec3 RotateFromTo(const Vec3& fromDirection, const Vec3& toDirection, const Vec3& rotationAxis);
 		Vec3 RotateAboutAxis(const Vec3& rotationAxis, float theta);
 
 		static Vec3 FromPhiThetaNormal(float phi, float theta, const Vec3& n);
