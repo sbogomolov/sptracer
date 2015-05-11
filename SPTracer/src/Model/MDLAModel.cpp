@@ -507,12 +507,10 @@ namespace SPTracer
 
 		while (!IsEndToken(++it, end))
 		{
-			std::shared_ptr<Vertex> v = std::make_shared<Vertex>();
-			v->v = Vec3{
-				GetFloat(it, end),		// x
-				GetFloat(++it, end),	// y
-				GetFloat(++it, end)		// z
-			};
+			std::shared_ptr<Vec3> v = std::make_shared<Vec3>();
+			v->x = GetFloat(it, end);
+			v->y = GetFloat(++it, end);
+			v->z = GetFloat(++it, end);
 
 			vertices_.push_back(std::move(v));
 		}
@@ -627,15 +625,15 @@ namespace SPTracer
 		}
 
 		// shift outline and holes indices
-		std::vector<std::shared_ptr<Vertex>> outlinePtr(outline.size());
-		std::vector<std::vector<std::shared_ptr<Vertex>>> holesPtr;
+		std::vector<std::shared_ptr<Vec3>> outlinePtr(outline.size());
+		std::vector<std::vector<std::shared_ptr<Vec3>>> holesPtr;
 
 		std::transform(outline.begin(), outline.end(), outlinePtr.begin(),
 			[&](unsigned long i) { return vertices_[verticesStartIndex + i]; });
 
 		for (auto& hole : holes)
 		{
-			std::vector<std::shared_ptr<Vertex>> holePtr(hole.size());
+			std::vector<std::shared_ptr<Vec3>> holePtr(hole.size());
 			std::transform(hole.begin(), hole.end(), holePtr.begin(),
 				[&](unsigned long i) { return vertices_[verticesStartIndex + i]; });
 			

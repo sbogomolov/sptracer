@@ -264,17 +264,17 @@ Config App::ReadConfig(std::string configFile) const
 			else if (parameter == "width")
 			{
 				// width
-				config.width = SPTracer::StringUtil::GetInt(value);
+				config.width = (unsigned int)SPTracer::StringUtil::GetInt(value);
 			}
 			else if (parameter == "height")
 			{
 				// height
-				config.height = SPTracer::StringUtil::GetInt(value);
+				config.height = (unsigned int)SPTracer::StringUtil::GetInt(value);
 			}
 			else if (parameter == "numthreads")
 			{
 				// number of threads
-				config.numThreads = SPTracer::StringUtil::GetInt(value);
+				config.numThreads = (unsigned int)SPTracer::StringUtil::GetInt(value);
 			}
 			else if (parameter == "wavelengthmin")
 			{

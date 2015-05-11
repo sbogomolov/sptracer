@@ -2,6 +2,7 @@
 #include <fstream>
 #include <numeric>
 #include <sstream>
+#include "Face.h"
 #include "OBJModel.h"
 #include "../Exception.h"
 #include "../Log.h"
@@ -12,6 +13,7 @@
 #include "Material/LambertianMaterial.h"
 #include "Material/PhongMaterial.h"
 #include "Material/PhongLuminaireMaterial.h"
+#include "Object/MeshObject.h"
 
 namespace SPTracer
 {
@@ -83,11 +85,11 @@ namespace SPTracer
 			throw Exception("Cannot open file: " + fileName);
 		}
 
-		// next vertex indices
-		size_t iv = 0;
-		size_t ivt = 0;
-		size_t ivn = 0;
-		size_t ivp = 0;
+		// current object data
+		bool saveObject = false;
+		std::string name;
+		std::vector<Face> faces;
+		std::shared_ptr<Material> material;
 
 		// read model file
 		std::string line;
@@ -112,111 +114,150 @@ namespace SPTracer
 			{
 				// vertex coordinates
 				std::vector<float> xyz = StringUtil::GetFloatArray(value, 3, 4, ' ');
-				Vec3 v = Vec3{
-					xyz[0],		// x
-					xyz[1],		// y
-					xyz[2]		// z
-				};
+				
+				// create new vertex
+				auto v = std::make_shared<Vec3>();
+				v->x = xyz[0];
+				v->y = xyz[1];
+				v->z = xyz[2];
 
-				// check if vertex already exists
-				if (vertices_.size() > iv)
-				{
-					// update existing vertex
-					vertices_[iv]->v = v;
-				}
-				else
-				{
-					// add new vertex
-					auto vertex = std::make_shared<Vertex>();
-					vertex->v = v;
-					vertices_.push_back(std::move(vertex));
-				}
-
-				// increment next index
-				iv++;
+				// add new vertex
+				vertices_.push_back(std::move(v));
 			}
 			else if (keyword == "vt")
 			{
-				// vertex texture coordinates
+				// texture coordinates
 				std::vector<float> uvw = StringUtil::GetFloatArray(value, 2, 3, ' ');
-				Vec3 vt = Vec3{
-					uvw[0],							// u
-					uvw[1],							// v
-					uvw.size() > 2 ? uvw[2] : 0.0f	// w
-				};
+				
+				// create new texture coordinates
+				auto vt = std::make_shared<Vec3>();
+				vt->x = uvw[0];
+				vt->y = uvw[1];
+				vt->z = uvw.size() > 2 ? uvw[2] : 0.0f;
 
-				// check if vertex already exists
-				if (vertices_.size() > ivt)
-				{
-					// update existing vertex
-					vertices_[ivt]->vt = vt;
-				}
-				else
-				{
-					// add new vertex
-					auto vertex = std::make_shared<Vertex>();
-					vertex->vt = vt;
-					vertices_.push_back(std::move(vertex));
-				}
-
-				// increment next index
-				ivt++;
+				// add new texture coordinates
+				textureCoordinates_.push_back(std::move(vt));
 			}
 			else if (keyword == "vn")
 			{
 				// vertex normal
 				std::vector<float> xyz = StringUtil::GetFloatArray(value, 3, ' ');
-				Vec3 vn = Vec3{
-					xyz[0],		// x
-					xyz[1],		// y
-					xyz[2]		// z
-				};
+				
+				// create new vertex normal
+				auto vn = std::make_shared<Vec3>();
+				vn->x = xyz[0];
+				vn->y = xyz[1];
+				vn->z = xyz[2];
 
-				// check if vertex already exists
-				if (vertices_.size() > ivn)
-				{
-					// update existing vertex
-					vertices_[ivn]->vn = vn;
-				}
-				else
-				{
-					// add new vertex
-					auto vertex = std::make_shared<Vertex>();
-					vertex->vn = vn;
-					vertices_.push_back(std::move(vertex));
-				}
-
-				// increment next index
-				ivn++;
+				// add new vertex normal
+				vertexNormals_.push_back(std::move(vn));
 			}
 			else if (keyword == "vp")
 			{
-				// vertex parameter space coordinates
+				// parameter space vertex
 				std::vector<float> uvw = StringUtil::GetFloatArray(value, 1, 3, ' ');
-				Vec3 vp = Vec3{
-					uvw[0],								// u
-					uvw.size() > 1 ? uvw[1] : 0.0f,		// v
-					uvw.size() > 2 ? uvw[2] : 0.0f		// w
-				};
 
-				// check if vertex already exists
-				if (vertices_.size() > ivp)
+				// create new parameter space vertex
+				auto vp = std::make_shared<Vec3>();
+				vp->x = uvw[0];
+				vp->y = uvw.size() > 1 ? uvw[1] : 0.0f;
+				vp->z = uvw.size() > 2 ? uvw[2] : 0.0f;
+
+				// add new parameter space vertex
+				parameterSpaceVertices_.push_back(std::move(vp));
+			}
+			else if (keyword == "o")
+			{
+				// object name
+				name = value;
+			}
+			else if (keyword == "usemtl")
+			{
+				// store old object
+				if (saveObject)
 				{
-					// update existing vertex
-					vertices_[ivp]->vp = vp;
-				}
-				else
-				{
-					// add new vertex
-					auto vertex = std::make_shared<Vertex>();
-					vertex->vp = vp;
-					vertices_.push_back(std::move(vertex));
+					AddObject(std::move(name), std::move(material), std::move(faces));
 				}
 
-				// increment next index
-				ivp++;
+				// reset object data
+				faces.clear();
+
+				// new object
+				saveObject = true;
+				
+				// get material
+				const auto it = materials_.find(value);
+				if (it == materials_.end())
+				{
+					std::string msg = "Cannot find material: " + value;
+					Log::Error(msg);
+					throw Exception(msg);
+				}
+
+				// set material
+				material = (*it).second;
+			}
+			else if (keyword == "f")
+			{
+				// face
+				Face face{};
+				
+				// split value on parts
+				std::vector<std::string> parts = StringUtil::Split(value, ' ');
+
+				// check count of parts
+				if (parts.size() < 3)
+				{
+					const char* msg = "The face has less than 3 vertices";
+					Log::Error(msg);
+					throw Exception(msg);
+				}
+
+				// parse parts
+				for (auto& part : parts)
+				{
+					std::vector<std::string> p = StringUtil::Split(part, '/');
+					
+					// vertex coordinates
+					long index = StringUtil::GetInt(p[0]);
+					face.vertices.push_back(vertices_[index >= 0 ? index : vertices_.size() + index]);
+					
+					// texture coordinates
+					if ((p.size() > 1) && (p[1].length() > 0))
+					{
+						face.hasTextureCoordinates = true;
+						index = StringUtil::GetInt(p[1]);
+						face.textureCoordinates.push_back(textureCoordinates_[index >= 0 ? index : textureCoordinates_.size() + index]);
+					}
+					else if (face.hasTextureCoordinates)
+					{
+						const char* msg = "Not all vertices of the face have texture coordinates";
+						Log::Error(msg);
+						throw Exception(msg);
+					}
+
+					// vertex normals
+					if ((p.size() > 1) && (p[1].length() > 0))
+					{
+						face.hasVertexNormals = true;
+						index = StringUtil::GetInt(p[1]);
+						face.vertexNormals.push_back(vertexNormals_[index >= 0 ? index : vertexNormals_.size() + index]);
+					}
+					else if (face.hasVertexNormals)
+					{
+						const char* msg = "Not all vertices of the face have normals";
+						Log::Error(msg);
+						throw Exception(msg);
+					}
+				}
+
+				// add face
+				faces.push_back(std::move(face));
 			}
 		}
+
+		// add last object
+		AddObject(std::move(name), std::move(material), std::move(faces));
 	}
 
 	void OBJModel::ParseMaterialsLibFile(const std::string& fileName, const Spectrum & spectrum)
@@ -331,6 +372,24 @@ namespace SPTracer
 				opticalDensity,
 				spectrum);
 		}
+	}
+
+	void OBJModel::AddObject(std::string name, std::shared_ptr<Material> material, std::vector<Face> faces)
+	{
+		// check number of vertices in faces
+		for (const auto& face : faces)
+		{
+			if (face.vertices.size() < 3)
+			{
+				const char* msg = "The face has less than 3 vertices";
+				Log::Error(msg);
+				throw Exception(msg);
+			}
+		}
+
+		// create and add object
+		auto object = std::make_shared<MeshObject>(std::move(name), std::move(material), std::move(faces));
+		objects_.push_back(std::move(object));
 	}
 
 	void OBJModel::AddMaterial(

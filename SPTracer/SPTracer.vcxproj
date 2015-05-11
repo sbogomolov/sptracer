@@ -172,6 +172,7 @@
     <ClCompile Include="src\Model\MDLAModel.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Model\Model.cpp" />
+    <ClCompile Include="src\Model\Object\MeshObject.cpp" />
     <ClCompile Include="src\Model\Object\Object.cpp" />
     <ClCompile Include="src\Model\Object\PlanarMeshObject.cpp" />
     <ClCompile Include="src\Model\OBJModel.cpp" />
@@ -191,7 +192,6 @@
     <ClInclude Include="src\Model\Material\PhongMaterial.h" />
     <ClInclude Include="src\Model\Object\MeshObject.h" />
     <ClInclude Include="src\Model\OBJModel.h" />
-    <ClInclude Include="src\Model\Vertex.h" />
     <ClInclude Include="src\PixelData.h" />
     <ClInclude Include="src\App.h" />
     <ClInclude Include="src\Color\RGBConverter.h" />

@@ -56,16 +56,38 @@ namespace SPTracer
 		return str;
 	}
 
-	int StringUtil::GetInt(const std::string & str)
+	// Splits string on parts with delimiter.
+	std::vector<std::string> StringUtil::Split(const std::string & str, char delim)
+	{
+		std::vector<std::string> parts;
+		size_t pos;
+		size_t start = 0;
+
+		while ((pos = str.find(delim, start)) != str.npos)
+		{
+			// add part to vector
+			parts.push_back(str.substr(start, pos - start));
+
+			// set start position after delimiter
+			start = pos + 1;
+		}
+
+		// add last part
+		parts.push_back(str.substr(start, str.length() - start));
+
+		return parts;
+	}
+
+	long StringUtil::GetInt(const std::string & str)
 	{
 		try
 		{
 			// try to get integer value
-			return std::stoi(str.c_str());
+			return std::stol(str.c_str());
 		}
 		catch (std::invalid_argument e)
 		{
-			throw Exception(("Expected float, got: " + str).c_str());
+			throw Exception(("Expected integer, got: " + str).c_str());
 		}
 	}
 

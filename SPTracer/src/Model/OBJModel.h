@@ -6,6 +6,7 @@
 
 namespace SPTracer
 {
+	struct Face;
 	struct Spectrum;
 	class Color;
 
@@ -18,6 +19,7 @@ namespace SPTracer
 		void GetKeywordAndValue(std::string line, std::string& keyword, std::string& value);
 		void ParseModelFile(const std::string& fileName, const Spectrum& spectrum);
 		void ParseMaterialsLibFile(const std::string& fileName, const Spectrum& spectrum);
+		void AddObject(std::string name, std::shared_ptr<Material> material, std::vector<Face> faces);
 		void AddMaterial(
 			std::string materialName,
 			std::unique_ptr<Color> diffuseReflectance,

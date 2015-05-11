@@ -19,7 +19,8 @@ namespace SPTracer
 		for (const auto& o : objects_)
 		{
 			bool success = o->Intersect(ray, current);
-			if (success && (!found || (current.distance < intersection.distance)))
+			if (success && (!found || (current.distance < intersection.distance) ||
+				(!intersection.object->IsEmissive() && o->IsEmissive())))
 			{
 				found = true;
 				intersection = current;
