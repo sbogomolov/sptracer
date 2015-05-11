@@ -8,7 +8,7 @@ int main(int argc, char **argv)
 	SPTracer::Log::Info("SPTracer started");
 
 	// config file
-	std::string configFile = argc > 2 ? argv[1] : "sptracer.cfg";
+	std::string configFile = argc > 1 ? argv[1] : "sptracer.cfg";
 	SPTracer::Log::Info("Config file: " + configFile);
 
 	// create application
