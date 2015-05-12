@@ -19,7 +19,7 @@ namespace SPTracer
 
 		virtual bool Intersect(const Ray& ray, Intersection& intersection) const = 0;
 		void GetNewRayDiffuse(const Ray& ray, const Intersection& intersection, Ray& newRay, std::vector<float>& reflectance) const;
-		void GetNewRaySpecular(const Ray& ray, const Intersection& intersection, Ray& newRay, std::vector<float>& reflectance) const;
+		bool GetNewRaySpecular(const Ray& ray, const Intersection& intersection, Ray& newRay, std::vector<float>& reflectance) const;
 		void GetRadiance(const Ray& ray, const Intersection& intersection, std::vector<float>& radiance) const;
 		
 		bool IsEmissive() const;

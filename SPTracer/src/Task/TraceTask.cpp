@@ -188,7 +188,12 @@ namespace SPTracer
 					else if (next < diffuseReflectionProbability + specularReflectionProbability)
 					{
 						// specular reflection
-						intersection.object->GetNewRaySpecular(*ray, intersection, newRay, reflectance);
+						if (!intersection.object->GetNewRaySpecular(*ray, intersection, newRay, reflectance))
+						{
+							// specular ray was poinint inside the material,
+							// stop tracing this path
+							break;
+						}
 						
 						// ray was not absorped, increase its weight by decreasing reflection probability
 						reflectionProbability *= specularReflectionProbability;
