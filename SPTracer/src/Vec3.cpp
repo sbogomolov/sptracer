@@ -75,18 +75,15 @@ namespace SPTracer
 		};
 	}
 
-	Vec3 Vec3::FromPhiThetaNormal(float phi, float theta, const Vec3& n)
+	Vec3 Vec3::FromPhiTheta(float phi, float theta)
 	{
-		// z axis
-		static const Vec3 zAxis{ 0.0f, 0.0f, 1.0f };
-
 		// get vector coordinates
 		float sinTheta = std::sin(theta);
 		return Vec3{
 			sinTheta * std::cos(phi),	// x
 			sinTheta * std::sin(phi),	// y
 			std::cos(theta)				// z
-		}.RotateFromTo(zAxis, n);
+		};
 	}
 
 	Vec3 Vec3::CrossProduct(const Vec3& lhs, const Vec3& rhs)
@@ -137,6 +134,15 @@ namespace SPTracer
 		lhs.x += rhs;		// x
 		lhs.y += rhs;		// y
 		lhs.z += rhs;		// z
+	}
+
+	Vec3 operator-(const Vec3& rhs)
+	{
+		return Vec3{
+			-rhs.x,	// x
+			-rhs.y,	// y
+			-rhs.z	// z
+		};
 	}
 
 	Vec3 operator-(const Vec3& lhs, const Vec3& rhs)
