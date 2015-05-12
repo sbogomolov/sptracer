@@ -76,9 +76,12 @@ namespace SPTracer
 		// z axis
 		static const Vec3 zAxis{ 0.0f, 0.0f, 1.0f };
 
+		// ideal specular reflection direction
+		Vec3 specularDirection = ray.direction - 2 * (ray.direction * intersection.normal) * intersection.normal;
+
 		// ideal specular reflection can be obtained by rotation
 		// of incident direction about normal on angle of PI.
-		Vec3 specularDirection = (-ray.direction).RotateAboutAxis(intersection.normal, Util::Pi);
+		// Vec3 specularDirection = (-ray.direction).RotateAboutAxis(intersection.normal, Util::Pi);
 
 		// generate random ray direction using PDF
 		float phi = Util::RandFloat(0.0f, 2.0f * Util::Pi);
