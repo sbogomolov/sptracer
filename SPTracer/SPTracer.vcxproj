@@ -167,6 +167,7 @@
     <ClCompile Include="src\Model\Color\ScalarColor.cpp" />
     <ClCompile Include="src\Model\Color\SpectralColor.cpp" />
     <ClCompile Include="src\Model\Material\LambertianMaterial.cpp" />
+    <ClCompile Include="src\Model\Material\Material.cpp" />
     <ClCompile Include="src\Model\Material\PhongLuminaireMaterial.cpp" />
     <ClCompile Include="src\Model\Material\PhongMaterial.cpp" />
     <ClCompile Include="src\Model\MDLAModel.cpp" />

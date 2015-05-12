@@ -27,6 +27,23 @@ namespace SPTracer
 		diffuseReflectionProbability_ = *std::max_element(precomputedDiffuseReflectance_.begin(), precomputedDiffuseReflectance_.end());
 	}
 
+	bool LambertianMaterial::GetNewRaySpecular(const Ray& ray, const Intersection& intersection, Ray& newRay, std::vector<float>& reflectance) const
+	{
+		std::string msg = "Lambertian material does not support specular reflections";
+		Log::Error(msg);
+		throw Exception(msg);
+	}
+
+	bool LambertianMaterial::IsEmissive() const
+	{
+		return false;
+	}
+
+	bool LambertianMaterial::IsReflective() const
+	{
+		return true;
+	}
+
 	void LambertianMaterial::GetDiffuseReflectance(const Ray& ray, const Intersection& intersection, const Ray& newRay, std::vector<float>& reflectance) const
 	{
 		// get diffuse reflectance
@@ -44,26 +61,9 @@ namespace SPTracer
 
 	void LambertianMaterial::GetSpecularReflectance(const Ray& ray, const Intersection& intersection, const Ray& newRay, std::vector<float>& reflectance) const
 	{
-		std::string msg = "Lambertian material does not support specular reflections";
-		Log::Error(msg);
+		std::string msg = "Lambertian material does not support specular reflectance";
+		Log::Error("Lambertian material does not have radiance");
 		throw Exception(msg);
-	}
-
-	float LambertianMaterial::GetSpecularExponent() const
-	{
-		std::string msg = "Lambertian material does not support specular exponent";
-		Log::Error(msg);
-		throw Exception(msg);
-	}
-
-	bool LambertianMaterial::IsEmissive() const
-	{
-		return false;
-	}
-
-	bool LambertianMaterial::IsReflective() const
-	{
-		return true;
 	}
 
 	void LambertianMaterial::GetRadiance(const Ray & ray, const Intersection & intersection, std::vector<float>& radiance) const
