@@ -185,7 +185,7 @@ namespace SPTracer
 						// ray was not absorped, increase its weight by decreasing reflection probability
 						reflectionProbability *= diffuseReflectionProbability;
 					}
-					else if (next < diffuseReflectionProbability + specularReflectionProbability)
+					else if (next < (diffuseReflectionProbability + specularReflectionProbability))
 					{
 						// specular reflection
 						if (!intersection.object->GetNewRaySpecular(*ray, intersection, newRay, reflectance))
