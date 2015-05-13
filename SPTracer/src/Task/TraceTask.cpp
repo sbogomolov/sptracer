@@ -190,7 +190,7 @@ namespace SPTracer
 						// specular reflection
 						if (!intersection.object->GetNewRaySpecular(*ray, intersection, newRay, reflectance))
 						{
-							// specular ray was poinint inside the material,
+							// specular ray points inside the material,
 							// stop tracing this path
 							break;
 						}
