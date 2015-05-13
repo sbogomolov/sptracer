@@ -139,11 +139,11 @@ namespace SPTracer {
 		// Calculate the average intensity. Calculations are based
 		// on the CIE Y component, which corresponds to lightness.
 		float mean = std::accumulate(xyzColor.begin(), xyzColor.end(), 0.0f,
-			[](float a, const Vec3& xyz) { return a + xyz.y; }) / n;
+			[](float sum, const Vec3& xyz) { return sum + xyz.y; }) / n;
 
 		// Then compute the standard deviation.
 		float sqrMean = std::accumulate(xyzColor.begin(), xyzColor.end(), 0.0f,
-			[](float a, const Vec3& xyz) { return a + xyz.y * xyz.y; }) / n;
+			[](float sum, const Vec3& xyz) { return sum + xyz.y * xyz.y; }) / n;
 
 		float variance = sqrMean - mean * mean;
 
