@@ -77,7 +77,8 @@ namespace SPTracer
 		static const Vec3 zAxis{ 0.0f, 0.0f, 1.0f };
 
 		// ideal specular reflection direction
-		Vec3 specularDirection = ray.direction - 2 * (ray.direction * intersection.normal) * intersection.normal;
+		float cosT = ray.direction * intersection.normal;
+		Vec3 specularDirection = ray.direction - 2 * cosT * intersection.normal;
 
 		// ideal specular reflection can be obtained by rotation
 		// of incident direction about normal on angle of PI.
