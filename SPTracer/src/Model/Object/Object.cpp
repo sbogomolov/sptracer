@@ -99,11 +99,6 @@ namespace SPTracer
 		// ray intersection point
 		Vec3 point = ray.origin + t * ray.direction;
 		
-		// Due to numerical error, intersection point might be
-		// slightly below the surface. In this case the secondary
-		// ray will intersect the same surface, which is wrong.
-		// If this will happen, epsilon should be increased.
-
 		// fill the intersection data
 		intersection.point = std::move(point);
 		intersection.normal = n;

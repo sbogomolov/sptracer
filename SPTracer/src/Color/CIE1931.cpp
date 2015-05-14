@@ -28,7 +28,7 @@ namespace SPTracer
 		return waveLengthStep_;
 	}
 
-	const Vec3 CIE1931::colorMap_[] = {
+	const std::vector<Vec3> CIE1931::colorMap_ = {
 		Vec3{ 0.000129900000f, 0.000003917000f, 0.000606100000f },	// 360 nm
 		Vec3{ 0.000145847000f, 0.000004393581f, 0.000680879200f },	// 361 nm
 		Vec3{ 0.000163802100f, 0.000004929604f, 0.000765145600f },	// 362 nm

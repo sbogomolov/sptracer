@@ -22,7 +22,7 @@ namespace SPTracer
 		static const float waveLengthMin_;
 		static const float waveLengthMax_;
 		static const float waveLengthStep_;
-		static const Vec3 colorMap_[];
+		static const std::vector<Vec3> colorMap_;
 	};
 
 }
