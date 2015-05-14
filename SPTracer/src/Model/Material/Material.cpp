@@ -22,8 +22,8 @@ namespace SPTracer
 
 		// generate random ray direction using BDRF as PDF
 		float phi = Util::RandFloat(0.0f, 2.0f * Util::Pi);
-		float theta = std::acos(std::sqrt(Util::RandFloat(0.0f, 1.0f)));
-		newRay.direction = Vec3::FromPhiTheta(phi, theta).RotateFromTo(zAxis, intersection.normal);
+		float cosTheta = std::sqrt(Util::RandFloat(0.0f, 1.0f));
+		newRay.direction = Vec3::FromPhiTheta(phi, cosTheta).RotateFromTo(zAxis, intersection.normal);
 
 		// new ray origin is intersection point
 		newRay.origin = intersection.point;

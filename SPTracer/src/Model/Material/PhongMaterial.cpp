@@ -77,8 +77,7 @@ namespace SPTracer
 		static const Vec3 zAxis{ 0.0f, 0.0f, 1.0f };
 
 		// ideal specular reflection direction
-		float cosT = ray.direction * intersection.normal;
-		Vec3 specularDirection = ray.direction - 2 * cosT * intersection.normal;
+		Vec3 specularDirection = ray.direction - 2 * (ray.direction * intersection.normal) * intersection.normal;
 
 		// ideal specular reflection can be obtained by rotation
 		// of incident direction about normal on angle of PI.
@@ -86,11 +85,11 @@ namespace SPTracer
 
 		// generate random ray direction using PDF
 		float phi = Util::RandFloat(0.0f, 2.0f * Util::Pi);
-		float alpha = std::acos(std::pow(Util::RandFloat(0.0f, 1.0f), 1.0f / (phongExponent_ + 1.0f)));
-		newRay.direction = Vec3::FromPhiTheta(phi, alpha).RotateFromTo(zAxis, specularDirection);
+		float cosAlpha = std::pow(Util::RandFloat(0.0f, 1.0f), 1.0f / (phongExponent_ + 1.0f));
+		newRay.direction = Vec3::FromPhiTheta(phi, cosAlpha).RotateFromTo(zAxis, specularDirection);
 
 		// check if direction points inside the material
-		if (std::acos(newRay.direction * intersection.normal) < Util::Eps)
+		if ((newRay.direction * intersection.normal) < Util::Eps)
 		{
 			// direction points inside the material,
 			// stop tracing this path

@@ -16,21 +16,19 @@ namespace SPTracer
 
 	Vec3 Vec3::RotateFromTo(const Vec3& fromDirection, const Vec3& toDirection)
 	{
-		// rotation angle
-		float theta = std::acos(fromDirection * toDirection);
+		// cos(theta)
+		float cosTheta = fromDirection * toDirection;
 		
-		float absTheta = std::abs(theta);
-
 		// do not rotate if angle is too small
-		if (absTheta < Util::Eps)
+		if (std::abs(cosTheta - 1.0f) < Util::Eps)
 		{
 			return *this;
 		}
 
-		// if angle is PI - flip vector
-		if (std::abs(absTheta - Util::Pi) < Util::Eps)
+		// flip vector if angle is PI
+		if (std::abs(cosTheta + 1.0f) < Util::Eps)
 		{
-			return -1.0f * (*this);
+			return -(*this);
 		}
 
 		// axis of rotation
@@ -40,32 +38,29 @@ namespace SPTracer
 		rotAxis.Normalize();
 
 		// rotate about axis
-		return (*this).RotateAboutAxis(rotAxis, theta);
+		return (*this).RotateAboutAxis(rotAxis, cosTheta);
 	}
 
 	Vec3 Vec3::RotateFromTo(const Vec3& fromDirection, const Vec3& toDirection, const Vec3& rotationAxis)
 	{
-		// rotation angle
-		float theta = std::acos(fromDirection * toDirection);
-
-		float absTheta = std::abs(theta);
+		// cos(theta)
+		float cosTheta = fromDirection * toDirection;
 
 		// do not rotate if angle is too small
-		if (absTheta < Util::Eps)
+		if (std::abs(cosTheta - 1.0f) < Util::Eps)
 		{
 			return *this;
 		}
 
 		// rotate about axis
-		return (*this).RotateAboutAxis(rotationAxis, theta);
+		return (*this).RotateAboutAxis(rotationAxis, cosTheta);
 	}
 
-	Vec3 Vec3::RotateAboutAxis(const Vec3& rotationAxis, float theta)
+	Vec3 Vec3::RotateAboutAxis(const Vec3& rotationAxis, float cosTheta)
 	{
 		Vec3& v = *this;
 		const Vec3& n = rotationAxis;
-		const float cosTheta = std::cos(theta);
-		const float sinTheta = std::sin(theta);
+		const float sinTheta = std::sqrt(1.0f - cosTheta * cosTheta);
 		const float a = ((n.x * v.x) + (n.y * v.y) + (n.z * v.z)) * (1.0f - cosTheta);
 
 		return Vec3{
@@ -75,14 +70,14 @@ namespace SPTracer
 		};
 	}
 
-	Vec3 Vec3::FromPhiTheta(float phi, float theta)
+	Vec3 Vec3::FromPhiTheta(float phi, float cosTheta)
 	{
 		// get vector coordinates
-		float sinTheta = std::sin(theta);
+		const float sinTheta = std::sqrt(1.0f - cosTheta * cosTheta);
 		return Vec3{
 			sinTheta * std::cos(phi),	// x
 			sinTheta * std::sin(phi),	// y
-			std::cos(theta)				// z
+			cosTheta					// z
 		};
 	}
 
