@@ -12,7 +12,7 @@ namespace SPTracer
 		// check that vector is not empty
 		if (amplitudes.size() == 0)
 		{
-			const char* s = "SpectralColor: Trying to create spectral color with no amplitudes";
+			std::string s = "SpectralColor: Trying to create spectral color with no amplitudes";
 			Log::Error(s);
 			throw Exception(s);
 		}

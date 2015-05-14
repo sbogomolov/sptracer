@@ -41,7 +41,7 @@ namespace SPTracer
 		// check model
 		if (objects_.size() == 0)
 		{
-			const char* s = "MDLAModel: Model has no objects";
+			std::string s = "MDLAModel: Model has no objects";
 			Log::Error(s);
 			throw Exception(s);
 		}
@@ -149,7 +149,7 @@ namespace SPTracer
 		// check if there is a token
 		if (it == end)
 		{
-			auto s = "MDLAModel: Unexpected end of file, no more tokens";
+			std::string s = "MDLAModel: Unexpected end of file, no more tokens";
 			Log::Error(s);
 			throw Exception(s);
 		}
@@ -196,8 +196,8 @@ namespace SPTracer
 		// check if there is a token
 		CheckToken(it, end);
 
-		const auto& token = *it;
-		auto len = token.length();
+		const std::string& token = *it;
+		size_t len = token.length();
 
 		// check if this is a string token
 		if ((token[0] != '\"') || (token[len - 1] != '\"'))
@@ -216,7 +216,7 @@ namespace SPTracer
 		// check if there is a token
 		CheckToken(it, end);
 
-		const auto& token = *it;
+		const std::string& token = *it;
 		try
 		{
 			// try to get float token
@@ -258,7 +258,7 @@ namespace SPTracer
 		// check file type
 		if (*it != "mdlflA20")
 		{
-			const char* s = "MDLAModel: Wrong file type";
+			std::string s = "MDLAModel: Wrong file type";
 			Log::Error(s);
 			throw Exception(s);
 		}
@@ -572,7 +572,7 @@ namespace SPTracer
 				if (outline.size() > 0)
 				{
 					// duplicate outline polygon
-					const char* s = "MDLAModel: Duplicate polygon for planar mesh object";
+					std::string s = "MDLAModel: Duplicate polygon for planar mesh object";
 					Log::Error(s);
 					throw Exception(s);
 				}
@@ -585,7 +585,7 @@ namespace SPTracer
 				if (outline.size() > 0)
 				{
 					// duplicate outline polygon
-					const char* s = "MDLAModel: Duplicate polygon for planar mesh object";
+					std::string s = "MDLAModel: Duplicate polygon for planar mesh object";
 					Log::Error(s);
 					throw Exception(s);
 				}
@@ -606,7 +606,7 @@ namespace SPTracer
 		if (outline.size() < 3)
 		{
 			// duplicate outline polygon
-			const char* s = "MDLAModel: Not enough vertices in outline";
+			std::string s = "MDLAModel: Not enough vertices in outline";
 			Log::Error(s);
 			throw Exception(s);
 		}
@@ -617,7 +617,7 @@ namespace SPTracer
 			if (hole.size() < 3)
 			{
 				// duplicate outline polygon
-				const char* s = "MDLAModel: Not enough vertices in hole";
+				std::string s = "MDLAModel: Not enough vertices in hole";
 				Log::Error(s);
 				throw Exception(s);
 			}

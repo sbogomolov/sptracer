@@ -1,7 +1,7 @@
 #ifndef SPT_VEC3_H
 #define SPT_VEC3_H
 
-#include <vector>
+#include <array>
 
 namespace SPTracer
 {
@@ -46,7 +46,7 @@ namespace SPTracer
 		friend void operator/=(Vec3& lhs, const float& rhs);
 
 	private:
-		float values_[3];
+		std::array<float, 3> values_;
 	};
 
 }

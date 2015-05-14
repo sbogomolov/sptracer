@@ -1,7 +1,7 @@
 #ifndef SPT_CIE1931_H
 #define SPT_CIE1931_H
 
-#include <unordered_map>
+#include <vector>
 #include "XYZConverter.h"
 
 namespace SPTracer
@@ -21,7 +21,7 @@ namespace SPTracer
 		static const float waveLengthMin_;
 		static const float waveLengthMax_;
 		static const float waveLengthStep_;
-		static const Vec3 colorMap_[];
+		static const std::vector<Vec3> colorMap_;
 	};
 
 }

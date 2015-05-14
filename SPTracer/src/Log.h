@@ -31,7 +31,7 @@ namespace SPTracer {
 			Initialized
 		};
 
-		static const char FileName[];
+		static const std::string FileName;
 		static State state_;
 
 		Log();

@@ -8,7 +8,7 @@
 namespace SPTracer {
 
 	// log file name
-	const char Log::FileName[] = "sptracer.log";
+	const std::string Log::FileName = "sptracer.log";
 	
 	// set initial state
 	Log::State Log::state_ = Log::State::NotInitialized;
@@ -31,7 +31,7 @@ namespace SPTracer {
 			file.close();
 
 			// try to delete file
-			if (std::remove(FileName))
+			if (std::remove(FileName.c_str()))
 			{
 				// initialization failed
 				state_ = State::InitializationFailed;

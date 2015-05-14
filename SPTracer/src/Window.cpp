@@ -109,7 +109,7 @@ std::shared_ptr<Window::ImageUpdater> Window::GetImageUpdater()
 std::string Window::NewWindowClassName()
 {
 	static const unsigned int len = 16;
-	static const char alphanum[] =
+	static const std::string alphanum =
 		"0123456789"
 		"ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 		"abcdefghijklmnopqrstuvwxyz";
@@ -117,7 +117,7 @@ std::string Window::NewWindowClassName()
 	std::ostringstream ss;
 	for (size_t i = 0; i < len; i++)
 	{
-		ss << alphanum[std::rand() % (sizeof(alphanum) - 1)];
+		ss << alphanum[std::rand() % (alphanum.length() - 1)];
 	}
 
 	return ss.str();

@@ -190,7 +190,7 @@ namespace SPTracer
 				// check count of parts
 				if (parts.size() < 3)
 				{
-					const char* msg = "The face has less than 3 vertices";
+					std::string msg = "The face has less than 3 vertices";
 					Log::Error(msg);
 					throw Exception(msg);
 				}
@@ -213,7 +213,7 @@ namespace SPTracer
 					}
 					else if (face.hasTextureCoordinates)
 					{
-						const char* msg = "Not all vertices of the face have texture coordinates";
+						std::string msg = "Not all vertices of the face have texture coordinates";
 						Log::Error(msg);
 						throw Exception(msg);
 					}
@@ -227,7 +227,7 @@ namespace SPTracer
 					}
 					else if (face.hasVertexNormals)
 					{
-						const char* msg = "Not all vertices of the face have normals";
+						std::string msg = "Not all vertices of the face have normals";
 						Log::Error(msg);
 						throw Exception(msg);
 					}
@@ -363,7 +363,7 @@ namespace SPTracer
 		{
 			if (face.vertices.size() < 3)
 			{
-				const char* msg = "The face has less than 3 vertices";
+				std::string msg = "The face has less than 3 vertices";
 				Log::Error(msg);
 				throw Exception(msg);
 			}

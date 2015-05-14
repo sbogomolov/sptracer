@@ -84,9 +84,9 @@ int App::Run()
 	// check if application is initialized
 	if (!initialized_)
 	{
-		auto s = "Trying to run not initialized application";
+		std::string s = "Trying to run not initialized application";
 		SPTracer::Log::Error(s);
-		throw std::exception(s);
+		throw std::exception(s.c_str());
 	}
 
 	// run tracer

@@ -5,15 +5,12 @@
 namespace SPTracer
 {
 	Vec3::Vec3()
-		: Vec3(0.0f, 0.0f, 0.0f)
 	{
 	}
 
 	Vec3::Vec3(float x, float y, float z)
+		: values_{ x, y, z }
 	{
-		values_[0] = x;
-		values_[1] = y;
-		values_[2] = z;
 	}
 
 	void Vec3::Normalize()
