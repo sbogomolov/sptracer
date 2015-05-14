@@ -80,15 +80,12 @@ namespace SPTracer
 				direction = direction.RotateFromTo(yAxis, camera.up, camera.n);
 
 				// spawn new ray
-				Ray originalRay;
-				originalRay.origin = origin;
-				originalRay.direction = direction;
+				Ray ray;
+				ray.origin = origin;
+				ray.direction = direction;
 
 				// originally ray contains all spectrum
-				originalRay.waveIndex = -1;
-
-				// set current ray to the original ray
-				Ray* ray = &originalRay;
+				ray.waveIndex = -1;
 
 				// set weight to 1
 				std::fill(weight.begin(), weight.end(), 1.0f);
@@ -98,7 +95,7 @@ namespace SPTracer
 				{
 					// try to find intersection
 					Intersection intersection;
-					if (!model.Intersect(*ray, intersection))
+					if (!model.Intersect(ray, intersection))
 					{
 						// no intersection foubd
 						break;
@@ -122,9 +119,9 @@ namespace SPTracer
 							Vec3& c = color[i * width + j];
 
 							// radiance
-							intersection.object->GetRadiance(*ray, intersection, radiance);
+							intersection.object->GetRadiance(ray, intersection, radiance);
 
-							if (ray->waveIndex == -1)
+							if (ray.waveIndex == -1)
 							{
 								// full spectrum
 								for (size_t t = 0; t < spectrum.count; t++)
@@ -139,10 +136,10 @@ namespace SPTracer
 							else
 							{
 								// only one radiance with applied weight and emission probability
-								float r = radiance[ray->waveIndex] * weight[ray->waveIndex] / emissionProbability;
+								float r = radiance[ray.waveIndex] * weight[ray.waveIndex] / emissionProbability;
 
 								// store radiance devided by the number of wave length in spectrum
-								c += r * xyzConverter.GetXYZ(spectrum.values[ray->waveIndex]);
+								c += r * xyzConverter.GetXYZ(spectrum.values[ray.waveIndex]);
 							}
 
 							// done with this ray
@@ -158,11 +155,11 @@ namespace SPTracer
 					// preserve monochromaticity, refracted state and the wave index for the ray
 					// origin and direction should be set in the GetNewRay method
 					Ray newRay;
-					newRay.refracted = ray->refracted;
-					newRay.waveIndex = ray->waveIndex;
+					newRay.refracted = ray.refracted;
+					newRay.waveIndex = ray.waveIndex;
 
-					float diffuseReflectionProbability = intersection.object->GetDiffuseReflectionProbability(ray->waveIndex);
-					float specularReflectionProbability = intersection.object->GetSpecularReflectionProbability(ray->waveIndex);
+					float diffuseReflectionProbability = intersection.object->GetDiffuseReflectionProbability(ray.waveIndex);
+					float specularReflectionProbability = intersection.object->GetSpecularReflectionProbability(ray.waveIndex);
 
 					/////////////////////////////////////////////////////////////////////////////////////
 					// 
@@ -180,7 +177,7 @@ namespace SPTracer
 					if (next < diffuseReflectionProbability)
 					{
 						// diffuse reflection
-						intersection.object->GetNewRayDiffuse(*ray, intersection, newRay, reflectance);
+						intersection.object->GetNewRayDiffuse(ray, intersection, newRay, reflectance);
 
 						// ray was not absorped, increase its weight by decreasing reflection probability
 						reflectionProbability *= diffuseReflectionProbability;
@@ -188,7 +185,7 @@ namespace SPTracer
 					else if (next < (diffuseReflectionProbability + specularReflectionProbability))
 					{
 						// specular reflection
-						if (!intersection.object->GetNewRaySpecular(*ray, intersection, newRay, reflectance))
+						if (!intersection.object->GetNewRaySpecular(ray, intersection, newRay, reflectance))
 						{
 							// specular ray points inside the material,
 							// stop tracing this path
@@ -205,7 +202,7 @@ namespace SPTracer
 					}
 
 					// update ray weight
-					if (ray->waveIndex == -1)
+					if (ray.waveIndex == -1)
 					{
 						for (size_t t = 0; t < spectrum.count; t++)
 						{
@@ -214,11 +211,11 @@ namespace SPTracer
 					}
 					else
 					{
-						weight[ray->waveIndex] *= reflectance[ray->waveIndex] / reflectionProbability;
+						weight[ray.waveIndex] *= reflectance[ray.waveIndex] / reflectionProbability;
 					}
 
 					// change current ray to reflected (refracted) ray
-					ray = &newRay;
+					std::swap(ray, newRay);
 				}
 			}
 		}
