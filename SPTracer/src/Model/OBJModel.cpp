@@ -220,14 +220,14 @@ namespace SPTracer
 					
 					// vertex coordinates
 					long index = StringUtil::GetInt(p[0]);
-					face.vertices.push_back(vertices_[index >= 0 ? index : vertices_.size() + index]);
+					face.vertices.push_back(vertices_[index >= 0 ? index - 1 : vertices_.size() + index]);
 					
 					// texture coordinates
 					if ((p.size() > 1) && (p[1].length() > 0))
 					{
 						face.hasTextureCoordinates = true;
 						index = StringUtil::GetInt(p[1]);
-						face.textureCoordinates.push_back(textureCoordinates_[index >= 0 ? index : textureCoordinates_.size() + index]);
+						face.textureCoordinates.push_back(textureCoordinates_[index >= 0 ? index - 1 : textureCoordinates_.size() + index]);
 					}
 					else if (face.hasTextureCoordinates)
 					{
@@ -237,11 +237,11 @@ namespace SPTracer
 					}
 
 					// vertex normals
-					if ((p.size() > 1) && (p[1].length() > 0))
+					if ((p.size() > 1) && (p[2].length() > 0))
 					{
 						face.hasVertexNormals = true;
-						index = StringUtil::GetInt(p[1]);
-						face.vertexNormals.push_back(vertexNormals_[index >= 0 ? index : vertexNormals_.size() + index]);
+						index = StringUtil::GetInt(p[2]);
+						face.vertexNormals.push_back(vertexNormals_[index >= 0 ? index - 1 : vertexNormals_.size() + index]);
 					}
 					else if (face.hasVertexNormals)
 					{
