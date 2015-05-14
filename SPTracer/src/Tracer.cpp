@@ -109,7 +109,11 @@ namespace SPTracer {
 		for (size_t i = 0; i < pixels_.size(); i++)
 		{
 			PixelData& pd = pixels_[i];
-			pd += color[i];
+			Vec3& c = color[i];
+			
+			pd.x += c[0];
+			pd.y += c[1];
+			pd.z += c[2];
 			pd.samples++;
 		}
 
@@ -139,11 +143,11 @@ namespace SPTracer {
 		// Calculate the average intensity. Calculations are based
 		// on the CIE Y component, which corresponds to lightness.
 		float mean = std::accumulate(xyzColor.begin(), xyzColor.end(), 0.0f,
-			[](float sum, const Vec3& xyz) { return sum + xyz.y; }) / n;
+			[](float sum, const Vec3& xyz) { return sum + xyz[1]; }) / n;
 
 		// Then compute the standard deviation.
 		float sqrMean = std::accumulate(xyzColor.begin(), xyzColor.end(), 0.0f,
-			[](float sum, const Vec3& xyz) { return sum + xyz.y * xyz.y; }) / n;
+			[](float sum, const Vec3& xyz) { return sum + xyz[1] * xyz[1]; }) / n;
 
 		float variance = sqrMean - mean * mean;
 
@@ -167,17 +171,17 @@ namespace SPTracer {
 			Vec3& rgb = rgbColor[i];
 
 			// Apply exposure correction
-			xyz.x = std::log(xyz.x / maxIntensity + 1.0f) / std::log(4.0f);
-			xyz.y = std::log(xyz.y / maxIntensity + 1.0f) / std::log(4.0f);
-			xyz.z = std::log(xyz.z / maxIntensity + 1.0f) / std::log(4.0f);
+			xyz[0] = std::log(xyz[0] / maxIntensity + 1.0f) / std::log(4.0f);
+			xyz[1] = std::log(xyz[1] / maxIntensity + 1.0f) / std::log(4.0f);
+			xyz[2] = std::log(xyz[2] / maxIntensity + 1.0f) / std::log(4.0f);
 
 			// Convert to sRGB.
 			rgb = rgbConverter_->GetRGB(xyz);
 
 			// Clamp colours to saturate.
-			rgb.x = Clamp(rgb.x);
-			rgb.y = Clamp(rgb.y);
-			rgb.z = Clamp(rgb.z);
+			rgb[0] = Clamp(rgb[0]);
+			rgb[1] = Clamp(rgb[1]);
+			rgb[2] = Clamp(rgb[2]);
 		}
 
 		return rgbColor;
@@ -196,11 +200,11 @@ namespace SPTracer {
 		for (size_t i = 0; i < pixels_.size(); i++)
 		{
 			PixelData& pd = pixels_[i];
-			xyzColor.push_back(Vec3{
+			xyzColor.push_back(Vec3(
 				static_cast<float>(pd.x / pd.samples),
 				static_cast<float>(pd.y / pd.samples),
 				static_cast<float>(pd.z / pd.samples)
-			});
+			));
 		}
 
 		// tonemap XYZ to RGB

@@ -6,7 +6,7 @@
 namespace SPTracer
 {
 
-	struct Vec3;
+	class Vec3;
 
 	class SRGB : public RGBConverter
 	{

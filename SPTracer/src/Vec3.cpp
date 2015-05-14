@@ -4,6 +4,18 @@
 
 namespace SPTracer
 {
+	Vec3::Vec3()
+		: Vec3(0.0f, 0.0f, 0.0f)
+	{
+	}
+
+	Vec3::Vec3(float x, float y, float z)
+	{
+		values_[0] = x;
+		values_[1] = y;
+		values_[2] = z;
+	}
+
 	void Vec3::Normalize()
 	{
 		*this /= this->EuclideanNorm();
@@ -61,171 +73,180 @@ namespace SPTracer
 		Vec3& v = *this;
 		const Vec3& n = rotationAxis;
 		const float sinTheta = std::sqrt(1.0f - cosTheta * cosTheta);
-		const float a = ((n.x * v.x) + (n.y * v.y) + (n.z * v.z)) * (1.0f - cosTheta);
+		const float a = ((n[0] * v[0]) + (n[1] * v[1]) + (n[2] * v[2])) * (1.0f - cosTheta);
 
-		return Vec3{
-			n.x * a + v.x * cosTheta + (-n.z * v.y + n.y * v.z) * sinTheta,	// x
-			n.y * a + v.y * cosTheta + ( n.z * v.x - n.x * v.z) * sinTheta,	// y
-			n.z * a + v.z * cosTheta + (-n.y * v.x + n.x * v.y) * sinTheta	// z
-		};
+		return Vec3(
+			n[0] * a + v[0] * cosTheta + (-n[2] * v[1] + n[1] * v[2]) * sinTheta,	// x
+			n[1] * a + v[1] * cosTheta + ( n[2] * v[0] - n[0] * v[2]) * sinTheta,	// y
+			n[2] * a + v[2] * cosTheta + (-n[1] * v[0] + n[0] * v[1]) * sinTheta	// z
+		);
 	}
 
 	Vec3 Vec3::FromPhiTheta(float phi, float cosTheta)
 	{
 		// get vector coordinates
 		const float sinTheta = std::sqrt(1.0f - cosTheta * cosTheta);
-		return Vec3{
+		return Vec3(
 			sinTheta * std::cos(phi),	// x
 			sinTheta * std::sin(phi),	// y
 			cosTheta					// z
-		};
+		);
 	}
 
 	Vec3 Vec3::CrossProduct(const Vec3& lhs, const Vec3& rhs)
 	{
-		return Vec3{
-			(lhs.y * rhs.z) - (lhs.z * rhs.y),	// x
-			(lhs.z * rhs.x) - (lhs.x * rhs.z),	// y
-			(lhs.x * rhs.y) - (lhs.y * rhs.x)	// z
-		};
+		return Vec3(
+			(lhs[1] * rhs[2]) - (lhs[2] * rhs[1]),	// x
+			(lhs[2] * rhs[0]) - (lhs[0] * rhs[2]),	// y
+			(lhs[0] * rhs[1]) - (lhs[1] * rhs[0])	// z
+		);
+	}
+
+	const float& Vec3::operator[](size_t index) const
+	{
+		return values_[index];
+	}
+
+	float& Vec3::operator[](size_t index)
+	{
+		return values_[index];
 	}
 
 	Vec3 operator+(const Vec3& lhs, const Vec3& rhs)
 	{
-		return Vec3{
-			lhs.x + rhs.x,	// x
-			lhs.y + rhs.y,	// y
-			lhs.z + rhs.z	// z
-		};
+		return Vec3(
+			lhs[0] + rhs[0],	// x
+			lhs[1] + rhs[1],	// y
+			lhs[2] + rhs[2]		// z
+		);
 	}
 
 	Vec3 operator+(const Vec3& lhs, const float& rhs)
 	{
-		return Vec3{
-			lhs.x + rhs,	// x
-			lhs.y + rhs,	// y
-			lhs.z + rhs		// z
-		};
+		return Vec3(
+			lhs[0] + rhs,	// x
+			lhs[1] + rhs,	// y
+			lhs[2] + rhs	// z
+		);
 	}
 
 	Vec3 operator+(const float& lhs, const Vec3& rhs)
 	{
-		return Vec3{
-			lhs + rhs.x,	// x
-			lhs + rhs.y,	// y
-			lhs + rhs.z		// z
-		};
+		return Vec3(
+			lhs + rhs[0],	// x
+			lhs + rhs[1],	// y
+			lhs + rhs[2]	// z
+		);
 	}
 
 	void operator+=(Vec3& lhs, const Vec3& rhs)
 	{
-		lhs.x += rhs.x;		// x
-		lhs.y += rhs.y;		// y
-		lhs.z += rhs.z;		// z
+		lhs[0] += rhs[0];		// x
+		lhs[1] += rhs[1];		// y
+		lhs[2] += rhs[2];		// z
 	}
 
 	void operator+=(Vec3& lhs, const float& rhs)
 	{
-		lhs.x += rhs;		// x
-		lhs.y += rhs;		// y
-		lhs.z += rhs;		// z
+		lhs[0] += rhs;		// x
+		lhs[1] += rhs;		// y
+		lhs[2] += rhs;		// z
 	}
 
 	Vec3 operator-(const Vec3& rhs)
 	{
-		return Vec3{
-			-rhs.x,	// x
-			-rhs.y,	// y
-			-rhs.z	// z
-		};
+		return Vec3(
+			-rhs[0],	// x
+			-rhs[1],	// y
+			-rhs[2]		// z
+		);
 	}
 
 	Vec3 operator-(const Vec3& lhs, const Vec3& rhs)
 	{
-		return Vec3 {
-			lhs.x - rhs.x,	// x
-			lhs.y - rhs.y,	// y
-			lhs.z - rhs.z	// z
-		};
+		return Vec3(
+			lhs[0] - rhs[0],	// x
+			lhs[1] - rhs[1],	// y
+			lhs[2] - rhs[2]		// z
+		);
 	}
 
 	Vec3 operator-(const Vec3& lhs, const float& rhs)
 	{
-		return Vec3{
-			lhs.x - rhs,	// x
-			lhs.y - rhs,	// y
-			lhs.z - rhs		// z
-		};
+		return Vec3(
+			lhs[0] - rhs,	// x
+			lhs[1] - rhs,	// y
+			lhs[2] - rhs	// z
+		);
 	}
 
 	Vec3 operator-(const float& lhs, const Vec3& rhs)
 	{
-		return Vec3{
-			lhs - rhs.x,	// x
-			lhs - rhs.y,	// y
-			lhs - rhs.z		// z
-		};
+		return Vec3(
+			lhs - rhs[0],	// x
+			lhs - rhs[1],	// y
+			lhs - rhs[2]	// z
+		);
 	}
 
 	void operator-=(Vec3& lhs, const Vec3& rhs)
 	{
-		lhs.x -= rhs.x;		// x
-		lhs.y -= rhs.y;		// y
-		lhs.z -= rhs.z;		// z
+		lhs[0] -= rhs[0];		// x
+		lhs[1] -= rhs[1];		// y
+		lhs[2] -= rhs[2];		// z
 	}
 
 	void operator-=(Vec3& lhs, const float& rhs)
 	{
-		lhs.x -= rhs;		// x
-		lhs.y -= rhs;		// y
-		lhs.z -= rhs;		// z
+		lhs[0] -= rhs;		// x
+		lhs[1] -= rhs;		// y
+		lhs[2] -= rhs;		// z
 	}
 
 	float operator*(const Vec3& lhs, const Vec3& rhs)
 	{
-		return (lhs.x * rhs.x) + (lhs.y * rhs.y) + (lhs.z * rhs.z);
+		return (lhs[0] * rhs[0]) + (lhs[1] * rhs[1]) + (lhs[2] * rhs[2]);
 	}
 
 	Vec3 operator*(const Vec3& lhs, const float& rhs)
 	{
-		return Vec3{
-			lhs.x * rhs,	// x
-			lhs.y * rhs,	// x
-			lhs.z * rhs		// z
-		};
+		return Vec3(
+			lhs[0] * rhs,	// x
+			lhs[1] * rhs,	// x
+			lhs[2] * rhs	// z
+		);
 	}
 
 	Vec3 operator*(const float& lhs, const Vec3& rhs)
 	{
-		return Vec3{
-			lhs * rhs.x,	// x
-			lhs * rhs.y,	// x
-			lhs * rhs.z		// z
-		};
+		return Vec3(
+			lhs * rhs[0],	// x
+			lhs * rhs[1],	// x
+			lhs * rhs[2]	// z
+		);
 	}
 
 	void operator*=(Vec3& lhs, const float& rhs)
 	{
-		lhs.x *= rhs;		// x
-		lhs.y *= rhs;		// y
-		lhs.z *= rhs;		// z
+		lhs[0] *= rhs;		// x
+		lhs[1] *= rhs;		// y
+		lhs[2] *= rhs;		// z
 	}
 
 	Vec3 operator/(const Vec3& lhs, const float& rhs)
 	{
-		return Vec3{
-			lhs.x / rhs,	// x
-			lhs.y / rhs,	// x
-			lhs.z / rhs		// z
-		};
+		return Vec3(
+			lhs[0] / rhs,	// x
+			lhs[1] / rhs,	// x
+			lhs[2] / rhs	// z
+		);
 	}
 
 	void operator/=(Vec3& lhs, const float& rhs)
 	{
-		lhs.x /= rhs;		// x
-		lhs.y /= rhs;		// y
-		lhs.z /= rhs;		// z
+		lhs[0] /= rhs;		// x
+		lhs[1] /= rhs;		// y
+		lhs[2] /= rhs;		// z
 	}
-
 
 }

@@ -300,17 +300,17 @@ namespace SPTracer
 
 		camera.name = GetString(++it, end);	// camera name
 
-		camera.p.x = GetFloat(++it, end);		// center of projection x
-		camera.p.y = GetFloat(++it, end);		// center of projection y
-		camera.p.z = GetFloat(++it, end);		// center of projection z
+		camera.p[0] = GetFloat(++it, end);		// center of projection x
+		camera.p[1] = GetFloat(++it, end);		// center of projection y
+		camera.p[2] = GetFloat(++it, end);		// center of projection z
 
-		camera.n.x = GetFloat(++it, end);		// image plane normal x
-		camera.n.y = GetFloat(++it, end);		// image plane normal y
-		camera.n.z = GetFloat(++it, end);		// image plane normal z
+		camera.n[0] = GetFloat(++it, end);		// image plane normal x
+		camera.n[1] = GetFloat(++it, end);		// image plane normal y
+		camera.n[2] = GetFloat(++it, end);		// image plane normal z
 
-		camera.up.x = GetFloat(++it, end);	// up direction x
-		camera.up.y = GetFloat(++it, end);	// up direction y
-		camera.up.z = GetFloat(++it, end);	// up direction z
+		camera.up[0] = GetFloat(++it, end);	// up direction x
+		camera.up[1] = GetFloat(++it, end);	// up direction y
+		camera.up[2] = GetFloat(++it, end);	// up direction z
 
 		camera.f = GetFloat(++it, end);		// distance to image plane
 		camera.iw = GetFloat(++it, end);		// image width
@@ -507,12 +507,11 @@ namespace SPTracer
 
 		while (!IsEndToken(++it, end))
 		{
-			std::shared_ptr<Vec3> v = std::make_shared<Vec3>();
-			v->x = GetFloat(it, end);
-			v->y = GetFloat(++it, end);
-			v->z = GetFloat(++it, end);
+			float x = GetFloat(it, end);
+			float y = GetFloat(++it, end);
+			float z = GetFloat(++it, end);
 
-			vertices_.push_back(std::move(v));
+			vertices_.push_back(std::make_shared<Vec3>(x, y, z));
 		}
 	}
 

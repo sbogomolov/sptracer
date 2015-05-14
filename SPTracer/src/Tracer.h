@@ -13,7 +13,7 @@
 namespace SPTracer
 {
 	struct Ray;
-	struct Vec3;
+	class Vec3;
 	class XYZConverter;
 	class RGBConverter;
 	class ImageUpdater;

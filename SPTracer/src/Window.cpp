@@ -221,7 +221,7 @@ void Window::ImageUpdater::UpdateImage(std::vector<SPTracer::Vec3> image, std::s
 			for (unsigned int j = 0; j < w; j++)
 			{
 				SPTracer::Vec3& c = image[i * w + j];
-				SetPixel(hdcMem, j, i, RGB((byte)(c.x * 255), (byte)(c.y * 255), (byte)(c.z * 255)));
+				SetPixel(hdcMem, j, i, RGB((byte)(c[0] * 255), (byte)(c[1] * 255), (byte)(c[2] * 255)));
 			}
 		}
 

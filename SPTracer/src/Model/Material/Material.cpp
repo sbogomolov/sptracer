@@ -18,7 +18,7 @@ namespace SPTracer
 		// Scaling factor in this case is: BDRF/PDF = 1
 
 		// z axis
-		static const Vec3 zAxis{ 0.0f, 0.0f, 1.0f };
+		static const Vec3 zAxis(0.0f, 0.0f, 1.0f);
 
 		// generate random ray direction using BDRF as PDF
 		float phi = Util::RandFloat(0.0f, 2.0f * Util::Pi);

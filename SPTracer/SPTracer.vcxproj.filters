@@ -69,9 +69,6 @@
     <ClCompile Include="src\Tracer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\PixelData.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Model\Color\RGBColor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

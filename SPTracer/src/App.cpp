@@ -207,33 +207,33 @@ Config App::ReadConfig(std::string configFile) const
 				// camera eye point
 				config.cameraLoaded = true;
 				std::vector<float> values = SPTracer::StringUtil::GetFloatArray(value, 3, ';');
-				config.camera.p = SPTracer::Vec3{
+				config.camera.p = SPTracer::Vec3(
 					values[0],
 					values[1],
 					values[2]
-				};
+				);
 			}
 			else if (parameter == "cameraviewdirection")
 			{
 				// camera view direction
 				config.cameraLoaded = true;
 				std::vector<float> values = SPTracer::StringUtil::GetFloatArray(value, 3, ';');
-				config.camera.n = SPTracer::Vec3{
+				config.camera.n = SPTracer::Vec3(
 					values[0],
 					values[1],
 					values[2]
-				};
+				);
 			}
 			else if (parameter == "cameraupdirection")
 			{
 				// camera up direction
 				config.cameraLoaded = true;
 				std::vector<float> values = SPTracer::StringUtil::GetFloatArray(value, 3, ';');
-				config.camera.up = SPTracer::Vec3{
+				config.camera.up = SPTracer::Vec3(
 					values[0],
 					values[1],
 					values[2]
-				};
+				);
 			}
 			else if (parameter == "camerafocaldistance")
 			{

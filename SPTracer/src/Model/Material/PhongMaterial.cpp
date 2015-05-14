@@ -74,7 +74,7 @@ namespace SPTracer
 		// Scaling factor in this case is: BDRF/PDF = 1
 
 		// z axis
-		static const Vec3 zAxis{ 0.0f, 0.0f, 1.0f };
+		static const Vec3 zAxis(0.0f, 0.0f, 1.0f);
 
 		// ideal specular reflection direction
 		Vec3 specularDirection = ray.direction - 2 * (ray.direction * intersection.normal) * intersection.normal;

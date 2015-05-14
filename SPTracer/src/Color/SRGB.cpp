@@ -7,11 +7,11 @@ namespace SPTracer
 
 	Vec3 SRGB::GetRGB(const Vec3& xyz) const
 	{
-		return Vec3{
-			GammaCorrect( 3.2406f * xyz.x - 1.5372f * xyz.y - 0.4986f * xyz.z),		// r
-			GammaCorrect(-0.9689f * xyz.x + 1.8758f * xyz.y + 0.0415f * xyz.z),		// g
-			GammaCorrect( 0.0557f * xyz.x - 0.2040f * xyz.y + 1.0570f * xyz.z)		// b
-		};
+		return Vec3(
+			GammaCorrect( 3.2406f * xyz[0] - 1.5372f * xyz[1] - 0.4986f * xyz[2]),		// r
+			GammaCorrect(-0.9689f * xyz[0] + 1.8758f * xyz[1] + 0.0415f * xyz[2]),		// g
+			GammaCorrect( 0.0557f * xyz[0] - 0.2040f * xyz[1] + 1.0570f * xyz[2])		// b
+		);
 	}
 
 	float SRGB::GammaCorrect(float c) const

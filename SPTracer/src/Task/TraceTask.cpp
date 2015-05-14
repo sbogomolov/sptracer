@@ -31,10 +31,10 @@ namespace SPTracer
 		static const Vec3& origin = camera.p;
 		
 		// y-axis
-		static const Vec3 yAxis{ 0.0f, 1.0f, 0.0f };
+		static const Vec3 yAxis(0.0f, 1.0f, 0.0f);
 
 		// z-axis
-		static const Vec3 zAxisReversed{ 0.0f, 0.0f, -1.0f };
+		static const Vec3 zAxisReversed(0.0f, 0.0f, -1.0f);
 
 		// width and height
 		static const unsigned int width = tracer_.GetWidth();
@@ -53,7 +53,7 @@ namespace SPTracer
 		static thread_local std::vector<Vec3> color(width * height);
 
 		// reset all colors
-		std::fill(color.begin(), color.end(), Vec3{});
+		std::fill(color.begin(), color.end(), Vec3());
 
 		for (size_t i = 0; i < height; i++)
 		{
@@ -64,11 +64,11 @@ namespace SPTracer
 				float v = top - (static_cast<float>(i) + Util::RandFloat(0.0f, 1.0f)) * pixelHeight;
 
 				// direction
-				Vec3 direction{
+				Vec3 direction(
 					u,			// x
 					v,			// y
 					-camera.f	// z
-				};
+				);
 
 				// normalize direction
 				direction.Normalize();

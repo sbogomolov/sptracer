@@ -1,14 +1,16 @@
 #ifndef SPT_VEC3_H
 #define SPT_VEC3_H
 
+#include <vector>
+
 namespace SPTracer
 {
 
-	struct Vec3
+	class Vec3
 	{
-		float x;
-		float y;
-		float z;
+	public:
+		explicit Vec3();
+		explicit Vec3(float x, float y, float z);
 
 		void Normalize();
 		float EuclideanNorm() const;
@@ -18,6 +20,9 @@ namespace SPTracer
 
 		static Vec3 FromPhiTheta(float phi, float cosTheta);
 		static Vec3 CrossProduct(const Vec3& lhs, const Vec3& rhs);
+
+		const float& operator[](size_t index) const;
+		float& operator[](size_t index);
 
 		friend Vec3 operator+(const Vec3& lhs, const Vec3& rhs);
 		friend Vec3 operator+(const Vec3& lhs, const float& rhs);
@@ -39,6 +44,9 @@ namespace SPTracer
 
 		friend Vec3 operator/(const Vec3& lhs, const float& rhs);
 		friend void operator/=(Vec3& lhs, const float& rhs);
+
+	private:
+		float values_[3];
 	};
 
 }

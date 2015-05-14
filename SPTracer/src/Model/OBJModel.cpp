@@ -114,57 +114,39 @@ namespace SPTracer
 			{
 				// vertex coordinates
 				std::vector<float> xyz = StringUtil::GetFloatArray(value, 3, 4, ' ');
-				
-				// create new vertex
-				auto v = std::make_shared<Vec3>();
-				v->x = xyz[0];
-				v->y = xyz[1];
-				v->z = xyz[2];
 
 				// add new vertex
-				vertices_.push_back(std::move(v));
+				vertices_.push_back(std::make_shared<Vec3>(xyz[0], xyz[1], xyz[2]));
 			}
 			else if (keyword == "vt")
 			{
 				// texture coordinates
 				std::vector<float> uvw = StringUtil::GetFloatArray(value, 2, 3, ' ');
-				
-				// create new texture coordinates
-				auto vt = std::make_shared<Vec3>();
-				vt->x = uvw[0];
-				vt->y = uvw[1];
-				vt->z = uvw.size() > 2 ? uvw[2] : 0.0f;
 
 				// add new texture coordinates
-				textureCoordinates_.push_back(std::move(vt));
+				textureCoordinates_.push_back(std::make_shared<Vec3>(
+					uvw[0],
+					uvw[1],
+					uvw.size() > 2 ? uvw[2] : 0.0f));
 			}
 			else if (keyword == "vn")
 			{
 				// vertex normal
 				std::vector<float> xyz = StringUtil::GetFloatArray(value, 3, ' ');
-				
-				// create new vertex normal
-				auto vn = std::make_shared<Vec3>();
-				vn->x = xyz[0];
-				vn->y = xyz[1];
-				vn->z = xyz[2];
 
 				// add new vertex normal
-				vertexNormals_.push_back(std::move(vn));
+				vertexNormals_.push_back(std::make_shared<Vec3>(xyz[0], xyz[1], xyz[2]));
 			}
 			else if (keyword == "vp")
 			{
 				// parameter space vertex
 				std::vector<float> uvw = StringUtil::GetFloatArray(value, 1, 3, ' ');
 
-				// create new parameter space vertex
-				auto vp = std::make_shared<Vec3>();
-				vp->x = uvw[0];
-				vp->y = uvw.size() > 1 ? uvw[1] : 0.0f;
-				vp->z = uvw.size() > 2 ? uvw[2] : 0.0f;
-
 				// add new parameter space vertex
-				parameterSpaceVertices_.push_back(std::move(vp));
+				parameterSpaceVertices_.push_back(std::make_shared<Vec3>(
+					uvw[0],
+					uvw.size() > 1 ? uvw[1] : 0.0f,
+					uvw.size() > 2 ? uvw[2] : 0.0f));
 			}
 			else if (keyword == "o")
 			{

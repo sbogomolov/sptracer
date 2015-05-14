@@ -19,25 +19,21 @@ namespace SPTracer
 		//
 
 		// X planes
-		float t1 = (min_.x - ray.origin.x) * invDirection.x;
-		float t2 = (max_.x - ray.origin.x) * invDirection.x;
+		float t1 = (min_[0] - ray.origin[0]) * invDirection[0];
+		float t2 = (max_[0] - ray.origin[0]) * invDirection[0];
 
 		float tmin = std::min(t1, t2);
 		float tmax = std::max(t1, t2);
 
-		// Y planes
-		t1 = (min_.y - ray.origin.y) * invDirection.y;
-		t2 = (max_.y - ray.origin.y) * invDirection.y;
+		// Y and Z planes
+		for (size_t i = 1; i < 3; i++)
+		{
+			t1 = (min_[i] - ray.origin[i]) * invDirection[i];
+			t2 = (max_[i] - ray.origin[i]) * invDirection[i];
 
-		tmin = std::max(tmin, std::min(t1, t2));
-		tmax = std::min(tmax, std::max(t1, t2));
-
-		// Z planes
-		t1 = (min_.z - ray.origin.z) * invDirection.z;
-		t2 = (max_.z - ray.origin.z) * invDirection.z;
-
-		tmin = std::max(tmin, std::min(t1, t2));
-		tmax = std::min(tmax, std::max(t1, t2));
+			tmin = std::max(tmin, std::min(t1, t2));
+			tmax = std::min(tmax, std::max(t1, t2));
+		}
 
 		return tmax > std::max(tmin, 0.0f);
 	}
