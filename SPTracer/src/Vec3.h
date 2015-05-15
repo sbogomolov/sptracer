@@ -9,8 +9,10 @@ namespace SPTracer
 	class Vec3
 	{
 	public:
-		explicit Vec3();
-		explicit Vec3(float x, float y, float z);
+		Vec3();
+		Vec3(float x, float y, float z);
+
+		void Reset();
 
 		void Normalize();
 		float EuclideanNorm() const;

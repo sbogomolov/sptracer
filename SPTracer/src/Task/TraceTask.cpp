@@ -53,7 +53,7 @@ namespace SPTracer
 		static thread_local std::vector<Vec3> color(width * height);
 
 		// reset all colors
-		std::fill(color.begin(), color.end(), Vec3());
+		std::for_each(color.begin(), color.end(), [](Vec3& c) { c.Reset(); });
 
 		for (size_t i = 0; i < height; i++)
 		{

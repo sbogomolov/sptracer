@@ -18,6 +18,11 @@ namespace SPTracer
 		*this /= this->EuclideanNorm();
 	}
 
+	void Vec3::Reset()
+	{
+		std::fill(values_.begin(), values_.end(), 0.0f);
+	}
+
 	float Vec3::EuclideanNorm() const
 	{
 		return std::sqrt((*this) * (*this));
