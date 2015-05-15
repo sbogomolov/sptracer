@@ -76,32 +76,12 @@ Window::~Window()
 	DeleteObject(bitmap_);
 }
 
-const unsigned int Window::GetWidth() const
-{
-	return width_;
-}
-
-const unsigned int Window::GetHeight() const
-{
-	return height_;
-}
-
-const HWND& Window::GetHwnd() const
+const HWND& Window::hwnd() const
 {
 	return hwnd_;
 }
 
-const HBITMAP& Window::GetBitmap() const
-{
-	return bitmap_;
-}
-
-std::mutex& Window::GetMutex()
-{
-	return mutex_;
-}
-
-std::shared_ptr<Window::ImageUpdater> Window::GetImageUpdater()
+std::shared_ptr<Window::ImageUpdater> Window::imageUpdater()
 {
 	return imageUpdater_;
 }
@@ -189,17 +169,17 @@ Window::ImageUpdater::ImageUpdater(Window& window)
 	: window_(window)
 {
 	char buf[1024];
-	GetWindowTextA(window_.GetHwnd(), buf, 1024);
+	GetWindowTextA(window_.hwnd_, buf, 1024);
 	title_ = std::string(buf);
 }
 
 void Window::ImageUpdater::UpdateImage(std::vector<SPTracer::Vec3> image, std::string status)
 {
-	const auto& hwnd = window_.GetHwnd();
+	const auto& hwnd = window_.hwnd_;
 
 	{
 		// lock
-		std::lock_guard<std::mutex> lock(window_.GetMutex());
+		std::lock_guard<std::mutex> lock(window_.mutex_);
 		
 		// update title
 		SetWindowTextA(hwnd, (title_ + ": " + status).c_str());
@@ -211,11 +191,11 @@ void Window::ImageUpdater::UpdateImage(std::vector<SPTracer::Vec3> image, std::s
 		HDC hdcMem = CreateCompatibleDC(hdc);
 
 		// select bitmap to memory DC
-		SelectObject(hdcMem, window_.GetBitmap());
+		SelectObject(hdcMem, window_.bitmap_);
 
 		// draw to bitmap
-		const auto& w = window_.GetWidth();
-		const auto& h = window_.GetHeight();
+		const auto& w = window_.width_;
+		const auto& h = window_.height_;
 		for (unsigned int i = 0; i < h; i++)
 		{
 			for (unsigned int j = 0; j < w; j++)

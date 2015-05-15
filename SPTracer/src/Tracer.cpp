@@ -48,46 +48,6 @@ namespace SPTracer {
 	{
 	}
 
-	const Camera& Tracer::GetCamera() const
-	{
-		return camera_;
-	}
-
-	const Model& Tracer::GetModel() const
-	{
-		return *model_;
-	}
-
-	const XYZConverter& Tracer::GetXYZConverter() const
-	{
-		return *xyzConverter_;
-	}
-
-	TaskScheduler& Tracer::GetTaskScheduler() const
-	{
-		return *taskScheduler_;
-	}
-
-	const Spectrum& Tracer::GetSpectrum() const
-	{
-		return spectrum_;
-	}
-
-	unsigned int Tracer::GetWidth() const
-	{
-		return width_;
-	}
-
-	unsigned int Tracer::GetHeight() const
-	{
-		return height_;
-	}
-
-	unsigned long Tracer::GetPixelsCount() const
-	{
-		return pixelsCount_;
-	}
-
 	void Tracer::Run()
 	{
 		// record start time

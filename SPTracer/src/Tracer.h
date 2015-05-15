@@ -22,20 +22,13 @@ namespace SPTracer
 	
 	class Tracer
 	{
+		friend class TraceTask;
+
 	public:
 		Tracer(std::unique_ptr<Model> model, Camera camera,
 			unsigned int width, unsigned int height, unsigned int numThreads,
 			Spectrum spectrum);
 		virtual ~Tracer();
-
-		const Camera& GetCamera() const;
-		const Model& GetModel() const;
-		const XYZConverter& GetXYZConverter() const;
-		TaskScheduler& GetTaskScheduler() const;
-		const Spectrum& GetSpectrum() const;
-		unsigned int GetWidth() const;
-		unsigned int GetHeight() const;
-		unsigned long GetPixelsCount() const;
 
 		void Run();
 		void AddSamples(std::vector<Vec3>& color);

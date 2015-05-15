@@ -61,12 +61,12 @@ App::App(std::string configFile)
 			config.spectrum);
 
 		// assign image updater
-		tracer_->SetImageUpdater(window_->GetImageUpdater());
+		tracer_->SetImageUpdater(window_->imageUpdater());
 	}
 	catch (SPTracer::Exception e)
 	{
 		// show message box with error
-		MessageBoxA(window_->GetHwnd(), e.what(), "Error", MB_ICONERROR | MB_OK);
+		MessageBoxA(window_->hwnd(), e.what(), "Error", MB_ICONERROR | MB_OK);
 		std::terminate();
 		return;
 	}

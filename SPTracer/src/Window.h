@@ -11,6 +11,8 @@
 
 class Window
 {
+	friend class ImageUpdater;
+
 public:
 	class ImageUpdater : public SPTracer::ImageUpdater
 	{
@@ -26,12 +28,8 @@ public:
 	Window(unsigned int width, unsigned int height, std::string title);
 	virtual ~Window();
 	
-	const unsigned int GetWidth() const;
-	const unsigned int GetHeight() const;
-	const HWND& GetHwnd() const;
-	const HBITMAP& GetBitmap() const;
-	std::mutex& GetMutex();
-	std::shared_ptr<ImageUpdater> GetImageUpdater();
+	const HWND& hwnd() const;
+	std::shared_ptr<ImageUpdater> imageUpdater();
 
 private:
 	HWND hwnd_;

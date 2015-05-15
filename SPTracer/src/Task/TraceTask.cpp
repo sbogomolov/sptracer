@@ -21,13 +21,13 @@ namespace SPTracer
 	void TraceTask::Run()
 	{
 		// model
-		static const Model& model = tracer_.GetModel();
+		static const Model& model = *tracer_.model_;
 
 		// color converter
-		static const XYZConverter& xyzConverter = tracer_.GetXYZConverter();
+		static const XYZConverter& xyzConverter = *tracer_.xyzConverter_;
 		
 		// camera
-		static const Camera& camera = tracer_.GetCamera();
+		static const Camera& camera = tracer_.camera_;
 		static const Vec3& origin = camera.p;
 		
 		// y-axis
@@ -37,15 +37,15 @@ namespace SPTracer
 		static const Vec3 zAxisReversed(0.0f, 0.0f, -1.0f);
 
 		// width and height
-		static const unsigned int width = tracer_.GetWidth();
-		static const unsigned int height = tracer_.GetHeight();
+		static const unsigned int width = tracer_.width_;
+		static const unsigned int height = tracer_.height_;
 		static const float pixelWidth = camera.iw / width;
 		static const float pixelHeight = camera.ih / height;
 		static const float left = camera.icx - camera.iw / 2.0f;
 		static const float top = camera.icy + camera.ih / 2.0f;
 
 		// spectrum
-		static const Spectrum& spectrum = tracer_.GetSpectrum();
+		static const Spectrum& spectrum = tracer_.spectrum_;
 
 		static thread_local std::vector<float> reflectance(spectrum.count);
 		static thread_local std::vector<float> radiance(spectrum.count);
@@ -221,7 +221,7 @@ namespace SPTracer
 		}
 
 		// add another task
-		tracer_.GetTaskScheduler().AddTask(std::make_unique<TraceTask>(tracer_));
+		tracer_.taskScheduler_->AddTask(std::make_unique<TraceTask>(tracer_));
 		
 		// add samples
 		tracer_.AddSamples(color);
