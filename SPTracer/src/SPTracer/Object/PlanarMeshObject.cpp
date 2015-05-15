@@ -15,12 +15,12 @@ namespace SPTracer
 		face_(std::move(face)),
 		holeFaces_(std::move(holeFaces))
 	{
-		// compute hole faces normals
+		// compute hole faces normals, edge1 and edge2
 		for (auto& holeFace : holeFaces_)
 		{
 			holeFace.normals.reserve(holeFace.vertices.size() - 2);
-			holeFace.e1.reserve(holeFace.vertices.size() - 2);
-			holeFace.e2.reserve(holeFace.vertices.size() - 2);
+			holeFace.edge1.reserve(holeFace.vertices.size() - 2);
+			holeFace.edge2.reserve(holeFace.vertices.size() - 2);
 
 			const Vec3& v1 = *holeFace.vertices[0];
 			for (size_t i = 0; i < holeFace.vertices.size() - 2; i++)
@@ -35,15 +35,15 @@ namespace SPTracer
 				const Vec3& v3 = *holeFace.vertices[i + 1];
 
 				holeFace.normals.push_back(ComputeNormal(v1, v2, v3));
-				holeFace.e1.push_back(v2 - v1);
-				holeFace.e2.push_back(v3 - v1);
+				holeFace.edge1.push_back(v2 - v1);
+				holeFace.edge2.push_back(v3 - v1);
 			}
 		}
 
-		// compute face normals
+		// compute face normals, edge1 and edge2
 		face_.normals.reserve(face_.vertices.size() - 2);
-		face_.e1.reserve(face_.vertices.size() - 2);
-		face_.e2.reserve(face_.vertices.size() - 2);
+		face_.edge1.reserve(face_.vertices.size() - 2);
+		face_.edge2.reserve(face_.vertices.size() - 2);
 
 		const Vec3& v1 = *face_.vertices[0];
 		for (size_t i = 0; i < face_.vertices.size() - 2; i++)
@@ -52,8 +52,8 @@ namespace SPTracer
 			const Vec3& v3 = *face_.vertices[i + 2];
 
 			face_.normals.push_back(ComputeNormal(v1, v2, v3));
-			face_.e1.push_back(v2 - v1);
-			face_.e2.push_back(v3 - v1);
+			face_.edge1.push_back(v2 - v1);
+			face_.edge2.push_back(v3 - v1);
 		}
 	}
 
@@ -74,7 +74,7 @@ namespace SPTracer
 				const Vec3& v2 = *holeFace.vertices[i + 2];
 				const Vec3& v3 = *holeFace.vertices[i + 1];
 
-				if (IntersectWithTriangle(ray, v1, v2, v3, holeFace.normals[i], holeFace.e1[i], holeFace.e2[i], intersection))
+				if (IntersectWithTriangle(ray, v1, v2, v3, holeFace.normals[i], holeFace.edge1[i], holeFace.edge2[i], intersection))
 				{
 					return false;
 				}
@@ -88,7 +88,7 @@ namespace SPTracer
 			const Vec3& v2 = *face_.vertices[i + 1];
 			const Vec3& v3 = *face_.vertices[i + 2];
 
-			if (IntersectWithTriangle(ray, v1, v2, v3, face_.normals[i], face_.e1[i], face_.e2[i], intersection))
+			if (IntersectWithTriangle(ray, v1, v2, v3, face_.normals[i], face_.edge1[i], face_.edge2[i], intersection))
 			{
 				return true;
 			}

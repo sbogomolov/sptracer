@@ -11,8 +11,8 @@ namespace SPTracer
 	{
 		std::vector<std::shared_ptr<Vec3>> vertices;
 		std::vector<Vec3> normals;
-		std::vector<Vec3> e1;
-		std::vector<Vec3> e2;
+		std::vector<Vec3> edge1;
+		std::vector<Vec3> edge2;
 
 		bool hasTextureCoordinates = false;
 		std::vector<std::shared_ptr<Vec3>> textureCoordinates;
