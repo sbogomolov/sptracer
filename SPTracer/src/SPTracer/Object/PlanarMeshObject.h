@@ -3,6 +3,7 @@
 
 #include "../stdafx.h"
 #include "../Vec3.h"
+#include "Face.h"
 #include "Object.h"
 
 namespace SPTracer
@@ -14,18 +15,15 @@ namespace SPTracer
 	public:
 		PlanarMeshObject(
 			std::string name,
-			std::shared_ptr<Material> material, 
-			std::vector<std::shared_ptr<Vec3>> outline,
-			std::vector<std::vector<std::shared_ptr<Vec3>>> holes);
+			std::shared_ptr<Material> material,
+			Face face,
+			std::vector<Face> holeFaces);
 
 		bool Intersect(const Ray& ray, Intersection& intersection) const override;
 
 	private:
-		std::vector<std::shared_ptr<Vec3>> outline_;
-		std::vector<std::vector<std::shared_ptr<Vec3>>> holes_;
-		
-		std::vector<Vec3> outlineNormals_;
-		std::vector<std::vector<Vec3>> holesNormals_;
+		Face face_;
+		std::vector<Face> holeFaces_;
 	};
 
 }

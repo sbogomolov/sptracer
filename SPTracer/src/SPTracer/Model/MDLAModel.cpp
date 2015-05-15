@@ -7,6 +7,7 @@
 #include "../Material/LambertianMaterial.h"
 #include "../Material/PhongLuminaireMaterial.h"
 #include "../Model/Camera.h"
+#include "../Object/Face.h"
 #include "../Object/PlanarMeshObject.h"
 #include "MDLAModel.h"
 
@@ -619,11 +620,11 @@ namespace SPTracer
 			}
 		}
 
-		// shift outline and holes indices
-		std::vector<std::shared_ptr<Vec3>> outlinePtr(outline.size());
-		std::vector<std::vector<std::shared_ptr<Vec3>>> holesPtr;
+		// get outline and holes vertices
+		std::vector<std::shared_ptr<Vec3>> outlineVertices(outline.size());
+		std::vector<std::vector<std::shared_ptr<Vec3>>> holesVertices;
 
-		std::transform(outline.begin(), outline.end(), outlinePtr.begin(),
+		std::transform(outline.begin(), outline.end(), outlineVertices.begin(),
 			[&](unsigned long i) { return vertices_[verticesStartIndex + i]; });
 
 		for (auto& hole : holes)
@@ -632,15 +633,29 @@ namespace SPTracer
 			std::transform(hole.begin(), hole.end(), holePtr.begin(),
 				[&](unsigned long i) { return vertices_[verticesStartIndex + i]; });
 			
-			holesPtr.push_back(std::move(holePtr));
+			holesVertices.push_back(std::move(holePtr));
+		}
+
+		// create outline face
+		Face face{};
+		face.vertices = std::move(outlineVertices);
+
+		// create hole faces
+		std::vector<Face> holeFaces;
+		holeFaces.reserve(holesVertices.size());
+		for (auto& holeVertices : holesVertices)
+		{
+			Face f{};
+			f.vertices = std::move(holeVertices);
+			holeFaces.push_back(f);
 		}
 
 		// add object
 		objects_.push_back(std::make_shared<PlanarMeshObject>(
 			std::move(name),
 			std::move(material),
-			std::move(outlinePtr),
-			std::move(holesPtr)));
+			std::move(face),
+			std::move(holeFaces)));
 	}
 
 }
