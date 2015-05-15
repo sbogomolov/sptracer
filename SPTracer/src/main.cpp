@@ -1,6 +1,5 @@
-#include "stdafx.h"
 #include "App.h"
-#include "Log.h"
+#include "SPTracer/Log.h"
 
 int main(int argc, char **argv)
 {

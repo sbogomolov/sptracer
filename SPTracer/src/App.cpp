@@ -1,14 +1,14 @@
-#include "stdafx.h"
 #include "App.h"
-#include "Camera.h"
-#include "Exception.h"
-#include "Log.h"
-#include "StringUtil.h"
-#include "Tracer.h"
-#include "Vec3.h"
 #include "Window.h"
-#include "Model/MDLAModel.h"
-#include "Model/OBJModel.h"
+#include "WindowImageUpdater.h"
+#include "SPTracer/Exception.h"
+#include "SPTracer/Log.h"
+#include "SPTracer/StringUtil.h"
+#include "SPTracer/Vec3.h"
+#include "SPTracer/Model/Camera.h"
+#include "SPTracer/Model/MDLAModel.h"
+#include "SPTracer/Model/OBJModel.h"
+#include "SPTracer/Tracer/Tracer.h"
 
 App::App(std::string configFile)
 {

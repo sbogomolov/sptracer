@@ -1,9 +1,8 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-#include "stdafx.h"
-#include "Camera.h"
-#include "Spectrum.h"
+#include "SPTracer/Color/Spectrum.h"
+#include "SPTracer/Model/Camera.h"
 
 struct Config
 {
