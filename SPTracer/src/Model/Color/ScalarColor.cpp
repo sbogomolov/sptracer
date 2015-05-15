@@ -1,3 +1,4 @@
+#include "../../stdafx.h"
 #include "ScalarColor.h"
 
 namespace SPTracer

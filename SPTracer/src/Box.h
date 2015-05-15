@@ -1,6 +1,7 @@
 #ifndef SPT_BOX_H
 #define SPT_BOX_H
 
+#include "stdafx.h"
 #include "Vec3.h"
 
 namespace SPTracer

@@ -1,10 +1,4 @@
-#include <algorithm>
-#include <chrono>
-#include <cmath>
-#include <iomanip>
-#include <numeric>
-#include <sstream>
-#include <thread>
+#include "stdafx.h"
 #include "Model/Model.h"
 #include "Color/CIE1931.h"
 #include "Color/SRGB.h"

@@ -1,4 +1,4 @@
-#include <thread>
+#include "../stdafx.h"
 #include "../Ray.h"
 #include "../Tracer.h"
 #include "TaskScheduler.h"

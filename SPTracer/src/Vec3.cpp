@@ -1,4 +1,4 @@
-#include <cmath>
+#include "stdafx.h"
 #include "Util.h"
 #include "Vec3.h"
 

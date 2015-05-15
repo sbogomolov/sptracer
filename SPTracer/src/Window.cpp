@@ -1,6 +1,4 @@
-#include <cstdlib>
-#include <exception>
-#include <sstream>
+#include "stdafx.h"
 #include "Log.h"
 #include "Window.h"
 

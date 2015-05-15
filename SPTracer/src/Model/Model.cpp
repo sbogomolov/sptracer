@@ -1,4 +1,4 @@
-#include <limits>
+#include "../stdafx.h"
 #include "../Intersection.h"
 #include "../Ray.h"
 #include "../Util.h"

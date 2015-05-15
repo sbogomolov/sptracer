@@ -1,8 +1,7 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-#include <memory>
-#include <string>
+#include "stdafx.h"
 #include "Camera.h"
 #include "Spectrum.h"
 

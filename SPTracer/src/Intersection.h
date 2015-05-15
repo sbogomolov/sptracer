@@ -1,7 +1,7 @@
 #ifndef SPT_INTERSECTION_H
 #define SPT_INTERSECTION_H
 
-#include <memory>
+#include "stdafx.h"
 #include "Vec3.h"
 
 namespace SPTracer

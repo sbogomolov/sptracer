@@ -1,11 +1,7 @@
 #ifndef SPT_TRACER_H
 #define SPT_TRACER_H
 
-#include <chrono>
-#include <memory>
-#include <string>
-#include <mutex>
-#include <vector>
+#include "stdafx.h"
 #include "Camera.h"
 #include "PixelData.h"
 #include "Spectrum.h"

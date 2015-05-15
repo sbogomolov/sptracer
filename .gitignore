@@ -1,4 +1,5 @@
 .vs
+ipch
 Win32
 x64
 *.opensdf

@@ -1,9 +1,7 @@
 #ifndef SPT_MATERIAL_H
 #define SPT_MATERIAL_H
 
-#include <memory>
-#include <string>
-#include <vector>
+#include "../../stdafx.h"
 
 namespace SPTracer
 {

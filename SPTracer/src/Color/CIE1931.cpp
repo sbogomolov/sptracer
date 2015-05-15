@@ -1,6 +1,7 @@
-#include "CIE1931.h"
+#include "../stdafx.h"
 #include "../Spectrum.h"
 #include "../Vec3.h"
+#include "CIE1931.h"
 
 namespace SPTracer
 {

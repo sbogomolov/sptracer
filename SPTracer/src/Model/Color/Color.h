@@ -1,6 +1,8 @@
 #ifndef SPT_COLOR_H
 #define SPT_COLOR_H
 
+#include "../../stdafx.h"
+
 namespace SPTracer
 {
 

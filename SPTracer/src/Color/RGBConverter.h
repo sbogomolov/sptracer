@@ -1,6 +1,8 @@
 #ifndef SPT_RGB_CONVERTER_H
 #define SPT_RGB_CONVERTER_H
 
+#include "../stdafx.h"
+
 namespace SPTracer
 {
 

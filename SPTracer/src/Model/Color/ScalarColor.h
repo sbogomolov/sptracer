@@ -1,6 +1,7 @@
 #ifndef SPT_SCALAR_COLOR_H
 #define SPT_SCALAR_COLOR_H
 
+#include "../../stdafx.h"
 #include "Color.h"
 
 namespace SPTracer

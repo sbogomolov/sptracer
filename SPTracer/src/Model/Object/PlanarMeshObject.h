@@ -1,8 +1,7 @@
 #ifndef SPT_PLANAR_MESH_OBJECT_H
 #define SPT_PLANAR_MESH_OBJECT_H
 
-#include <memory>
-#include <vector>
+#include "../../stdafx.h"
 #include "../../Vec3.h"
 #include "Object.h"
 

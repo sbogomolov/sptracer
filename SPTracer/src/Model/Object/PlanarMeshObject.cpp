@@ -1,3 +1,4 @@
+#include "../../stdafx.h"
 #include "../../Intersection.h"
 #include "../Material/Material.h"
 #include "PlanarMeshObject.h"

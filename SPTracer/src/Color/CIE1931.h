@@ -1,7 +1,7 @@
 #ifndef SPT_CIE1931_H
 #define SPT_CIE1931_H
 
-#include <vector>
+#include "../stdafx.h"
 #include "XYZConverter.h"
 
 namespace SPTracer

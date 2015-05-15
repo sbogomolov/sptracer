@@ -1,7 +1,7 @@
 #ifndef SPT_LOG_H
 #define SPT_LOG_H
 
-#include <string>
+#include "stdafx.h"
 
 namespace SPTracer {
 

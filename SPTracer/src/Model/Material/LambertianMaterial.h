@@ -1,6 +1,7 @@
 #ifndef SPT_LAMBERTIAN_MATERIAL_H
 #define SPT_LAMBERTIAN_MATERIAL_H
 
+#include "../../stdafx.h"
 #include "Material.h"
 
 namespace SPTracer

@@ -1,8 +1,7 @@
 #ifndef SPT_MODEL_H
 #define SPT_MODEL_H
 
-#include <string>
-#include <unordered_map>
+#include "../stdafx.h"
 #include "../Vec3.h"
 #include "Material/Material.h"
 #include "Object/Object.h"

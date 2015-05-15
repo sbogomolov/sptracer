@@ -1,7 +1,7 @@
 #ifndef IMAGE_UPDATER_H
 #define IMAGE_UPDATER_H
 
-#include <string>
+#include "stdafx.h"
 #include "Vec3.h"
 
 namespace SPTracer

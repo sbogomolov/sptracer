@@ -1,4 +1,4 @@
-#include <cmath>
+#include "../../stdafx.h"
 #include "../../Intersection.h"
 #include "../../Ray.h"
 #include "../../Spectrum.h"

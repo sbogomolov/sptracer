@@ -1,9 +1,7 @@
 #ifndef APP_H
 #define APP_H
 
-#include <memory>
-#include <string>
-#include <windows.h>
+#include "stdafx.h"
 #include "Config.h"
 
 namespace SPTracer

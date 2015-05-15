@@ -1,14 +1,11 @@
-#include <algorithm>
-#include <fstream>
-#include <numeric>
-#include <sstream>
-#include "Face.h"
-#include "OBJModel.h"
+#include "../stdafx.h"
 #include "../Exception.h"
 #include "../Log.h"
 #include "../Spectrum.h"
 #include "../StringUtil.h"
 #include "../Util.h"
+#include "Face.h"
+#include "OBJModel.h"
 #include "Color/RGBColor.h"
 #include "Material/LambertianMaterial.h"
 #include "Material/PhongMaterial.h"

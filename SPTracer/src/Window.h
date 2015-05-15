@@ -1,10 +1,7 @@
 #ifndef WINDOW_H
 #define WINDOW_H
 
-#include <memory>
-#include <mutex>
-#include <string>
-#include <vector>
+#include "stdafx.h"
 #include <windows.h>
 #include "ImageUpdater.h"
 #include "Vec3.h"

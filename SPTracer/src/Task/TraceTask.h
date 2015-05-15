@@ -1,6 +1,7 @@
 #ifndef TRACE_TASK_H
 #define TRACE_TASK_H
 
+#include "../stdafx.h"
 #include "../Ray.h"
 #include "Task.h"
 

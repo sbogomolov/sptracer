@@ -1,8 +1,7 @@
-#include <algorithm>
-#include <sstream>
-#include "SpectralColor.h"
+#include "../../stdafx.h"
 #include "../../Exception.h"
 #include "../../Log.h"
+#include "SpectralColor.h"
 
 namespace SPTracer
 {

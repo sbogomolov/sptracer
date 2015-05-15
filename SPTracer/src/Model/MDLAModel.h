@@ -1,9 +1,7 @@
 #ifndef SPT_MDLA_MODEL_H
 #define SPT_MDLA_MODEL_H
 
-#include <memory>
-#include <string>
-#include <vector>
+#include "../stdafx.h"
 #include "Model.h"
 
 namespace SPTracer

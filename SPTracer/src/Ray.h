@@ -1,7 +1,7 @@
 #ifndef SPT_RAY_H
 #define SPT_RAY_H
 
-#include <vector>
+#include "stdafx.h"
 #include "Vec3.h"
 
 namespace SPTracer

@@ -1,7 +1,4 @@
-#include <algorithm>
-#include <ctype.h>
-#include <exception>
-#include <sstream>
+#include "stdafx.h"
 #include "Exception.h"
 #include "StringUtil.h"
 

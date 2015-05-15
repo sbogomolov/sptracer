@@ -1,6 +1,4 @@
-#include <exception>
-#include <fstream>
-#include <memory>
+#include "stdafx.h"
 #include "App.h"
 #include "Camera.h"
 #include "Exception.h"

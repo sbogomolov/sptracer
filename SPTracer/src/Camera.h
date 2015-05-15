@@ -1,6 +1,7 @@
 #ifndef SPT_CAMERA_H
 #define SPT_CAMERA_H
 
+#include "stdafx.h"
 #include "Vec3.h"
 
 namespace SPTracer

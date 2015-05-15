@@ -1,7 +1,7 @@
 #ifndef SPT_PHONG_LUMINAIRE_MATERIAL_H
 #define SPT_PHONG_LUMINAIRE_MATERIAL_H
 
-#include <memory>
+#include "../../stdafx.h"
 #include "Material.h"
 
 namespace SPTracer

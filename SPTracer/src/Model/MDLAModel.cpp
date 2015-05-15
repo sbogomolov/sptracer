@@ -1,8 +1,4 @@
-#include <algorithm>
-#include <exception>
-#include <fstream>
-#include <sstream>
-#include <vector>
+#include "../stdafx.h"
 #include "../Camera.h"
 #include "../Exception.h"
 #include "../Log.h"

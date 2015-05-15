@@ -1,6 +1,8 @@
 #ifndef SPT_UTIL_H
 #define SPT_UTIL_H
 
+#include "stdafx.h"
+
 namespace SPTracer
 {
 

@@ -1,6 +1,8 @@
 #ifndef SPT_PIXEL_DATA_H
 #define SPT_PIXEL_DATA_H
 
+#include "stdafx.h"
+
 namespace SPTracer
 {
 

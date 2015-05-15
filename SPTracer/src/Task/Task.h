@@ -1,6 +1,8 @@
 #ifndef SPT_TASK_H
 #define SPT_TASK_H
 
+#include "../stdafx.h"
+
 namespace SPTracer
 {
 

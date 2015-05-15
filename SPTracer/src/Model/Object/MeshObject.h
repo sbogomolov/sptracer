@@ -1,8 +1,7 @@
 #ifndef SPT_MESH_OBJECT_H
 #define SPT_MESH_OBJECT_H
 
-#include <memory>
-#include <vector>
+#include "../../stdafx.h"
 #include "../../Vec3.h"
 #include "../Face.h"
 #include "Object.h"

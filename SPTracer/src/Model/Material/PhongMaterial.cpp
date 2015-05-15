@@ -1,8 +1,4 @@
-#include <algorithm>
-#include <cmath>
-#include <functional>
-#include <numeric>
-#include <string>
+#include "../../stdafx.h"
 #include "../../Exception.h"
 #include "../../Intersection.h"
 #include "../../Log.h"

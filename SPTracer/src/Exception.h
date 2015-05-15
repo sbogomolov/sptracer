@@ -1,8 +1,7 @@
 #ifndef SPT_EXCEPTION_H
 #define SPT_EXCEPTION_H
 
-#include <exception>
-#include <string>
+#include "stdafx.h"
 
 namespace SPTracer
 {

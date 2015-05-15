@@ -1,5 +1,4 @@
-#include <windows.h>
-#include <sstream>
+#include "stdafx.h"
 #include "App.h"
 #include "Log.h"
 

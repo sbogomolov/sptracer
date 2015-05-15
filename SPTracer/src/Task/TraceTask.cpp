@@ -1,5 +1,4 @@
-#include <algorithm>
-#include <numeric>
+#include "../stdafx.h"
 #include "../Intersection.h"
 #include "../Spectrum.h"
 #include "../Tracer.h"

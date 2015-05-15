@@ -1,8 +1,4 @@
-#include <cstdio>
-#include <ctime>
-#include <fstream>
-#include <sstream>
-#include <vector>
+#include "stdafx.h"
 #include "Log.h"
 
 namespace SPTracer {

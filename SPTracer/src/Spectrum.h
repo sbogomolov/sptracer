@@ -1,7 +1,7 @@
 #ifndef SPT_SPECTRUM_H
 #define SPT_SPECTRUM_H
 
-#include <vector>
+#include "stdafx.h"
 
 namespace SPTracer
 {

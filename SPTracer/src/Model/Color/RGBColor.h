@@ -1,8 +1,7 @@
 #ifndef SPT_RGB_COLOR_H
 #define SPT_RGB_COLOR_H
 
-#include <mutex>
-#include <vector>
+#include "../../stdafx.h"
 #include "Color.h"
 
 namespace SPTracer

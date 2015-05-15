@@ -1,4 +1,4 @@
-#include <algorithm>
+#include "stdafx.h"
 #include "Box.h"
 #include "Intersection.h"
 #include "Ray.h"

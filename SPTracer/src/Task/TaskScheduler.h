@@ -1,10 +1,7 @@
 #ifndef SPT_TASK_SCHEDULER_H
 #define SPT_TASK_SCHEDULER_H
 
-#include <condition_variable>
-#include <memory>
-#include <mutex>
-#include <queue>
+#include "../stdafx.h"
 #include "Task.h"
 
 namespace SPTracer

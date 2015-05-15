@@ -1,7 +1,7 @@
 #ifndef SPT_SPECTRAL_COLOR_H
 #define SPT_SPECTRAL_COLOR_H
 
-#include <vector>
+#include "../../stdafx.h"
 #include "Color.h"
 
 namespace SPTracer

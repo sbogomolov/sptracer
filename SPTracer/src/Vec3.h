@@ -1,7 +1,7 @@
 #ifndef SPT_VEC3_H
 #define SPT_VEC3_H
 
-#include <array>
+#include "stdafx.h"
 
 namespace SPTracer
 {

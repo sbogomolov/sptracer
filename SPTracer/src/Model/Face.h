@@ -1,8 +1,7 @@
 #ifndef SPT_FACE_H
 #define SPT_FACE_H
 
-#include <memory>
-#include <vector>
+#include "../stdafx.h"
 #include "../Vec3.h"
 
 namespace SPTracer

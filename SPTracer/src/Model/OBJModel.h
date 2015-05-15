@@ -1,7 +1,7 @@
 #ifndef SPT_OBJ_MODEL_H
 #define SPT_OBJ_MODEL_H
 
-#include <string>
+#include "../stdafx.h"
 #include "Model.h"
 
 namespace SPTracer
