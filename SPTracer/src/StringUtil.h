@@ -10,6 +10,8 @@ namespace SPTracer
 	class StringUtil
 	{
 	public:
+		StringUtil() = delete;
+
 		static std::string& ToLower(std::string& str);
 		static std::string& TrimBegin(std::string& str, const std::string& chars);
 		static std::string& TrimEnd(std::string& str, const std::string& chars);
@@ -21,9 +23,6 @@ namespace SPTracer
 		static float GetFloat(const std::string& str);
 		static std::vector<float> GetFloatArray(const std::string& str, size_t count, char delim);
 		static std::vector<float> GetFloatArray(const std::string& str, size_t minCount, size_t maxCount, char delim);
-
-	private:
-		StringUtil();
 	};
 
 }

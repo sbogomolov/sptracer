@@ -16,7 +16,7 @@ namespace SPTracer
 			float amplitude;	// amplitude
 		};
 
-		SpectralColor(std::vector<Amplitude> amplitudes);
+		explicit SpectralColor(std::vector<Amplitude> amplitudes);
 		float GetAmplitude(float waveLength) const override;
 
 	private:

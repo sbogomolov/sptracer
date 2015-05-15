@@ -15,9 +15,9 @@ namespace SPTracer
 		virtual void Run() = 0;
 
 	protected:
-		Task(Tracer& tracer) : tracer_(tracer) { };
-
 		Tracer& tracer_;
+
+		explicit Task(Tracer& tracer) : tracer_(tracer) { };
 	};
 
 }

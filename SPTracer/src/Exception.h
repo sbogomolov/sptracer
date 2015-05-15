@@ -10,8 +10,8 @@ namespace SPTracer
 	class Exception : public std::exception
 	{
 	public:
-		Exception(const char* msg) : std::exception(msg) { };
-		Exception(std::string msg) : std::exception(msg.c_str()) { };
+		explicit Exception(const char* msg) : std::exception(msg) { };
+		explicit Exception(std::string msg) : std::exception(msg.c_str()) { };
 	};
 
 }

@@ -13,14 +13,6 @@ namespace SPTracer {
 	// set initial state
 	Log::State Log::state_ = Log::State::NotInitialized;
 
-	Log::Log()
-	{
-	}
-
-	Log::~Log()
-	{
-	}
-
 	void Log::Init()
 	{
 		// try to open log file to check if it exists

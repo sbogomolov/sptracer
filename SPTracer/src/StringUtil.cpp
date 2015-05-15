@@ -8,10 +8,6 @@
 namespace SPTracer
 {
 
-	StringUtil::StringUtil()
-	{
-	}
-
 	// Converts string to lowercase.
 	std::string& StringUtil::ToLower(std::string& str)
 	{

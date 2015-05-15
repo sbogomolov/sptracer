@@ -13,7 +13,8 @@ namespace SPTracer
 	class TraceTask : public Task
 	{
 	public:
-		TraceTask(Tracer& tracer);
+		explicit TraceTask(Tracer& tracer);
+
 		void Run() override;
 	};
 

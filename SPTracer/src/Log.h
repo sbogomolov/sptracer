@@ -8,6 +8,8 @@ namespace SPTracer {
 	class Log
 	{
 	public:
+		Log() = delete;
+
 		static void Trace(std::string msg);
 		static void Debug(std::string msg);
 		static void Info(std::string msg);
@@ -34,8 +36,6 @@ namespace SPTracer {
 		static const std::string FileName;
 		static State state_;
 
-		Log();
-		virtual ~Log();
 		static void Init();
 		static std::string FormatTime();
 		static std::string FormatLevel(Level logLevel);

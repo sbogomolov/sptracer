@@ -16,10 +16,10 @@ class Window;
 class App
 {
 public:
-	App(std::string configFile);
+	explicit App(std::string configFile);
 	virtual ~App();
-	int Run();
 
+	int Run();
 	bool IsInitialized() const;
 
 private:
