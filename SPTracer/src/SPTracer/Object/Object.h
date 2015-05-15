@@ -30,7 +30,15 @@ namespace SPTracer
 		Object(std::string name, std::shared_ptr<Material> material);
 
 		static Vec3 ComputeNormal(const Vec3& v1, const Vec3& v2, const Vec3& v3);
-		static bool IntersectWithTriangle(const Ray& ray, const Vec3& n, const Vec3& v1, const Vec3& v2, const Vec3& v3, Intersection& intersection);
+		static bool IntersectWithTriangle(
+			const Ray& ray,
+			const Vec3& v1,
+			const Vec3& v2,
+			const Vec3& v3,
+			const Vec3& n,
+			const Vec3& e1,
+			const Vec3& e2,
+			Intersection& intersection);
 
 	private:
 		std::string name_;

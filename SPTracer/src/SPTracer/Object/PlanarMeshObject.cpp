@@ -18,40 +18,42 @@ namespace SPTracer
 		// compute hole faces normals
 		for (auto& holeFace : holeFaces_)
 		{
-			auto& vert = holeFace.vertices;
-			auto& norm = holeFace.normals;
+			holeFace.normals.reserve(holeFace.vertices.size() - 2);
+			holeFace.e1.reserve(holeFace.vertices.size() - 2);
+			holeFace.e2.reserve(holeFace.vertices.size() - 2);
 
-			norm.reserve(vert.size() - 2);
-			const Vec3& v1 = *vert[0];
-			for (size_t i = 0; i < vert.size() - 2; i++)
+			const Vec3& v1 = *holeFace.vertices[0];
+			for (size_t i = 0; i < holeFace.vertices.size() - 2; i++)
 			{
-				const Vec3& v2 = *vert[i + 1];
-				const Vec3& v3 = *vert[i + 2];
-
 				// Vertices order is reversed here. In the MDLA file vertices for a hole 
 				// are written in a clockwise order as oposed to the vertices of face.
 				// Holes are checked for intersection in the same way as face, so their 
 				// normals must point in the same direction as face normals. That is why
 				// 2nd and 3rd vertices for every triangle are swapped.
 
-				Vec3 n = ComputeNormal(v1, v3, v2);
-				norm.push_back(std::move(n));
+				const Vec3& v2 = *holeFace.vertices[i + 2];
+				const Vec3& v3 = *holeFace.vertices[i + 1];
+
+				holeFace.normals.push_back(ComputeNormal(v1, v2, v3));
+				holeFace.e1.push_back(v2 - v1);
+				holeFace.e2.push_back(v3 - v1);
 			}
 		}
 
 		// compute face normals
-		auto& vert = face_.vertices;
-		auto& norm = face_.normals;
+		face_.normals.reserve(face_.vertices.size() - 2);
+		face_.e1.reserve(face_.vertices.size() - 2);
+		face_.e2.reserve(face_.vertices.size() - 2);
 
-		norm.reserve(vert.size() - 2);
-		const Vec3& v1 = *vert[0];
-		for (size_t i = 0; i < vert.size() - 2; i++)
+		const Vec3& v1 = *face_.vertices[0];
+		for (size_t i = 0; i < face_.vertices.size() - 2; i++)
 		{
-			const Vec3& v2 = *vert[i + 1];
-			const Vec3& v3 = *vert[i + 2];
+			const Vec3& v2 = *face_.vertices[i + 1];
+			const Vec3& v3 = *face_.vertices[i + 2];
 
-			Vec3 n = ComputeNormal(v1, v2, v3);
-			norm.push_back(std::move(n));
+			face_.normals.push_back(ComputeNormal(v1, v2, v3));
+			face_.e1.push_back(v2 - v1);
+			face_.e2.push_back(v3 - v1);
 		}
 	}
 
@@ -60,22 +62,19 @@ namespace SPTracer
 		// check intersection with holeFaces face
 		for (const auto& holeFace : holeFaces_)
 		{
-			const auto& vert = holeFace.vertices;
-			const auto& norm = holeFace.normals;
-
-			const Vec3& v1 = *vert[0];
-			for (size_t i = 0; i < norm.size(); i++)
+			const Vec3& v1 = *holeFace.vertices[0];
+			for (size_t i = 0; i < holeFace.normals.size(); i++)
 			{
-				const Vec3& v2 = *vert[i + 1];
-				const Vec3& v3 = *vert[i + 2];
-
 				// Vertices order is reversed here. In the MDLA file vertices for a hole 
 				// are written in a clockwise order as oposed to the vertices of face.
 				// Holes are checked for intersection in the same way as face, so their 
 				// normals must point in the same direction as face normals. That is why
 				// 2nd and 3rd vertices for every triangle are swapped.
 
-				if (IntersectWithTriangle(ray, norm[i], v1, v3, v2, intersection))
+				const Vec3& v2 = *holeFace.vertices[i + 2];
+				const Vec3& v3 = *holeFace.vertices[i + 1];
+
+				if (IntersectWithTriangle(ray, v1, v2, v3, holeFace.normals[i], holeFace.e1[i], holeFace.e2[i], intersection))
 				{
 					return false;
 				}
@@ -83,16 +82,13 @@ namespace SPTracer
 		}
 
 		// check intersection with face
-		const auto& vert = face_.vertices;
-		const auto& norm = face_.normals;
-
-		const Vec3& v1 = *vert[0];
-		for (size_t i = 0; i < norm.size(); i++)
+		const Vec3& v1 = *face_.vertices[0];
+		for (size_t i = 0; i < face_.normals.size(); i++)
 		{
-			const Vec3& v2 = *vert[i + 1];
-			const Vec3& v3 = *vert[i + 2];
+			const Vec3& v2 = *face_.vertices[i + 1];
+			const Vec3& v3 = *face_.vertices[i + 2];
 
-			if (IntersectWithTriangle(ray, norm[i], v1, v2, v3, intersection))
+			if (IntersectWithTriangle(ray, v1, v2, v3, face_.normals[i], face_.e1[i], face_.e2[i], intersection))
 			{
 				return true;
 			}

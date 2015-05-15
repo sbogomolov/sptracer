@@ -33,14 +33,19 @@ namespace SPTracer
 		return normal;
 	}
 
-	bool Object::IntersectWithTriangle(const Ray& ray, const Vec3& n, const Vec3& v1, const Vec3& v2, const Vec3& v3, Intersection& intersection)
+	bool Object::IntersectWithTriangle(
+		const Ray& ray,
+		const Vec3& v1,
+		const Vec3& v2,
+		const Vec3& v3,
+		const Vec3& n,
+		const Vec3& e1,
+		const Vec3& e2,
+		Intersection& intersection)
 	{
 		//
 		// Moller–Trumbore intersection algorithm
 		//
-
-		Vec3 e1 = v2 - v1;
-		Vec3 e2 = v3 - v1;
 
 		Vec3 p = Vec3::CrossProduct(ray.direction, e2);
 		float det = e1 * p;
@@ -68,17 +73,21 @@ namespace SPTracer
 		// invert determinant
 		float invDet = 1.0f / det;
 
+		// get first barycentric coordinate
 		Vec3 s = ray.origin - v1;
 		float u = invDet * (s * p);
 
+		// check first barycentric coordinate
 		if ((u < 0.0f) || (u > 1.0f))
 		{
 			return false;
 		}
 
+		// get second barycentric coordinate
 		Vec3 q = Vec3::CrossProduct(s, e1);
 		float v = invDet * (ray.direction * q);
 
+		// check second and third barycentric coordinates
 		if ((v < 0.0f) || ((u + v) > 1.0f))
 		{
 			return false;
