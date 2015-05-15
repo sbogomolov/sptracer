@@ -16,10 +16,10 @@ namespace SPTracer
 		holeFaces_(std::move(holeFaces))
 	{
 		// compute hole faces normals
-		for (auto& face : holeFaces_)
+		for (auto& holeFace : holeFaces_)
 		{
-			auto& vert = face.vertices;
-			auto& norm = face.normals;
+			auto& vert = holeFace.vertices;
+			auto& norm = holeFace.normals;
 
 			norm.reserve(vert.size() - 2);
 			const Vec3& v1 = *vert[0];
@@ -58,10 +58,10 @@ namespace SPTracer
 	bool PlanarMeshObject::Intersect(const Ray& ray, Intersection& intersection) const
 	{
 		// check intersection with holeFaces face
-		for (const auto& face : holeFaces_)
+		for (const auto& holeFace : holeFaces_)
 		{
-			const auto& vert = face.vertices;
-			const auto& norm = face.normals;
+			const auto& vert = holeFace.vertices;
+			const auto& norm = holeFace.normals;
 
 			const Vec3& v1 = *vert[0];
 			for (size_t i = 0; i < norm.size(); i++)
