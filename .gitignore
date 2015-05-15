@@ -5,3 +5,5 @@ x64
 *.opensdf
 *.sdf
 *.suo
+*.psess
+*.vsp
