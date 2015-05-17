@@ -31,8 +31,8 @@ namespace SPTracer
 			t1 = (min_[i] - ray.origin[i]) * invDirection[i];
 			t2 = (max_[i] - ray.origin[i]) * invDirection[i];
 
-			tmin = std::max(tmin, std::min(t1, t2));
-			tmax = std::min(tmax, std::max(t1, t2));
+			tmin = std::max(std::min(t1, t2), tmin);
+			tmax = std::min(std::max(t1, t2), tmax);
 		}
 
 		return tmax > std::max(tmin, 0.0f);
