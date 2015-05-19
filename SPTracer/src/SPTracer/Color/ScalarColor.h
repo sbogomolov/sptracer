@@ -11,7 +11,7 @@ namespace SPTracer
 	{
 	public:
 		explicit ScalarColor(float amplitude);
-		float GetAmplitude(float waveLength) const override;
+		virtual float GetAmplitude(float waveLength) const override;
 
 	private:
 		float amplitude_;

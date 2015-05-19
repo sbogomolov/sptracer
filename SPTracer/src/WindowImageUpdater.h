@@ -13,7 +13,7 @@ class WindowImageUpdater : public SPTracer::ImageUpdater
 public:
 	explicit WindowImageUpdater(Window& window);
 	
-	void UpdateImage(std::vector<SPTracer::Vec3> image, std::string status) override;
+	virtual void UpdateImage(std::vector<SPTracer::Vec3> image, std::string status) override;
 
 private:
 	Window& window_;

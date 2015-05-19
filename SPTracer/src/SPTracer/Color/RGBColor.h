@@ -12,7 +12,7 @@ namespace SPTracer
 	public:
 		RGBColor(float r, float g, float b);
 
-		float GetAmplitude(float waveLength) const override;
+		virtual float GetAmplitude(float waveLength) const override;
 
 	private:
 		float r_;

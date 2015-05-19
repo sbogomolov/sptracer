@@ -19,7 +19,7 @@ namespace SPTracer
 			Face face,
 			std::vector<Face> holeFaces);
 
-		bool Intersect(const Ray& ray, Intersection& intersection) const override;
+		virtual bool Intersect(const Ray& ray, Intersection& intersection) const override;
 
 	private:
 		Face face_;

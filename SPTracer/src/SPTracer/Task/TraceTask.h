@@ -16,7 +16,7 @@ namespace SPTracer
 	public:
 		explicit TraceTask(Tracer& tracer);
 
-		void Run() override;
+		virtual void Run() override;
 	};
 
 }
