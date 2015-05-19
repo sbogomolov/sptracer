@@ -1,6 +1,5 @@
 #include "../stdafx.h"
 #include "../Material/Material.h"
-#include "../Tracer/Intersection.h"
 #include "PlanarMeshObject.h"
 
 namespace SPTracer
