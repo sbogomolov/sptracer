@@ -1,8 +1,12 @@
 #ifndef KD_TREE_H
 #define KD_TREE_H
 
+#include "../stdafx.h"
+#include "../Object/Face.h"
+
 namespace SPTracer
 {
+	class Box;
 	class KdTreeNode;
 	class Model;
 
@@ -18,7 +22,7 @@ namespace SPTracer
 		static const float TraverseStepCost;
 		static const float IntersectionCost;
 
-		// std::unique_ptr<KdTreeNode> Divide(const std::vector<Face> )
+		std::unique_ptr<KdTreeNode> Build(std::vector<Face> faces, const Box& box);
 
 		std::unique_ptr<KdTreeNode> rootNode_;
 	};

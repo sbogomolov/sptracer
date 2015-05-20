@@ -3,6 +3,7 @@
 
 #include "../stdafx.h"
 #include "../Vec3.h"
+#include "Face.h"
 
 namespace SPTracer
 {
@@ -15,9 +16,10 @@ namespace SPTracer
 	class Object
 	{
 	public:
+		Object(std::string name, std::shared_ptr<Material> material, std::vector<Face> faces, bool computeNormals);
 		virtual ~Object();
 
-		virtual bool Intersect(const Ray& ray, Intersection& intersection) const = 0;
+		bool Intersect(const Ray& ray, Intersection& intersection) const;
 		void GetNewRayDiffuse(const Ray& ray, const Intersection& intersection, Ray& newRay, std::vector<float>& reflectance) const;
 		bool GetNewRaySpecular(const Ray& ray, const Intersection& intersection, Ray& newRay, std::vector<float>& reflectance) const;
 		void GetRadiance(const Ray& ray, const Intersection& intersection, std::vector<float>& radiance) const;
@@ -28,8 +30,6 @@ namespace SPTracer
 		float GetSpecularReflectionProbability(int waveIndex) const;	// use index -1 for average reflectivity
 
 	protected:
-		Object(std::string name, std::shared_ptr<Material> material);
-
 		static Vec3 ComputeNormal(const Vec3& v1, const Vec3& v2, const Vec3& v3);
 		static bool IntersectWithTriangle(
 			const Ray& ray,
@@ -39,7 +39,7 @@ namespace SPTracer
 	private:
 		std::string name_;
 		std::shared_ptr<Material> material_;
-
+		std::vector<Face> faces_;
 	};
 
 }

@@ -63,13 +63,7 @@
     <ClCompile Include="src\SPTracer\Object\Box.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\SPTracer\Object\MeshObject.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\SPTracer\Object\Object.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\SPTracer\Object\PlanarMeshObject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\SPTracer\Task\TaskScheduler.cpp">
@@ -176,13 +170,7 @@
     <ClInclude Include="src\SPTracer\Object\Face.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\SPTracer\Object\MeshObject.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\SPTracer\Object\Object.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\SPTracer\Object\PlanarMeshObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\SPTracer\Task\Task.h">

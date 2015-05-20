@@ -9,7 +9,7 @@
 #include "../Material/LambertianMaterial.h"
 #include "../Material/PhongMaterial.h"
 #include "../Material/PhongLuminaireMaterial.h"
-#include "../Object/MeshObject.h"
+#include "../Object/Object.h"
 #include "../Object/Vertex.h"
 #include "OBJModel.h"
 
@@ -249,7 +249,7 @@ namespace SPTracer
 					const Vertex& v3 = vertices[i + 2];
 
 					// new face
-					faces.push_back(Face(v1, v2, v3));
+					faces.push_back(Face(material, v1, v2, v3));
 				}
 			}
 		}
@@ -375,7 +375,7 @@ namespace SPTracer
 	void OBJModel::AddObject(std::string name, std::shared_ptr<Material> material, std::vector<Face> faces, bool computeNormals)
 	{
 		// create and add object
-		auto object = std::make_shared<MeshObject>(std::move(name), std::move(material), std::move(faces), computeNormals);
+		auto object = std::make_shared<Object>(std::move(name), std::move(material), std::move(faces), computeNormals);
 		objects_.push_back(std::move(object));
 	}
 

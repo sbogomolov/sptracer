@@ -8,7 +8,7 @@
 #include "../Material/PhongLuminaireMaterial.h"
 #include "../Model/Camera.h"
 #include "../Object/Face.h"
-#include "../Object/PlanarMeshObject.h"
+#include "../Object/Object.h"
 #include "MDLAModel.h"
 
 namespace SPTracer
@@ -610,21 +610,8 @@ namespace SPTracer
 			throw Exception(s);
 		}
 
-		// check holes
-		for (const auto& hole : holes)
-		{
-			if (hole.size() < 3)
-			{
-				// duplicate outline polygon
-				std::string s = "MDLAModel: Not enough vertices in hole";
-				Log::Error(s);
-				throw Exception(s);
-			}
-		}
-
 		// get outline and holes vertices
 		std::vector<Vertex> outlineVertices(outline.size());
-		std::vector<std::vector<Vertex>> holesVertices;
 
 		auto getVertex = [&](unsigned long i) {
 			Vertex v{};
@@ -633,22 +620,6 @@ namespace SPTracer
 		};
 
 		std::transform(outline.begin(), outline.end(), outlineVertices.begin(), getVertex);
-
-		for (auto& hole : holes)
-		{
-			std::vector<Vertex> holeVertices(hole.size());
-			std::transform(hole.begin(), hole.end(), holeVertices.begin(),	getVertex);
-			
-			holesVertices.push_back(std::move(holeVertices));
-		}
-
-		// check number of outline vertices
-		if (outlineVertices.size() < 3)
-		{
-			std::string msg = "The outline has less than 3 vertices";
-			Log::Error(msg);
-			throw Exception(msg);
-		}
 
 		// add outline faces
 		std::vector<Face> faces;
@@ -659,43 +630,15 @@ namespace SPTracer
 			const Vertex& v3 = outlineVertices[i + 2];
 
 			// new face
-			faces.push_back(Face(v1, v2, v3));
-		}
-		
-		// create hole faces
-		std::vector<Face> holeFaces;
-		for (auto& holeVertices : holesVertices)
-		{
-			if (holeVertices.size() < 3)
-			{
-				std::string msg = "The hole has less than 3 vertices";
-				Log::Error(msg);
-				throw Exception(msg);
-			}
-
-			const Vertex& v1 = outlineVertices[0];
-			for (size_t i = 0; i < outlineVertices.size() - 2; i++)
-			{
-				// Vertices order is reversed here. In the MDLA file vertices for a hole 
-				// are written in a clockwise order as oposed to the vertices of face.
-				// Holes are checked for intersection in the same way as face, so their 
-				// normals must point in the same direction as face normals. That is why
-				// 2nd and 3rd vertices for every triangle are swapped.
-
-				const Vertex& v2 = outlineVertices[i + 2];
-				const Vertex& v3 = outlineVertices[i + 1];
-
-				// new face
-				holeFaces.push_back(Face(v1, v2, v3));
-			}
+			faces.push_back(Face(material, v1, v2, v3));
 		}
 
 		// add object
-		objects_.push_back(std::make_shared<PlanarMeshObject>(
+		objects_.push_back(std::make_shared<Object>(
 			std::move(name),
 			std::move(material),
 			std::move(faces),
-			std::move(holeFaces)));
+			true));
 	}
 
 }

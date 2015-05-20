@@ -248,19 +248,7 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
-    <ClCompile Include="src\SPTracer\Object\MeshObject.cpp">
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../stdafx.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../stdafx.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../stdafx.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../stdafx.h</PrecompiledHeaderFile>
-    </ClCompile>
     <ClCompile Include="src\SPTracer\Object\Object.cpp">
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../stdafx.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../stdafx.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../stdafx.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../stdafx.h</PrecompiledHeaderFile>
-    </ClCompile>
-    <ClCompile Include="src\SPTracer\Object\PlanarMeshObject.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../stdafx.h</PrecompiledHeaderFile>
@@ -330,7 +318,6 @@
     <ClInclude Include="src\SPTracer\Object\Face.h" />
     <ClInclude Include="src\SPTracer\Material\PhongMaterial.h" />
     <ClInclude Include="src\SPTracer\Object\Box.h" />
-    <ClInclude Include="src\SPTracer\Object\MeshObject.h" />
     <ClInclude Include="src\SPTracer\Model\OBJModel.h" />
     <ClInclude Include="src\SPTracer\Object\Vertex.h" />
     <ClInclude Include="src\SPTracer\Tracer\KdTree.h" />
@@ -354,7 +341,6 @@
     <ClInclude Include="src\SPTracer\Model\MDLAModel.h" />
     <ClInclude Include="src\SPTracer\Model\Model.h" />
     <ClInclude Include="src\SPTracer\Object\Object.h" />
-    <ClInclude Include="src\SPTracer\Object\PlanarMeshObject.h" />
     <ClInclude Include="src\SPTracer\Tracer\Ray.h" />
     <ClInclude Include="src\SPTracer\Color\Spectrum.h" />
     <ClInclude Include="src\SPTracer\stdafx.h" />

@@ -20,4 +20,15 @@ namespace SPTracer
 		return *rootNode_;
 	}
 
+	std::unique_ptr<KdTreeNode> KdTree::Build(std::vector<Face> faces, const Box& box)
+	{
+		if (false/* check terminate condition */)
+		{
+			// return std::make_unique<KdTreeNode>(std::move(faces));
+		}
+
+
+		return std::unique_ptr<KdTreeNode>();
+	}
+
 }
