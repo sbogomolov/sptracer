@@ -130,6 +130,7 @@ namespace SPTracer
 
 		// normal
 		intersection.normal = (1.0f - u - v) * vertices_[0].normal + u * vertices_[1].normal + v * vertices_[2].normal;
+		intersection.normal.Normalize();
 
 		// fill the intersection data
 		intersection.point = std::move(point);
