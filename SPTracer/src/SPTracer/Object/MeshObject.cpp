@@ -5,25 +5,23 @@
 namespace SPTracer
 {
 
-	MeshObject::MeshObject(std::string name, std::shared_ptr<Material> material, std::vector<Face> faces)
+	MeshObject::MeshObject(std::string name, std::shared_ptr<Material> material, std::vector<Face> faces, bool computeNormals)
 		: Object(std::move(name), std::move(material)), faces_(std::move(faces))
 	{
 		// compute face normals, edge1 and edge2
-		for (auto& face : faces_)
+		if (computeNormals)
 		{
-			face.normals.reserve(face.vertices.size() - 2);
-			face.edge1.reserve(face.vertices.size() - 2);
-			face.edge2.reserve(face.vertices.size() - 2);
-
-			const Vec3& v1 = *face.vertices[0];
-			for (size_t i = 0; i < face.vertices.size() - 2; i++)
+			for (auto& face : faces_)
 			{
-				const Vec3& v2 = *face.vertices[i + 1];
-				const Vec3& v3 = *face.vertices[i + 2];
+				const Vec3& v1 = face[0].coord;
+				const Vec3& v2 = face[1].coord;
+				const Vec3& v3 = face[2].coord;
 
-				face.normals.push_back(ComputeNormal(v1, v2, v3));
-				face.edge1.push_back(v2 - v1);
-				face.edge2.push_back(v3 - v1);
+				const Vec3 n = ComputeNormal(v1, v2, v3);
+				for (size_t i = 0; i < 3; i++)
+				{
+					face[i].normal = n;
+				}
 			}
 		}
 	}
@@ -33,16 +31,9 @@ namespace SPTracer
 		// check intersection with faces
 		for (const auto& face : faces_)
 		{
-			const Vec3& v1 = *face.vertices[0];
-			for (size_t i = 0; i < face.normals.size(); i++)
+			if (IntersectWithTriangle(ray, face, intersection))
 			{
-				const Vec3& v2 = *face.vertices[i + 1];
-				const Vec3& v3 = *face.vertices[i + 2];
-
-				if (IntersectWithTriangle(ray, v1, v2, v3, face.normals[i], face.edge1[i], face.edge2[i], intersection))
-				{
-					return true;
-				}
+				return true;
 			}
 		}
 

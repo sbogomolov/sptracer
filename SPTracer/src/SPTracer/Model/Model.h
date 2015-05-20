@@ -20,10 +20,6 @@ namespace SPTracer
 
 	protected:
 		std::unordered_map<std::string, std::shared_ptr<Material>> materials_;
-		std::vector<std::shared_ptr<Vec3>> vertices_;
-		std::vector<std::shared_ptr<Vec3>> vertexNormals_;
-		std::vector<std::shared_ptr<Vec3>> textureCoordinates_;
-		std::vector<std::shared_ptr<Vec3>> parameterSpaceVertices_;
 		std::vector<std::shared_ptr<Object>> objects_;
 
 		Model();

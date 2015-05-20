@@ -497,19 +497,22 @@ namespace SPTracer
 			std::move(reflectiveMaterial), std::move(radiantExitance), phongExponent->GetAmplitude(0.0f), spectrum);
 	}
 
-	void MDLAModel::ParseVertexPositions(TokensIterator& it, TokensIterator& end)
+	std::vector<Vec3> MDLAModel::ParseVertexPositions(TokensIterator& it, TokensIterator& end)
 	{
 		// check keyword
 		CheckKeyword(it, end, "vrtxPstn");
 
+		std::vector<Vec3> vertexCoordinates;
 		while (!IsEndToken(++it, end))
 		{
 			float x = GetFloat(it, end);
 			float y = GetFloat(++it, end);
 			float z = GetFloat(++it, end);
 
-			vertices_.push_back(std::make_shared<Vec3>(x, y, z));
+			vertexCoordinates.push_back(Vec3(x, y, z));
 		}
+
+		return vertexCoordinates;
 	}
 
 	void MDLAModel::ParsePolygon(TokensIterator& it, TokensIterator& end, std::vector<unsigned long>& vertices)
@@ -554,15 +557,14 @@ namespace SPTracer
 		std::vector<unsigned long> outline;
 		std::vector<std::vector<unsigned long>> holes;
 
-		unsigned long verticesStartIndex = static_cast<unsigned long>(vertices_.size());
-
+		std::vector<Vec3> vertexCoordinates;
 		while (!IsEndToken(++it, end))
 		{
 			const std::string& type = *it;
 			if (type == "vrtxPstn")
 			{
 				// get vertices
-				ParseVertexPositions(it, end);
+				vertexCoordinates = ParseVertexPositions(it, end);
 			}
 			else if (type == "plygn")
 			{
@@ -621,40 +623,78 @@ namespace SPTracer
 		}
 
 		// get outline and holes vertices
-		std::vector<std::shared_ptr<Vec3>> outlineVertices(outline.size());
-		std::vector<std::vector<std::shared_ptr<Vec3>>> holesVertices;
+		std::vector<Vertex> outlineVertices(outline.size());
+		std::vector<std::vector<Vertex>> holesVertices;
 
-		std::transform(outline.begin(), outline.end(), outlineVertices.begin(),
-			[&](unsigned long i) { return vertices_[verticesStartIndex + i]; });
+		auto getVertex = [&](unsigned long i) {
+			Vertex v{};
+			v.coord = vertexCoordinates[i];
+			return v;
+		};
+
+		std::transform(outline.begin(), outline.end(), outlineVertices.begin(), getVertex);
 
 		for (auto& hole : holes)
 		{
-			std::vector<std::shared_ptr<Vec3>> holePtr(hole.size());
-			std::transform(hole.begin(), hole.end(), holePtr.begin(),
-				[&](unsigned long i) { return vertices_[verticesStartIndex + i]; });
+			std::vector<Vertex> holeVertices(hole.size());
+			std::transform(hole.begin(), hole.end(), holeVertices.begin(),	getVertex);
 			
-			holesVertices.push_back(std::move(holePtr));
+			holesVertices.push_back(std::move(holeVertices));
 		}
 
-		// create outline face
-		Face face{};
-		face.vertices = std::move(outlineVertices);
+		// check number of outline vertices
+		if (outlineVertices.size() < 3)
+		{
+			std::string msg = "The outline has less than 3 vertices";
+			Log::Error(msg);
+			throw Exception(msg);
+		}
 
+		// add outline faces
+		std::vector<Face> faces;
+		const Vertex& v1 = outlineVertices[0];
+		for (size_t i = 0; i < outlineVertices.size() - 2; i++)
+		{
+			const Vertex& v2 = outlineVertices[i + 1];
+			const Vertex& v3 = outlineVertices[i + 2];
+
+			// new face
+			faces.push_back(Face(v1, v2, v3));
+		}
+		
 		// create hole faces
 		std::vector<Face> holeFaces;
-		holeFaces.reserve(holesVertices.size());
 		for (auto& holeVertices : holesVertices)
 		{
-			Face f{};
-			f.vertices = std::move(holeVertices);
-			holeFaces.push_back(f);
+			if (holeVertices.size() < 3)
+			{
+				std::string msg = "The hole has less than 3 vertices";
+				Log::Error(msg);
+				throw Exception(msg);
+			}
+
+			const Vertex& v1 = outlineVertices[0];
+			for (size_t i = 0; i < outlineVertices.size() - 2; i++)
+			{
+				// Vertices order is reversed here. In the MDLA file vertices for a hole 
+				// are written in a clockwise order as oposed to the vertices of face.
+				// Holes are checked for intersection in the same way as face, so their 
+				// normals must point in the same direction as face normals. That is why
+				// 2nd and 3rd vertices for every triangle are swapped.
+
+				const Vertex& v2 = outlineVertices[i + 2];
+				const Vertex& v3 = outlineVertices[i + 1];
+
+				// new face
+				holeFaces.push_back(Face(v1, v2, v3));
+			}
 		}
 
 		// add object
 		objects_.push_back(std::make_shared<PlanarMeshObject>(
 			std::move(name),
 			std::move(material),
-			std::move(face),
+			std::move(faces),
 			std::move(holeFaces)));
 	}
 

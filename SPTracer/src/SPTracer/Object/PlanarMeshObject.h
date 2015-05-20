@@ -16,13 +16,13 @@ namespace SPTracer
 		PlanarMeshObject(
 			std::string name,
 			std::shared_ptr<Material> material,
-			Face face,
+			std::vector<Face> faces,
 			std::vector<Face> holeFaces);
 
 		virtual bool Intersect(const Ray& ray, Intersection& intersection) const override;
 
 	private:
-		Face face_;
+		std::vector<Face> faces_;
 		std::vector<Face> holeFaces_;
 	};
 

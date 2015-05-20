@@ -3,22 +3,29 @@
 
 #include "../stdafx.h"
 #include "../Vec3.h"
+#include "Vertex.h"
 
 namespace SPTracer
 {
-
-	struct Face
+	
+	class Face
 	{
-		std::vector<std::shared_ptr<Vec3>> vertices;
-		std::vector<Vec3> normals;
-		std::vector<Vec3> edge1;
-		std::vector<Vec3> edge2;
+	public:
+		Face();
+		Face(Vertex v1, Vertex v2, Vertex v3);
+		virtual ~Face();
 
-		bool hasTextureCoordinates = false;
-		std::vector<std::shared_ptr<Vec3>> textureCoordinates;
-		
-		bool hasVertexNormals = false;
-		std::vector<std::shared_ptr<Vec3>> vertexNormals;
+		Vertex& operator[](size_t index);
+		const Vertex& operator[](size_t index) const;
+		const Vec3& e1() const;
+		const Vec3& e2() const;
+
+	private:
+		std::array<Vertex, 3> vertices_;
+		Vec3 e1_;
+		Vec3 e2_;
+
+		void Init();
 	};
 
 }

@@ -4,6 +4,7 @@
 #include "../Material/Material.h"
 #include "../Tracer/Intersection.h"
 #include "../Tracer/Ray.h"
+#include "Face.h"
 #include "Object.h"
 
 namespace SPTracer
@@ -35,20 +36,15 @@ namespace SPTracer
 
 	bool Object::IntersectWithTriangle(
 		const Ray& ray,
-		const Vec3& v1,
-		const Vec3& v2,
-		const Vec3& v3,
-		const Vec3& n,
-		const Vec3& e1,
-		const Vec3& e2,
+		const Face& face,
 		Intersection& intersection)
 	{
 		//
 		// Moller–Trumbore intersection algorithm
 		//
 
-		Vec3 p = Vec3::CrossProduct(ray.direction, e2);
-		float det = e1 * p;
+		Vec3 p = Vec3::CrossProduct(ray.direction, face.e2());
+		float det = face.e1() * p;
 
 		// check determinant
 		if (ray.refracted)
@@ -74,7 +70,7 @@ namespace SPTracer
 		float invDet = 1.0f / det;
 
 		// get first barycentric coordinate
-		Vec3 s = ray.origin - v1;
+		Vec3 s = ray.origin - face[0].coord;
 		float u = invDet * (s * p);
 
 		// check first barycentric coordinate
@@ -84,7 +80,7 @@ namespace SPTracer
 		}
 
 		// get second barycentric coordinate
-		Vec3 q = Vec3::CrossProduct(s, e1);
+		Vec3 q = Vec3::CrossProduct(s, face.e1());
 		float v = invDet * (ray.direction * q);
 
 		// check second and third barycentric coordinates
@@ -95,7 +91,7 @@ namespace SPTracer
 
 		// at this stage we can compute t to find out where
 		// the intersection point is on the line
-		float t = invDet * (e2 * q);
+		float t = invDet * (face.e2() * q);
 
 		// check intersection
 		if (t < Util::Eps)
@@ -107,10 +103,13 @@ namespace SPTracer
 
 		// ray intersection point
 		Vec3 point = ray.origin + t * ray.direction;
+
+		// normal
+		intersection.normal = (1.0f - u - v) * face[0].normal + u * face[1].normal + v * face[2].normal;
 		
 		// fill the intersection data
 		intersection.point = std::move(point);
-		intersection.normal = n;
+		// intersection.normal = n;
 		intersection.distance = t;
 
 		return true;

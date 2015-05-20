@@ -2,6 +2,7 @@
 #define SPT_MDLA_MODEL_H
 
 #include "../stdafx.h"
+#include "../Vec3.h"
 #include "Model.h"
 
 namespace SPTracer
@@ -47,7 +48,7 @@ namespace SPTracer
 		std::unique_ptr<LambertianMaterial> ParseLambertianMaterial(TokensIterator& it, TokensIterator& end, const Spectrum& spectrum);
 		std::unique_ptr<PhongLuminaireMaterial> ParsePhongLuminaireMaterial(TokensIterator& it, TokensIterator& end, const Spectrum& spectrum);
 
-		void ParseVertexPositions(TokensIterator& it, TokensIterator& end);
+		std::vector<Vec3> ParseVertexPositions(TokensIterator& it, TokensIterator& end);
 		void ParsePolygon(TokensIterator& it, TokensIterator& end, std::vector<unsigned long>& vertices);
 		void ParseComplexPolygon(TokensIterator& it, TokensIterator& end,
 			std::vector<unsigned long>& vertices, std::vector<std::vector<unsigned long>>& holes);

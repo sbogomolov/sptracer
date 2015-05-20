@@ -9,6 +9,7 @@ namespace SPTracer
 	struct Intersection;
 	struct Ray;
 	struct Spectrum;
+	class Face;
 	class Material;
 
 	class Object
@@ -32,12 +33,7 @@ namespace SPTracer
 		static Vec3 ComputeNormal(const Vec3& v1, const Vec3& v2, const Vec3& v3);
 		static bool IntersectWithTriangle(
 			const Ray& ray,
-			const Vec3& v1,
-			const Vec3& v2,
-			const Vec3& v3,
-			const Vec3& n,
-			const Vec3& e1,
-			const Vec3& e2,
+			const Face& face,
 			Intersection& intersection);
 
 	private:

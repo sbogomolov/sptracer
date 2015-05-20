@@ -10,6 +10,7 @@
 #include "../Material/PhongMaterial.h"
 #include "../Material/PhongLuminaireMaterial.h"
 #include "../Object/MeshObject.h"
+#include "../Object/Vertex.h"
 #include "OBJModel.h"
 
 namespace SPTracer
@@ -82,11 +83,19 @@ namespace SPTracer
 			throw Exception("Cannot open file: " + fileName);
 		}
 
+		// vertices arrays
+		std::vector<Vec3> vertexCoordinatex;
+		std::vector<Vec3> vertexNormals;
+		std::vector<Vec3> textureCoordinates;
+		std::vector<Vec3> parameterSpaceVertices;
+
 		// current object data
 		bool saveObject = false;
 		std::string name;
 		std::vector<Face> faces;
 		std::shared_ptr<Material> material;
+
+		bool computeNormals = true;
 
 		// read model file
 		std::string line;
@@ -113,7 +122,7 @@ namespace SPTracer
 				std::vector<float> xyz = StringUtil::GetFloatArray(value, 3, 4, ' ');
 
 				// add new vertex
-				vertices_.push_back(std::make_shared<Vec3>(xyz[0], xyz[1], xyz[2]));
+				vertexCoordinatex.push_back(Vec3(xyz[0], xyz[1], xyz[2]));
 			}
 			else if (keyword == "vt")
 			{
@@ -121,7 +130,7 @@ namespace SPTracer
 				std::vector<float> uvw = StringUtil::GetFloatArray(value, 2, 3, ' ');
 
 				// add new texture coordinates
-				textureCoordinates_.push_back(std::make_shared<Vec3>(
+				textureCoordinates.push_back(Vec3(
 					uvw[0],
 					uvw[1],
 					uvw.size() > 2 ? uvw[2] : 0.0f));
@@ -132,7 +141,7 @@ namespace SPTracer
 				std::vector<float> xyz = StringUtil::GetFloatArray(value, 3, ' ');
 
 				// add new vertex normal
-				vertexNormals_.push_back(std::make_shared<Vec3>(xyz[0], xyz[1], xyz[2]));
+				vertexNormals.push_back(Vec3(xyz[0], xyz[1], xyz[2]));
 			}
 			else if (keyword == "vp")
 			{
@@ -140,7 +149,7 @@ namespace SPTracer
 				std::vector<float> uvw = StringUtil::GetFloatArray(value, 1, 3, ' ');
 
 				// add new parameter space vertex
-				parameterSpaceVertices_.push_back(std::make_shared<Vec3>(
+				parameterSpaceVertices.push_back(Vec3(
 					uvw[0],
 					uvw.size() > 1 ? uvw[1] : 0.0f,
 					uvw.size() > 2 ? uvw[2] : 0.0f));
@@ -155,11 +164,12 @@ namespace SPTracer
 				// store old object
 				if (saveObject)
 				{
-					AddObject(std::move(name), std::move(material), std::move(faces));
+					AddObject(std::move(name), std::move(material), std::move(faces), computeNormals);
 				}
 
 				// reset object data
 				faces.clear();
+				computeNormals = true;
 
 				// new object
 				saveObject = true;
@@ -178,9 +188,6 @@ namespace SPTracer
 			}
 			else if (keyword == "f")
 			{
-				// face
-				Face face{};
-				
 				// split value on parts
 				std::vector<std::string> parts = StringUtil::Split(value, ' ');
 
@@ -192,51 +199,63 @@ namespace SPTracer
 					throw Exception(msg);
 				}
 
+				// vertices
+				std::vector<Vertex> vertices;
+
 				// parse parts
 				for (auto& part : parts)
 				{
+					// new vertex
+					Vertex v{};
+
 					std::vector<std::string> p = StringUtil::Split(part, '/');
 					
 					// vertex coordinates
 					long index = StringUtil::GetInt(p[0]);
-					face.vertices.push_back(vertices_[index >= 0 ? index - 1 : vertices_.size() + index]);
+					v.coord = vertexCoordinatex[index >= 0 ? index - 1 : vertexCoordinatex.size() + index];
 					
 					// texture coordinates
 					if ((p.size() > 1) && (p[1].length() > 0))
 					{
-						face.hasTextureCoordinates = true;
 						index = StringUtil::GetInt(p[1]);
-						face.textureCoordinates.push_back(textureCoordinates_[index >= 0 ? index - 1 : textureCoordinates_.size() + index]);
-					}
-					else if (face.hasTextureCoordinates)
-					{
-						std::string msg = "Not all vertices of the face have texture coordinates";
-						Log::Error(msg);
-						throw Exception(msg);
+						v.tex = textureCoordinates[index >= 0 ? index - 1 : textureCoordinates.size() + index];
 					}
 
 					// vertex normals
 					if ((p.size() > 1) && (p[2].length() > 0))
 					{
-						face.hasVertexNormals = true;
+						computeNormals = false;
 						index = StringUtil::GetInt(p[2]);
-						face.vertexNormals.push_back(vertexNormals_[index >= 0 ? index - 1 : vertexNormals_.size() + index]);
+						v.normal = vertexNormals[index >= 0 ? index - 1 : vertexNormals.size() + index];
 					}
-					else if (face.hasVertexNormals)
-					{
-						std::string msg = "Not all vertices of the face have normals";
-						Log::Error(msg);
-						throw Exception(msg);
-					}
+
+					// add vertex to array of vertices
+					vertices.push_back(std::move(v));
 				}
 
-				// add face
-				faces.push_back(std::move(face));
+				// check number of vertices
+				if (vertices.size() < 3)
+				{
+					std::string msg = "The face has less than 3 vertices";
+					Log::Error(msg);
+					throw Exception(msg);
+				}
+
+				// add faces
+				const Vertex& v1 = vertices[0];
+				for (size_t i = 0; i < vertices.size() - 2; i++)
+				{
+					const Vertex& v2 = vertices[i + 1];
+					const Vertex& v3 = vertices[i + 2];
+
+					// new face
+					faces.push_back(Face(v1, v2, v3));
+				}
 			}
 		}
 
 		// add last object
-		AddObject(std::move(name), std::move(material), std::move(faces));
+		AddObject(std::move(name), std::move(material), std::move(faces), computeNormals);
 	}
 
 	void OBJModel::ParseMaterialsLibFile(const std::string& fileName, const Spectrum & spectrum)
@@ -353,21 +372,10 @@ namespace SPTracer
 		}
 	}
 
-	void OBJModel::AddObject(std::string name, std::shared_ptr<Material> material, std::vector<Face> faces)
+	void OBJModel::AddObject(std::string name, std::shared_ptr<Material> material, std::vector<Face> faces, bool computeNormals)
 	{
-		// check number of vertices in faces
-		for (const auto& face : faces)
-		{
-			if (face.vertices.size() < 3)
-			{
-				std::string msg = "The face has less than 3 vertices";
-				Log::Error(msg);
-				throw Exception(msg);
-			}
-		}
-
 		// create and add object
-		auto object = std::make_shared<MeshObject>(std::move(name), std::move(material), std::move(faces));
+		auto object = std::make_shared<MeshObject>(std::move(name), std::move(material), std::move(faces), computeNormals);
 		objects_.push_back(std::move(object));
 	}
 

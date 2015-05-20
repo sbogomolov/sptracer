@@ -16,7 +16,8 @@ namespace SPTracer
 		MeshObject(
 			std::string name,
 			std::shared_ptr<Material> material,
-			std::vector<Face> faces);
+			std::vector<Face> faces,
+			bool computeNormals);
 
 		virtual bool Intersect(const Ray& ray, Intersection& intersection) const override;
 
