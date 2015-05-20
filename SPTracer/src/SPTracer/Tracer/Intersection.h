@@ -6,14 +6,14 @@
 
 namespace SPTracer
 {
-	class Object;
+	class Primitive;
 
 	struct Intersection
 	{
 		Vec3 point;
 		Vec3 normal;
 		float distance;
-		std::shared_ptr<Object> object;
+		std::shared_ptr<Primitive> primitive;
 	};
 
 }

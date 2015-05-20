@@ -2,7 +2,7 @@
 #define CONFIG_H
 
 #include "SPTracer/Color/Spectrum.h"
-#include "SPTracer/Model/Camera.h"
+#include "SPTracer/Scene/Camera.h"
 
 struct Config
 {

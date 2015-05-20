@@ -1,8 +1,8 @@
 #include "../stdafx.h"
-#include "../Model/Model.h"
+#include "../Scene/Scene.h"
 #include "../Color/CIE1931.h"
 #include "../Color/SRGB.h"
-#include "../Model/Camera.h"
+#include "../Scene/Camera.h"
 #include "../Task/TaskScheduler.h"
 #include "../Task/TraceTask.h"
 #include "../ImageUpdater.h"
@@ -11,7 +11,7 @@
 
 namespace SPTracer {
 
-	Tracer::Tracer(std::unique_ptr<Model> model, Camera camera,
+	Tracer::Tracer(std::unique_ptr<Scene> model, Camera camera,
 		unsigned int width, unsigned int height, unsigned int numThreads,
 		Spectrum spectrum)
 		: model_(std::move(model)), camera_(std::move(camera)),

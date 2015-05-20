@@ -3,21 +3,25 @@
 #include "../Log.h"
 #include "../StringUtil.h"
 #include "../Util.h"
-#include "../Object/Face.h"
 #include "../Color/RGBColor.h"
 #include "../Color/Spectrum.h"
 #include "../Material/LambertianMaterial.h"
 #include "../Material/PhongMaterial.h"
 #include "../Material/PhongLuminaireMaterial.h"
-#include "../Object/Object.h"
-#include "../Object/Vertex.h"
+#include "../Primitive/Triangle.h"
+#include "../Primitive/Vertex.h"
 #include "OBJModel.h"
+#include "Scene.h"
 
 namespace SPTracer
 {
 
-	OBJModel::OBJModel(std::string fileName, const Spectrum& spectrum)
+	std::unique_ptr<Scene> OBJModel::scene_;
+
+	std::unique_ptr<Scene> OBJModel::Load(std::string fileName, const Spectrum& spectrum)
 	{
+		scene_ = std::make_unique<Scene>();
+
 		try
 		{
 			ParseModelFile(fileName, spectrum);
@@ -28,6 +32,8 @@ namespace SPTracer
 			Log::Error(msg);
 			throw Exception(msg);
 		}
+
+		return std::move(scene_);
 	}
 
 	void OBJModel::GetKeywordAndValue(std::string line, std::string& keyword, std::string& value)
@@ -92,7 +98,7 @@ namespace SPTracer
 		// current object data
 		bool saveObject = false;
 		std::string name;
-		std::vector<Face> faces;
+		std::vector<std::shared_ptr<Triangle>> triangles;
 		std::shared_ptr<Material> material;
 
 		bool computeNormals = true;
@@ -164,19 +170,19 @@ namespace SPTracer
 				// store old object
 				if (saveObject)
 				{
-					AddObject(std::move(name), std::move(material), std::move(faces), computeNormals);
+					AddTriangles(std::move(triangles), computeNormals);
 				}
 
 				// reset object data
-				faces.clear();
+				triangles.clear();
 				computeNormals = true;
 
 				// new object
 				saveObject = true;
 				
 				// get material
-				const auto it = materials_.find(value);
-				if (it == materials_.end())
+				const auto it = scene_->materials_.find(value);
+				if (it == scene_->materials_.end())
 				{
 					std::string msg = "Cannot find material: " + value;
 					Log::Error(msg);
@@ -241,21 +247,21 @@ namespace SPTracer
 					throw Exception(msg);
 				}
 
-				// add faces
+				// add triangles
 				const Vertex& v1 = vertices[0];
 				for (size_t i = 0; i < vertices.size() - 2; i++)
 				{
 					const Vertex& v2 = vertices[i + 1];
 					const Vertex& v3 = vertices[i + 2];
 
-					// new face
-					faces.push_back(Face(material, v1, v2, v3));
+					// new triangle
+					triangles.push_back(std::make_shared<Triangle>(material, v1, v2, v3));
 				}
 			}
 		}
 
 		// add last object
-		AddObject(std::move(name), std::move(material), std::move(faces), computeNormals);
+		AddTriangles(std::move(triangles), computeNormals);
 	}
 
 	void OBJModel::ParseMaterialsLibFile(const std::string& fileName, const Spectrum & spectrum)
@@ -372,11 +378,17 @@ namespace SPTracer
 		}
 	}
 
-	void OBJModel::AddObject(std::string name, std::shared_ptr<Material> material, std::vector<Face> faces, bool computeNormals)
+	void OBJModel::AddTriangles(std::vector<std::shared_ptr<Triangle>> triangles, bool computeNormals)
 	{
-		// create and add object
-		auto object = std::make_shared<Object>(std::move(name), std::move(material), std::move(faces), computeNormals);
-		objects_.push_back(std::move(object));
+		for (auto& t : triangles)
+		{
+			if (computeNormals)
+			{
+				t->ComputeNormals();
+			}
+
+			scene_->primitives_.push_back(std::move(t));
+		}
 	}
 
 	void OBJModel::AddMaterial(
@@ -413,7 +425,7 @@ namespace SPTracer
 		if (radiance)
 		{
 			// Phong Luminaire material
-			materials_[materialName] = std::make_shared<PhongLuminaireMaterial>(
+			scene_->materials_[materialName] = std::make_shared<PhongLuminaireMaterial>(
 				std::move(reflectiveMaterial),
 				std::move(radiance),
 				1.0f,
@@ -422,7 +434,7 @@ namespace SPTracer
 		else
 		{
 			// Reflective material
-			materials_[materialName] = std::shared_ptr<Material>(std::move(reflectiveMaterial));
+			scene_->materials_[materialName] = std::shared_ptr<Material>(std::move(reflectiveMaterial));
 		}
 	}
 

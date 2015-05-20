@@ -6,15 +6,22 @@
 #include "../Color/Spectrum.h"
 #include "../Material/LambertianMaterial.h"
 #include "../Material/PhongLuminaireMaterial.h"
-#include "../Model/Camera.h"
-#include "../Object/Face.h"
-#include "../Object/Object.h"
+#include "../Primitive/Triangle.h"
+#include "../Primitive/Vertex.h"
+#include "Camera.h"
 #include "MDLAModel.h"
+#include "Scene.h"
 
 namespace SPTracer
 {
 
-	MDLAModel::MDLAModel(std::string fileName, const Spectrum& spectrum, Camera& camera)
+	std::unique_ptr<Scene> MDLAModel::scene_;
+		
+	MDLAModel::MDLAModel()
+	{
+	}
+
+	std::unique_ptr<Scene> MDLAModel::Load(std::string fileName, const Spectrum& spectrum, Camera& camera)
 	{
 		// open file
 		std::ifstream file(fileName);
@@ -32,16 +39,22 @@ namespace SPTracer
 		// get tokens
 		auto tokens = GetTokens(ss.str());
 
+		// create scene
+		scene_ = std::make_unique<Scene>();
+
 		// parse tokens
 		ParseTokens(tokens, spectrum, camera);
 
 		// check model
-		if (objects_.size() == 0)
+		if (scene_->primitives_.size() == 0)
 		{
-			std::string s = "MDLAModel: Model has no objects";
+			std::string s = "MDLAModel: Scene has no objects";
 			Log::Error(s);
 			throw Exception(s);
 		}
+
+		// return scene
+		return std::move(scene_);
 	}
 
 	// Splits the text on tokens skipping comments.
@@ -393,7 +406,7 @@ namespace SPTracer
 		MustBeEndToken(++it, end);
 
 		// add material to model
-		this->materials_[name] = std::shared_ptr<Material>(std::move(material));
+		scene_->materials_[name] = std::shared_ptr<Material>(std::move(material));
 
 		return name;
 	}
@@ -438,10 +451,10 @@ namespace SPTracer
 			std::string name = GetString(++it, end);
 
 			// get material
-			auto m = materials_.find(name);
+			auto m = scene_->materials_.find(name);
 			
 			// check that material exists
-			if (m == materials_.end())
+			if (m == scene_->materials_.end())
 			{
 				// material does not exist
 				std::string s = "MDLAModel: Material with name \"" + name + "\" does not exist";
@@ -621,24 +634,19 @@ namespace SPTracer
 
 		std::transform(outline.begin(), outline.end(), outlineVertices.begin(), getVertex);
 
-		// add outline faces
-		std::vector<Face> faces;
+		// add outline triangles
+		std::vector<std::shared_ptr<Triangle>> triangles;
 		const Vertex& v1 = outlineVertices[0];
 		for (size_t i = 0; i < outlineVertices.size() - 2; i++)
 		{
 			const Vertex& v2 = outlineVertices[i + 1];
 			const Vertex& v3 = outlineVertices[i + 2];
 
-			// new face
-			faces.push_back(Face(material, v1, v2, v3));
+			// new triangle
+			auto t = std::make_shared<Triangle>(material, v1, v2, v3);
+			t->ComputeNormals();
+			scene_->primitives_.push_back(std::move(t));
 		}
-
-		// add object
-		objects_.push_back(std::make_shared<Object>(
-			std::move(name),
-			std::move(material),
-			std::move(faces),
-			true));
 	}
 
 }

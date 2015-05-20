@@ -4,7 +4,7 @@
 #include "../Util.h"
 #include "../Color/Color.h"
 #include "../Color/Spectrum.h"
-#include "../Model/Model.h"
+#include "../Scene/Scene.h"
 #include "../Tracer/Intersection.h"
 #include "../Tracer/Ray.h"
 #include "PhongMaterial.h"

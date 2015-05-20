@@ -5,9 +5,10 @@
 #include "SPTracer/Log.h"
 #include "SPTracer/StringUtil.h"
 #include "SPTracer/Vec3.h"
-#include "SPTracer/Model/Camera.h"
-#include "SPTracer/Model/MDLAModel.h"
-#include "SPTracer/Model/OBJModel.h"
+#include "SPTracer/Scene/Camera.h"
+#include "SPTracer/Scene/MDLAModel.h"
+#include "SPTracer/Scene/OBJModel.h"
+#include "SPTracer/Scene/Scene.h"
 #include "SPTracer/Tracer/Tracer.h"
 
 App::App(std::string configFile)
@@ -27,18 +28,18 @@ App::App(std::string configFile)
 
 	try
 	{
-		std::unique_ptr<SPTracer::Model> model;
+		std::unique_ptr<SPTracer::Scene> scene;
 		SPTracer::Camera camera{};
 		
 		if (config.modelType == Config::ModelType::MDLA)
 		{
 			// load MDLA model
-			model = std::make_unique<SPTracer::MDLAModel>(config.modelFile, config.spectrum, camera);			
+			scene = SPTracer::MDLAModel::Load(config.modelFile, config.spectrum, camera);			
 		}
 		else if (config.modelType == Config::ModelType::OBJ)
 		{
 			// load OBJ model
-			model = std::make_unique<SPTracer::OBJModel>(config.modelFile, config.spectrum);
+			scene = SPTracer::OBJModel::Load(config.modelFile, config.spectrum);
 			
 			// camera data must be present in config file
 			if (!config.cameraLoaded)
@@ -54,7 +55,7 @@ App::App(std::string configFile)
 		}
 
 		// create tracer
-		tracer_ = std::make_unique<SPTracer::Tracer>(std::move(model), std::move(camera),
+		tracer_ = std::make_unique<SPTracer::Tracer>(std::move(scene), std::move(camera),
 			config.width, config.height, config.numThreads,
 			config.spectrum);
 
@@ -186,7 +187,7 @@ Config App::ReadConfig(std::string configFile) const
 				else
 				{
 					// unknown model type
-					throw std::exception(("Error in configuration file: Unknown model type: " + originalLine).c_str());
+					throw std::exception(("Error in configuration file: Unknown scene type: " + originalLine).c_str());
 				}
 			}
 			else if (parameter == "modelfile")

@@ -1,20 +1,21 @@
 #include "../stdafx.h"
 #include "../Util.h"
+#include "../Primitive/Primitive.h"
 #include "../Tracer/Intersection.h"
 #include "../Tracer/Ray.h"
-#include "Model.h"
+#include "Scene.h"
 
 namespace SPTracer
 {
-	Model::Model()
+	Scene::Scene()
 	{
 	}
 
-	Model::~Model()
+	Scene::~Scene()
 	{
 	}
 
-	bool Model::Intersect(const Ray& ray, Intersection& intersection) const
+	bool Scene::Intersect(const Ray& ray, Intersection& intersection) const
 	{
 		// set initial intersection distance to max possible,
 		// so that any intersection will be closer than that
@@ -22,16 +23,16 @@ namespace SPTracer
 
 		Intersection newIntersection;
 
-		for (const auto& o : objects_)
+		for (const auto& p : primitives_)
 		{
 			// find new intersection
-			bool success = o->Intersect(ray, newIntersection);
+			bool success = p->Intersect(ray, newIntersection);
 			
 			// check if new intersection is closer
 			if (success && (newIntersection.distance < intersection.distance))
 			{
 				intersection = newIntersection;
-				intersection.object = o;
+				intersection.primitive = p;
 			}
 		}
 

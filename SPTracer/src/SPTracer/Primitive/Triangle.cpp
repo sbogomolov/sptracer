@@ -2,54 +2,49 @@
 #include "../Util.h"
 #include "../Tracer/Intersection.h"
 #include "../Tracer/Ray.h"
-#include "Face.h"
+#include "Triangle.h"
 
 namespace SPTracer
 {
 
-	Face::Face(std::shared_ptr<Material> material)
-		: Face(std::move(material), Vertex{}, Vertex{}, Vertex{})
+	Triangle::Triangle(std::shared_ptr<Material> material)
+		: Triangle(std::move(material), Vertex{}, Vertex{}, Vertex{})
 	{
 	}
 
-	Face::Face(std::shared_ptr<Material> material, Vertex v1, Vertex v2, Vertex v3)
-		: material_(std::move(material)), vertices_{ std::move(v1), std::move(v2), std::move(v3) }
+	Triangle::Triangle(std::shared_ptr<Material> material, Vertex v1, Vertex v2, Vertex v3)
+		: Primitive(std::move(material)), vertices_{ std::move(v1), std::move(v2), std::move(v3) }
 	{
 		// pre-compute edges for ray-triangle intersection test
 		e1_ = vertices_[1].coord - vertices_[0].coord;
 		e2_ = vertices_[2].coord - vertices_[0].coord;
 	}
 
-	Face::~Face()
+	Triangle::~Triangle()
 	{
 	}
 
-	Vertex& Face::operator[](size_t index)
-	{
-		return vertices_[index];
-	}
-
-	const Vertex& Face::operator[](size_t index) const
+	Vertex& Triangle::operator[](size_t index)
 	{
 		return vertices_[index];
 	}
 
-	const Material& Face::material() const
+	const Vertex& Triangle::operator[](size_t index) const
 	{
-		return *material_;
+		return vertices_[index];
 	}
 
-	const Vec3& Face::e1() const
+	const Vec3& Triangle::e1() const
 	{
 		return e1_;
 	}
 
-	const Vec3& Face::e2() const
+	const Vec3& Triangle::e2() const
 	{
 		return e2_;
 	}
 
-	void Face::ComputeNormals()
+	void Triangle::ComputeNormals()
 	{
 		// compute normal vector (using cross product)
 		Vec3 normal = Vec3::CrossProduct(e1_, e2_);
@@ -61,7 +56,7 @@ namespace SPTracer
 		std::for_each(vertices_.begin(), vertices_.end(), [&normal](Vertex& v) { v.normal = normal; });
 	}
 
-	bool Face::Intersect(const Ray& ray, Intersection& intersection) const
+	bool Triangle::Intersect(const Ray& ray, Intersection& intersection) const
 	{
 		//
 		// Moller–Trumbore intersection algorithm

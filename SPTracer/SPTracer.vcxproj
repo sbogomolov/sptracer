@@ -218,7 +218,7 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
-    <ClCompile Include="src\SPTracer\Model\MDLAModel.cpp">
+    <ClCompile Include="src\SPTracer\Scene\MDLAModel.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../stdafx.h</PrecompiledHeaderFile>
@@ -230,31 +230,31 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="src\SPTracer\Model\Model.cpp">
+    <ClCompile Include="src\SPTracer\Scene\Scene.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
-    <ClCompile Include="src\SPTracer\Object\Box.cpp">
+    <ClCompile Include="src\SPTracer\Primitive\Box.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
-    <ClCompile Include="src\SPTracer\Object\Face.cpp">
+    <ClCompile Include="src\SPTracer\Primitive\Triangle.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
-    <ClCompile Include="src\SPTracer\Object\Object.cpp">
+    <ClCompile Include="src\SPTracer\Scene\OBJModel.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
-    <ClCompile Include="src\SPTracer\Model\OBJModel.cpp">
+    <ClCompile Include="src\SPTracer\Primitive\Primitive.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../stdafx.h</PrecompiledHeaderFile>
@@ -315,11 +315,12 @@
   <ItemGroup>
     <ClInclude Include="src\Config.h" />
     <ClInclude Include="src\SPTracer\Color\RGBColor.h" />
-    <ClInclude Include="src\SPTracer\Object\Face.h" />
+    <ClInclude Include="src\SPTracer\Primitive\Triangle.h" />
     <ClInclude Include="src\SPTracer\Material\PhongMaterial.h" />
-    <ClInclude Include="src\SPTracer\Object\Box.h" />
-    <ClInclude Include="src\SPTracer\Model\OBJModel.h" />
-    <ClInclude Include="src\SPTracer\Object\Vertex.h" />
+    <ClInclude Include="src\SPTracer\Primitive\Box.h" />
+    <ClInclude Include="src\SPTracer\Scene\OBJModel.h" />
+    <ClInclude Include="src\SPTracer\Primitive\Primitive.h" />
+    <ClInclude Include="src\SPTracer\Primitive\Vertex.h" />
     <ClInclude Include="src\SPTracer\Tracer\KdTree.h" />
     <ClInclude Include="src\SPTracer\Tracer\KdTreeNode.h" />
     <ClInclude Include="src\SPTracer\Tracer\PixelData.h" />
@@ -328,7 +329,7 @@
     <ClInclude Include="src\SPTracer\Color\SRGB.h" />
     <ClInclude Include="src\SPTracer\ImageUpdater.h" />
     <ClInclude Include="src\SPTracer\Log.h" />
-    <ClInclude Include="src\SPTracer\Model\Camera.h" />
+    <ClInclude Include="src\SPTracer\Scene\Camera.h" />
     <ClInclude Include="src\SPTracer\Color\CIE1931.h" />
     <ClInclude Include="src\SPTracer\Color\Color.h" />
     <ClInclude Include="src\SPTracer\Color\XYZConverter.h" />
@@ -338,9 +339,8 @@
     <ClInclude Include="src\SPTracer\Material\LambertianMaterial.h" />
     <ClInclude Include="src\SPTracer\Material\Material.h" />
     <ClInclude Include="src\SPTracer\Material\PhongLuminaireMaterial.h" />
-    <ClInclude Include="src\SPTracer\Model\MDLAModel.h" />
-    <ClInclude Include="src\SPTracer\Model\Model.h" />
-    <ClInclude Include="src\SPTracer\Object\Object.h" />
+    <ClInclude Include="src\SPTracer\Scene\MDLAModel.h" />
+    <ClInclude Include="src\SPTracer\Scene\Scene.h" />
     <ClInclude Include="src\SPTracer\Tracer\Ray.h" />
     <ClInclude Include="src\SPTracer\Color\Spectrum.h" />
     <ClInclude Include="src\SPTracer\stdafx.h" />

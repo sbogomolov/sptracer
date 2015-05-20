@@ -2,8 +2,9 @@
 #include "../Util.h"
 #include "../Color/Spectrum.h"
 #include "../Color/XYZConverter.h"
-#include "../Model/Camera.h"
-#include "../Model/Model.h"
+#include "../Scene/Camera.h"
+#include "../Scene/Scene.h"
+#include "../Primitive/Primitive.h"
 #include "../Tracer/Intersection.h"
 #include "../Tracer/Tracer.h"
 #include "TaskScheduler.h"
@@ -20,7 +21,7 @@ namespace SPTracer
 	void TraceTask::Run()
 	{
 		// model
-		static const Model& model = *tracer_.model_;
+		static const Scene& model = *tracer_.model_;
 
 		// color converter
 		static const XYZConverter& xyzConverter = *tracer_.xyzConverter_;
@@ -100,14 +101,17 @@ namespace SPTracer
 						break;
 					}
 
+					// material
+					const auto& material = intersection.primitive->material();
+
 					// reflected (refracted) ray weight correction
 					float reflectionProbability = 1.0f;
 
 					// check if light should be emitted
-					if (intersection.object->IsEmissive())
+					if (material.IsEmissive())
 					{
 						// check if material is reflective
-						bool reflective = intersection.object->IsReflective();
+						bool reflective = material.IsReflective();
 
 						// emission probability for emissive material
 						float emissionProbability = reflective ? 0.9f : 1.0f;
@@ -118,7 +122,7 @@ namespace SPTracer
 							Vec3& c = color[i * width + j];
 
 							// radiance
-							intersection.object->GetRadiance(ray, intersection, radiance);
+							material.GetRadiance(ray, intersection, radiance);
 
 							if (ray.waveIndex == -1)
 							{
@@ -157,8 +161,8 @@ namespace SPTracer
 					newRay.refracted = ray.refracted;
 					newRay.waveIndex = ray.waveIndex;
 
-					float diffuseReflectionProbability = intersection.object->GetDiffuseReflectionProbability(ray.waveIndex);
-					float specularReflectionProbability = intersection.object->GetSpecularReflectionProbability(ray.waveIndex);
+					float diffuseReflectionProbability = material.GetDiffuseReflectionProbability(ray.waveIndex);
+					float specularReflectionProbability = material.GetSpecularReflectionProbability(ray.waveIndex);
 
 					/////////////////////////////////////////////////////////////////////////////////////
 					// 
@@ -176,7 +180,7 @@ namespace SPTracer
 					if (next < diffuseReflectionProbability)
 					{
 						// diffuse reflection
-						intersection.object->GetNewRayDiffuse(ray, intersection, newRay, reflectance);
+						material.GetNewRayDiffuse(ray, intersection, newRay, reflectance);
 
 						// ray was not absorped, increase its weight by decreasing reflection probability
 						reflectionProbability *= diffuseReflectionProbability;
@@ -184,7 +188,7 @@ namespace SPTracer
 					else if (next < (diffuseReflectionProbability + specularReflectionProbability))
 					{
 						// specular reflection
-						if (!intersection.object->GetNewRaySpecular(ray, intersection, newRay, reflectance))
+						if (!material.GetNewRaySpecular(ray, intersection, newRay, reflectance))
 						{
 							// specular ray points inside the material,
 							// stop tracing this path

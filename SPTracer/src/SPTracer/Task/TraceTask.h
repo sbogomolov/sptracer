@@ -8,7 +8,7 @@
 namespace SPTracer
 {
 	class XYZConverter;
-	class Model;
+	class Scene;
 	class Tracer;
 
 	class TraceTask : public Task
