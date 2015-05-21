@@ -20,7 +20,7 @@ namespace SPTracer
 
 	void Vec3::Reset()
 	{
-		std::fill(values_.begin(), values_.end(), 0.0f);
+		std::fill(std::begin(values_), std::end(values_), 0.0f);
 	}
 
 	float Vec3::EuclideanNorm() const

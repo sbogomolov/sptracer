@@ -48,7 +48,15 @@ namespace SPTracer
 		friend void operator/=(Vec3& lhs, const float& rhs);
 
 	private:
-		std::array<float, 3> values_;
+		static const size_t n_ = 3;
+
+#ifdef _MSC_VER
+		// alignment for MSVC
+		__declspec(align(16)) float values_[n_];
+#else
+		// alignment for GCC and Clang
+		float values_[n_] __attribute__((aligned(16)));
+#endif
 	};
 
 }
