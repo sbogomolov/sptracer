@@ -278,8 +278,8 @@ namespace SPTracer
 		std::unique_ptr<Color> diffuseReflectance;
 		std::unique_ptr<Color> specularReflectance;
 		std::unique_ptr<Color> radiance;
-		float specularExponent;
-		float opticalDensity;
+		float specularExponent = 1.0f;
+		float opticalDensity = 1.0f;
 
 		// read model file
 		std::string line;
@@ -316,8 +316,8 @@ namespace SPTracer
 				diffuseReflectance.reset(nullptr);
 				specularReflectance.reset(nullptr);
 				radiance.reset(nullptr);
-				specularExponent = 0.0f;
-				opticalDensity = 0.0f;
+				specularExponent = 1.0f;
+				opticalDensity = 1.0f;
 			}
 			else if (keyword == "kd")
 			{
