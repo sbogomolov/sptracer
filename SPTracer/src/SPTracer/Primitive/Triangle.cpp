@@ -47,10 +47,7 @@ namespace SPTracer
 	void Triangle::ComputeNormals()
 	{
 		// compute normal vector (using cross product)
-		Vec3 normal = Vec3::CrossProduct(e1_, e2_);
-
-		// normalize normal vector
-		normal.Normalize();
+		Vec3 normal = e1_.Cross(e2_).Normalize();
 
 		// set normal for vertices
 		std::for_each(vertices_.begin(), vertices_.end(), [&normal](Vertex& v) { v.normal = normal; });
@@ -62,8 +59,8 @@ namespace SPTracer
 		// Moller–Trumbore intersection algorithm
 		//
 
-		Vec3 p = Vec3::CrossProduct(ray.direction, e2_);
-		float det = e1_ * p;
+		Vec3 p = ray.direction.Cross(e2_);
+		float det = e1_.Dot(p);
 
 		// check determinant
 		if (ray.refracted)
@@ -90,7 +87,7 @@ namespace SPTracer
 
 		// get first barycentric coordinate
 		Vec3 s = ray.origin - vertices_[0].coord;
-		float u = invDet * (s * p);
+		float u = invDet * s.Dot(p);
 
 		// check first barycentric coordinate
 		if ((u < 0.0f) || (u > 1.0f))
@@ -99,8 +96,8 @@ namespace SPTracer
 		}
 
 		// get second barycentric coordinate
-		Vec3 q = Vec3::CrossProduct(s, e1_);
-		float v = invDet * (ray.direction * q);
+		Vec3 q = s.Cross(e1_);
+		float v = invDet * ray.direction.Dot(q);
 
 		// check second and third barycentric coordinates
 		if ((v < 0.0f) || ((u + v) > 1.0f))
@@ -110,7 +107,7 @@ namespace SPTracer
 
 		// at this stage we can compute t to find out where
 		// the intersection point is on the line
-		float t = invDet * (e2_ * q);
+		float t = invDet * e2_.Dot(q);
 
 		// check intersection
 		if (t < Util::Eps)
@@ -124,8 +121,7 @@ namespace SPTracer
 		Vec3 point = ray.origin + t * ray.direction;
 
 		// normal
-		intersection.normal = (1.0f - u - v) * vertices_[0].normal + u * vertices_[1].normal + v * vertices_[2].normal;
-		intersection.normal.Normalize();
+		intersection.normal = ((1.0f - u - v) * vertices_[0].normal + u * vertices_[1].normal + v * vertices_[2].normal).Normalize();
 
 		// fill the intersection data
 		intersection.point = std::move(point);

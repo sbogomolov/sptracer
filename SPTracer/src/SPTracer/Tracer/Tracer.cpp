@@ -34,8 +34,8 @@ namespace SPTracer {
 		rgbConverter_ = std::make_unique<SRGB>();
 
 		// normalize camera directions
-		camera_.n.Normalize();
-		camera_.up.Normalize();
+		camera_.n = camera_.n.Normalize();
+		camera_.up = camera_.up.Normalize();
 	}
 
 	Tracer::~Tracer()
@@ -64,7 +64,7 @@ namespace SPTracer {
 		{
 			PixelData& pd = pixels_[i];
 			Vec3& c = color[i];
-			
+
 			pd.x += c[0];
 			pd.y += c[1];
 			pd.z += c[2];
@@ -121,13 +121,15 @@ namespace SPTracer {
 
 		for (size_t i = 0; i < xyzColor.size(); i++)
 		{
-			Vec3 xyz = xyzColor[i];
 			Vec3& rgb = rgbColor[i];
-
+			
 			// Apply exposure correction
-			xyz[0] = std::log(xyz[0] / maxIntensity + 1.0f) / std::log(4.0f);
-			xyz[1] = std::log(xyz[1] / maxIntensity + 1.0f) / std::log(4.0f);
-			xyz[2] = std::log(xyz[2] / maxIntensity + 1.0f) / std::log(4.0f);
+			const Vec3& c = xyzColor[i];
+			Vec3 xyz(
+				std::log(c[0] / maxIntensity + 1.0f) / std::log(4.0f),
+				std::log(c[1] / maxIntensity + 1.0f) / std::log(4.0f),
+				std::log(c[2] / maxIntensity + 1.0f) / std::log(4.0f)
+				);
 
 			// Convert to sRGB.
 			rgb = rgbConverter_->GetRGB(xyz);

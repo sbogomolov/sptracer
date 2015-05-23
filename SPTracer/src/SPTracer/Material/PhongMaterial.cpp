@@ -73,7 +73,7 @@ namespace SPTracer
 		static const Vec3 zAxis(0.0f, 0.0f, 1.0f);
 
 		// ideal specular reflection direction
-		Vec3 specularDirection = ray.direction - 2 * (ray.direction * intersection.normal) * intersection.normal;
+		Vec3 specularDirection = ray.direction - 2 * (ray.direction.Dot(intersection.normal)) * intersection.normal;
 
 		// ideal specular reflection can be obtained by rotation
 		// of incident direction about normal on angle of PI.
@@ -85,7 +85,7 @@ namespace SPTracer
 		newRay.direction = Vec3::FromPhiTheta(phi, cosAlpha).RotateFromTo(zAxis, specularDirection);
 
 		// check if direction points inside the material
-		if ((newRay.direction * intersection.normal) < Util::Eps)
+		if ((newRay.direction.Dot(intersection.normal)) < Util::Eps)
 		{
 			// direction points inside the material,
 			// stop tracing this path

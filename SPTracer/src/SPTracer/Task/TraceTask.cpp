@@ -64,14 +64,11 @@ namespace SPTracer
 				float v = top - (static_cast<float>(i) + Util::RandFloat(0.0f, 1.0f)) * pixelHeight;
 
 				// direction
-				Vec3 direction(
+				Vec3 direction = Vec3(
 					u,			// x
 					v,			// y
 					-camera.f	// z
-				);
-
-				// normalize direction
-				direction.Normalize();
+				).Normalize();
 
 				// rotate direction according ti view direction around up axis
 				direction = direction.RotateFromTo(zAxisReversed, camera.n, camera.up);

@@ -64,7 +64,7 @@ namespace SPTracer
 	void PhongLuminaireMaterial::GetRadiance(const Ray& ray, const Intersection& intersection, std::vector<float>& radiance) const
 	{
 		// cos(theta)
-		float cosTheta = (-ray.direction) * intersection.normal;
+		float cosTheta = intersection.normal.Dot(-ray.direction);
 
 		// cos distribution with Phong exponent
 		float weight = phongExponentUsed_

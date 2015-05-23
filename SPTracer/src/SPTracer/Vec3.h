@@ -12,40 +12,67 @@ namespace SPTracer
 		Vec3();
 		Vec3(float x, float y, float z);
 
-		void Reset();
-
-		void Normalize();
-		float EuclideanNorm() const;
-		Vec3 RotateFromTo(const Vec3& fromDirection, const Vec3& toDirection);
-		Vec3 RotateFromTo(const Vec3& fromDirection, const Vec3& toDirection, const Vec3& rotationAxis);
-		Vec3 RotateAboutAxis(const Vec3& rotationAxis, float cosTheta);
-
+		// get vector from spherical coordinates
 		static Vec3 FromPhiTheta(float phi, float cosTheta);
-		static Vec3 CrossProduct(const Vec3& lhs, const Vec3& rhs);
 
+		// [] operator
 		const float& operator[](size_t index) const;
 		float& operator[](size_t index);
 
-		friend Vec3 operator+(const Vec3& lhs, const Vec3& rhs);
-		friend Vec3 operator+(const Vec3& lhs, const float& rhs);
-		friend Vec3 operator+(const float& lhs, const Vec3& rhs);
-		friend void operator+=(Vec3& lhs, const Vec3& rhs);
-		friend void operator+=(Vec3& lhs, const float& rhs);
+		// arithmetic operators
+		Vec3 operator+(const Vec3& b) const;
+		Vec3 operator-(const Vec3& b) const;
+		Vec3 operator*(const Vec3& b) const;
+		Vec3 operator/(const Vec3& b) const;
 
-		friend Vec3 operator-(const Vec3& rhs);
-		friend Vec3 operator-(const Vec3& lhs, const Vec3& rhs);
-		friend Vec3 operator-(const Vec3& lhs, const float& rhs);
-		friend Vec3 operator-(const float& lhs, const Vec3& rhs);
-		friend void operator-=(Vec3& lhs, const Vec3& rhs);
-		friend void operator-=(Vec3& lhs, const float& rhs);
+		// op= operators
+		Vec3& operator+=(const Vec3& b);
+		Vec3& operator-=(const Vec3& b);
+		Vec3& operator*=(const Vec3& b);
+		Vec3& operator/=(const Vec3& b);
 
-		friend float operator*(const Vec3& lhs, const Vec3& rhs);
-		friend Vec3 operator*(const Vec3& lhs, const float& rhs);
-		friend Vec3 operator*(const float& lhs, const Vec3& rhs);
-		friend void operator*=(Vec3& lhs, const float& rhs);
+		// arythmetic operators with floats
+		Vec3 operator+(float b) const;
+		Vec3 operator-(float b) const;
+		Vec3 operator*(float b) const;
+		Vec3 operator/(float b) const;
+		
+		// op= operators with floats
+		Vec3& operator+=(float b);
+		Vec3& operator-=(float b);
+		Vec3& operator*=(float b);
+		Vec3& operator/=(float b);
 
-		friend Vec3 operator/(const Vec3& lhs, const float& rhs);
-		friend void operator/=(Vec3& lhs, const float& rhs);
+		// negation operator
+		Vec3 operator-() const;
+
+		// products
+		Vec3 Cross(const Vec3& b) const;
+		float Dot(const Vec3& b) const;
+		
+		// reset vector elements
+		void Reset();
+
+		// vector length
+		float Length() const;
+
+		// normalize vector length
+		Vec3 Normalize() const;
+
+		// rotate from one vector to another
+		Vec3 RotateFromTo(const Vec3& fromDirection, const Vec3& toDirection) const;
+
+		// rotate from one vector to another about axis
+		Vec3 RotateFromTo(const Vec3& fromDirection, const Vec3& toDirection, const Vec3& rotationAxis) const;
+
+		// rotate about axis on angle
+		Vec3 RotateAboutAxis(const Vec3& rotationAxis, float cosTheta) const;
+
+		// arythmetic operators with floats when floats come first
+		friend Vec3 operator+(float a, const Vec3& b);
+		friend Vec3 operator-(float a, const Vec3& b);
+		friend Vec3 operator*(float a, const Vec3& b);
+		friend Vec3 operator/(float a, const Vec3& b);
 
 	private:
 		static const size_t n_ = 3;
@@ -58,7 +85,6 @@ namespace SPTracer
 		float values_[n_] __attribute__((aligned(16)));
 #endif
 	};
-
 }
 
 #endif
