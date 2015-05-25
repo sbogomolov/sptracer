@@ -7,7 +7,7 @@ namespace SPTracer
 	const float KdTree::TraverseStepCost = 0.3f;
 	const float KdTree::IntersectionCost = 1.0f;
 
-	KdTree::KdTree(const Scene& model)
+	KdTree::KdTree(std::vector<std::shared_ptr<Primitive>> model)
 	{
 	}
 
@@ -20,7 +20,7 @@ namespace SPTracer
 		return *rootNode_;
 	}
 
-	std::unique_ptr<KdTreeNode> KdTree::Build(std::vector<Triangle> primitives, const Box& box)
+	std::unique_ptr<KdTreeNode> KdTree::Build(std::vector<Primitive> primitives, const Box& box)
 	{
 		if (false/* check terminate condition */)
 		{

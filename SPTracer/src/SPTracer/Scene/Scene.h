@@ -26,7 +26,7 @@ namespace SPTracer
 	protected:
 		std::unordered_map<std::string, std::shared_ptr<Material>> materials_;
 		std::vector<std::shared_ptr<Primitive>> primitives_;
-		KdTree kdTree_;
+		std::unique_ptr<KdTree> kdTree_;
 	};
 
 }

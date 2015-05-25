@@ -78,12 +78,6 @@
     <ClCompile Include="src\WindowImageUpdater.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\SPTracer\Tracer\KdTreeNode.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\SPTracer\Tracer\KdTree.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\SPTracer\Primitive\Box.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -100,6 +94,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\SPTracer\Scene\Scene.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SPTracer\Scene\KdTree.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SPTracer\Scene\KdTreeNode.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -194,12 +194,6 @@
     <ClInclude Include="src\SPTracer\Vec3.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\SPTracer\Tracer\KdTree.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\SPTracer\Tracer\KdTreeNode.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\SPTracer\Primitive\Box.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -222,6 +216,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\SPTracer\Scene\Camera.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SPTracer\Scene\KdTree.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SPTracer\Scene\KdTreeNode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

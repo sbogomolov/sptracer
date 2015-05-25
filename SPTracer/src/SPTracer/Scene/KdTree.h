@@ -8,12 +8,13 @@ namespace SPTracer
 {
 	class Box;
 	class KdTreeNode;
+	class Primitive;
 	class Scene;
 
 	class KdTree
 	{
 	public:
-		KdTree(const Scene& model);
+		KdTree(std::vector<std::shared_ptr<Primitive>> model);
 		virtual ~KdTree();
 
 		const KdTreeNode& rootNode() const;
@@ -22,9 +23,9 @@ namespace SPTracer
 		static const float TraverseStepCost;
 		static const float IntersectionCost;
 
-		std::unique_ptr<KdTreeNode> Build(std::vector<Triangle> primitives, const Box& box);
-
 		std::unique_ptr<KdTreeNode> rootNode_;
+
+		std::unique_ptr<KdTreeNode> Build(std::vector<Primitive> primitives, const Box& box);
 	};
 
 }
