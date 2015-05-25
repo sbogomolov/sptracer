@@ -2,6 +2,7 @@
 #define SPT_PRIMITIVE_H
 
 #include "../stdafx.h"
+#include "Box.h"
 
 namespace SPTracer
 {
@@ -15,6 +16,7 @@ namespace SPTracer
 		virtual ~Primitive();
 
 		const Material& material() const;
+		virtual Box GetBoundingBox() const = 0;
 		virtual bool Intersect(const Ray& ray, Intersection& intersection) const = 0;
 
 	protected:

@@ -323,6 +323,7 @@
     <ClInclude Include="src\SPTracer\Scene\OBJModel.h" />
     <ClInclude Include="src\SPTracer\Primitive\Primitive.h" />
     <ClInclude Include="src\SPTracer\Primitive\Vertex.h" />
+    <ClInclude Include="src\SPTracer\Scene\SplittingPlane.h" />
     <ClInclude Include="src\SPTracer\Tracer\PixelData.h" />
     <ClInclude Include="src\App.h" />
     <ClInclude Include="src\SPTracer\Color\RGBConverter.h" />

@@ -3,6 +3,7 @@
 #include "../Primitive/Primitive.h"
 #include "../Tracer/Intersection.h"
 #include "../Tracer/Ray.h"
+#include "KDTree.h"
 #include "Scene.h"
 
 namespace SPTracer
@@ -13,6 +14,12 @@ namespace SPTracer
 
 	Scene::~Scene()
 	{
+	}
+
+	void Scene::BuildKdTree()
+	{
+		// move primitoves vector, because it will not be used in the future
+		kdTree_ = std::make_unique<KdTree>(std::move(primitives_));
 	}
 
 	bool Scene::Intersect(const Ray& ray, Intersection& intersection) const

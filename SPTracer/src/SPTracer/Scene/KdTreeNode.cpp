@@ -1,10 +1,10 @@
 #include "../stdafx.h"
-#include "../Primitive/Triangle.h"
+#include "../Primitive/Primitive.h"
 #include "KdTreeNode.h"
 
 namespace SPTracer
 {
-	KdTreeNode::KdTreeNode(Box box, std::vector<Triangle> primitives)
+	KdTreeNode::KdTreeNode(Box box, std::vector<std::shared_ptr<Primitive>> primitives)
 		: box_(std::move(box)), primitives_(std::move(primitives))
 	{
 	}

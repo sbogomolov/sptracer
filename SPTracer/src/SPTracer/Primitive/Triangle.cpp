@@ -53,6 +53,32 @@ namespace SPTracer
 		std::for_each(vertices_.begin(), vertices_.end(), [&normal](Vertex& v) { v.normal = normal; });
 	}
 
+	Box Triangle::GetBoundingBox() const
+	{
+		auto result = std::minmax_element(vertices_.begin(), vertices_.end(), [](const Vertex& a, const Vertex& b) {
+			return a.coord[0] < b.coord[0];
+		});
+
+		float minX = (*result.first).coord[0];
+		float maxX = (*result.second).coord[0];
+
+		result = std::minmax_element(vertices_.begin(), vertices_.end(), [](const Vertex& a, const Vertex& b) {
+			return a.coord[1] < b.coord[1];
+		});
+
+		float minY = (*result.first).coord[1];
+		float maxY = (*result.second).coord[1];
+
+		result = std::minmax_element(vertices_.begin(), vertices_.end(), [](const Vertex& a, const Vertex& b) {
+			return a.coord[2] < b.coord[2];
+		});
+
+		float minZ = (*result.first).coord[2];
+		float maxZ = (*result.second).coord[2];
+
+		return Box(Vec3(minX, minY, minZ), Vec3(maxX, maxY, maxZ));
+	}
+
 	bool Triangle::Intersect(const Ray& ray, Intersection& intersection) const
 	{
 		//

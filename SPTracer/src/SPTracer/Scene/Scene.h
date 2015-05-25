@@ -4,12 +4,12 @@
 #include "../stdafx.h"
 #include "../Vec3.h"
 #include "../Material/Material.h"
-#include "KDTree.h"
 
 namespace SPTracer
 {
 	struct Intersection;
 	struct Ray;
+	class KdTree;
 	class Primitive;
 
 	class Scene
@@ -21,6 +21,7 @@ namespace SPTracer
 		Scene();
 		virtual ~Scene();
 
+		void BuildKdTree();
 		bool Intersect(const Ray& ray, Intersection& intersection) const;
 
 	protected:

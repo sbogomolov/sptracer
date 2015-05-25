@@ -25,6 +25,7 @@ namespace SPTracer
 		const Vec3& e2() const;
 
 		void ComputeNormals();
+		virtual Box GetBoundingBox() const override;
 		virtual bool Intersect(const Ray& ray, Intersection& intersection) const override;
 
 	private:

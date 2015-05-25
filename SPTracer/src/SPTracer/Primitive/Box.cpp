@@ -11,6 +11,22 @@ namespace SPTracer
 	{
 	}
 
+	const Vec3& Box::min() const
+	{
+		return min_;
+	}
+
+	const Vec3& Box::max() const
+	{
+		return max_;
+	}
+
+	const float Box::GetSurfaceArea() const
+	{
+		Vec3 d = max_ - min_;
+		return 2.0f * (d[0] * d[1] + d[1] * d[2] + d[2] * d[0]);
+	}
+
 	bool Box::Intersect(const Ray& ray, const Vec3& invDirection, Intersection& intersection)
 	{
 		//

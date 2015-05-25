@@ -224,5 +224,8 @@
     <ClInclude Include="src\SPTracer\Scene\KdTreeNode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\SPTracer\Scene\SplittingPlane.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
