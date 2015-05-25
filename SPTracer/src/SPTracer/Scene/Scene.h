@@ -4,6 +4,7 @@
 #include "../stdafx.h"
 #include "../Vec3.h"
 #include "../Material/Material.h"
+#include "KDTree.h"
 
 namespace SPTracer
 {
@@ -25,6 +26,7 @@ namespace SPTracer
 	protected:
 		std::unordered_map<std::string, std::shared_ptr<Material>> materials_;
 		std::vector<std::shared_ptr<Primitive>> primitives_;
+		KdTree kdTree_;
 	};
 
 }
