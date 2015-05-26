@@ -1,9 +1,9 @@
-#ifndef SPT_SPLITTING_PLANE_H
-#define SPT_SPLITTING_PLANE_H
+#ifndef SPT_SPLIT_PLANE_H
+#define SPT_SPLIT_PLANE_H
 
 namespace SPTracer
 {
-	struct SplittingPlane
+	struct SplitPlane
 	{
 		unsigned char dimension;
 		float position;

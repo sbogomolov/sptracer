@@ -11,10 +11,10 @@
 
 namespace SPTracer {
 
-	Tracer::Tracer(std::unique_ptr<Scene> model, Camera camera,
+	Tracer::Tracer(std::unique_ptr<Scene> scene, Camera camera,
 		unsigned int width, unsigned int height, unsigned int numThreads,
 		Spectrum spectrum)
-		: model_(std::move(model)), camera_(std::move(camera)),
+		: scene_(std::move(scene)), camera_(std::move(camera)),
 		  width_(width), height_(height), numThreads_(numThreads),
 		  spectrum_(std::move(spectrum))
 	{
@@ -36,6 +36,9 @@ namespace SPTracer {
 		// normalize camera directions
 		camera_.n = camera_.n.Normalize();
 		camera_.up = camera_.up.Normalize();
+
+		// build kd-Tree
+		scene_->BuildKdTree();
 	}
 
 	Tracer::~Tracer()

@@ -21,7 +21,7 @@ namespace SPTracer
 	void TraceTask::Run()
 	{
 		// model
-		static const Scene& model = *tracer_.model_;
+		static const Scene& model = *tracer_.scene_;
 
 		// color converter
 		static const XYZConverter& xyzConverter = *tracer_.xyzConverter_;

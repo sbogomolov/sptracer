@@ -3,6 +3,7 @@
 
 #include "../stdafx.h"
 #include "../Vec3.h"
+#include "Box.h"
 #include "Primitive.h"
 #include "Vertex.h"
 
@@ -25,8 +26,9 @@ namespace SPTracer
 		const Vec3& e2() const;
 
 		void ComputeNormals();
-		virtual Box GetBoundingBox() const override;
 		virtual bool Intersect(const Ray& ray, Intersection& intersection) const override;
+		virtual const Box GetBox() const override;
+		virtual Box Clip(const Box& box) const override;
 
 	private:
 		std::array<Vertex, 3> vertices_;

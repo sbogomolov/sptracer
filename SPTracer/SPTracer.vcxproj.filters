@@ -90,9 +90,6 @@
     <ClCompile Include="src\SPTracer\Scene\MDLAModel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\SPTracer\Scene\OBJModel.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\SPTracer\Scene\Scene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -100,6 +97,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\SPTracer\Scene\KdTreeNode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SPTracer\Scene\OBJModel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SPTracer\Scene\SplitEvent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -209,9 +212,6 @@
     <ClInclude Include="src\SPTracer\Scene\MDLAModel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\SPTracer\Scene\OBJModel.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\SPTracer\Scene\Scene.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -224,7 +224,16 @@
     <ClInclude Include="src\SPTracer\Scene\KdTreeNode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\SPTracer\Scene\SplittingPlane.h">
+    <ClInclude Include="src\SPTracer\Scene\OBJModel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SPTracer\Scene\SplitEvent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SPTracer\Scene\SplitEventType.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SPTracer\Scene\SplitPlane.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

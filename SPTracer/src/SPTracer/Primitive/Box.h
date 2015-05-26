@@ -13,13 +13,15 @@ namespace SPTracer
 	class Box
 	{
 	public:
+		Box();
 		Box(Vec3 min, Vec3 max);
 
 		const Vec3& min() const;
 		const Vec3& max() const;
 
 		const float GetSurfaceArea() const;
-		bool Intersect(const Ray& ray, const Vec3& invDirection, Intersection& intersection);
+		bool Intersect(const Ray& ray, const Vec3& invDirection);
+		bool IsPlanar(unsigned char dimension) const;
 
 	private:
 		Vec3 min_;	// lower limit for coordinates

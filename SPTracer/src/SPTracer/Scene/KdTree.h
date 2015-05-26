@@ -5,7 +5,7 @@
 
 namespace SPTracer
 {
-	struct SplittingPlane;
+	struct SplitPlane;
 	class Box;
 	class KdTreeNode;
 	class Primitive;
@@ -20,23 +20,33 @@ namespace SPTracer
 		const KdTreeNode& rootNode() const;
 
 	private:
+		struct Event
+		{
+			SplitPlane& plane;
+			unsigned char type;
+		};
+
 		static const float TraverseStepCost;
 		static const float IntersectionCost;
 
 		std::unique_ptr<KdTreeNode> rootNode_;
 
 		// recurent tree building procedure
-		std::unique_ptr<KdTreeNode> Build(Box box, std::vector<std::shared_ptr<Primitive>> primitives);
-		
+		static std::unique_ptr<KdTreeNode> Build(Box box, std::vector<std::shared_ptr<Primitive>> primitives);
+
+		// finds the best split plane
+		static std::tuple<SplitPlane, float, bool> FindPlane(const Box& box, const std::vector<std::shared_ptr<Primitive>>& primitives);
+
 		// splits the box with a plane
-		std::tuple<Box, Box> SplitBox(const Box& box, const SplittingPlane& plane) const;
+		static std::tuple<Box, Box> SplitBox(const Box& box, const SplitPlane& plane);
 		
+		// gets the cost of split using the Surface Area Heuristic and
 		// selects the side where primitives lying exactly on plane should belong
-		// true - to the left side, false - to the right side
-		std::tuple<float, bool> SelectCostSide(const Box& leftBox, const Box& rightBox, float surfaceArea, size_t leftCount, size_t rightCount, size_t middleCount) const;
+		// (true - to the left side, false - to the right side)
+		static std::tuple<float, bool> GetSurfaceAreaHeuristicCost(const Box& leftBox, const Box& rightBox, float surfaceArea, size_t leftCount, size_t planarCount, size_t rightCount);
 
 		// gets the split cost
-		float Cost(float leftProb, float rightProb, size_t leftCount, size_t rightCount) const;
+		static float GetCost(float leftProb, float rightProb, size_t leftCount, size_t rightCount);
 	};
 
 }

@@ -6,6 +6,10 @@
 
 namespace SPTracer
 {
+	Box::Box()
+	{
+	}
+
 	Box::Box(Vec3 min, Vec3 max)
 		: min_(std::move(min)), max_(std::move(max))
 	{
@@ -27,7 +31,7 @@ namespace SPTracer
 		return 2.0f * (d[0] * d[1] + d[1] * d[2] + d[2] * d[0]);
 	}
 
-	bool Box::Intersect(const Ray& ray, const Vec3& invDirection, Intersection& intersection)
+	bool Box::Intersect(const Ray& ray, const Vec3& invDirection)
 	{
 		//
 		// Kay and Kayjia "slabs" method, optimized by Tavian Barnes
@@ -52,6 +56,11 @@ namespace SPTracer
 		}
 
 		return tmax > std::max(tmin, 0.0f);
+	}
+
+	bool Box::IsPlanar(unsigned char dimension) const
+	{
+		return (max_[dimension] - min_[dimension]) < Util::Eps;
 	}
 
 }

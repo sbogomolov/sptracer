@@ -2,12 +2,12 @@
 #define SPT_PRIMITIVE_H
 
 #include "../stdafx.h"
-#include "Box.h"
 
 namespace SPTracer
 {
 	struct Intersection;
 	struct Ray;
+	class Box;
 	class Material;
 
 	class Primitive
@@ -16,8 +16,9 @@ namespace SPTracer
 		virtual ~Primitive();
 
 		const Material& material() const;
-		virtual Box GetBoundingBox() const = 0;
+		virtual const Box GetBox() const = 0;
 		virtual bool Intersect(const Ray& ray, Intersection& intersection) const = 0;
+		virtual Box Clip(const Box& box) const = 0;
 
 	protected:
 		explicit Primitive(std::shared_ptr<Material> material);

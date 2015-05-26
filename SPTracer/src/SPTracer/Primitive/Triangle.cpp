@@ -1,5 +1,8 @@
 #include "../stdafx.h"
 #include "../Util.h"
+#include "../Scene/SplitEvent.h"
+#include "../Scene/SplitEventType.h"
+#include "../Scene/SplitPlane.h"
 #include "../Tracer/Intersection.h"
 #include "../Tracer/Ray.h"
 #include "Triangle.h"
@@ -53,8 +56,9 @@ namespace SPTracer
 		std::for_each(vertices_.begin(), vertices_.end(), [&normal](Vertex& v) { v.normal = normal; });
 	}
 
-	Box Triangle::GetBoundingBox() const
+	const Box Triangle::GetBox() const
 	{
+		// compute AABB
 		auto result = std::minmax_element(vertices_.begin(), vertices_.end(), [](const Vertex& a, const Vertex& b) {
 			return a.coord[0] < b.coord[0];
 		});
@@ -103,7 +107,7 @@ namespace SPTracer
 			if (det < Util::Eps)
 			{
 				// if det is close to 0 - ray lies in plane of triangle
-				// if det is negative - ray comes from inside
+				// if det is negative - ray comes from middle
 				return false;
 			}
 		}
@@ -155,6 +159,209 @@ namespace SPTracer
 		intersection.distance = t;
 
 		return true;
+	}
+
+	Box Triangle::Clip(const Box& box) const
+	{
+		// clipped box sizes
+		Vec3 clippedMin;
+		Vec3 clippedMax;
+
+		// key keyPoints (intersections and keyPoints inside the box)
+		std::vector<Vec3> keyPoints;
+
+		// sorted keyPoints of triangle
+		std::vector<size_t> left;
+		std::vector<size_t> middle;
+		std::vector<size_t> right;
+		std::vector<size_t> leftAndMiddle;
+		std::vector<size_t> rightAndMiddle;
+
+		// each vector can contain not more than 3 keyPoints
+		left.reserve(3);
+		right.reserve(3);
+
+		// stores information of how many times point was in middle position
+		// if point was in middle position 3 times (for X, Y and Z) - than it
+		// is onFace the box and should be added to keyPoints list
+		std::array<unsigned char, 3> middleCount{ 0, 0, 0 };
+
+		// box max and min
+		const Vec3& min = box.min();
+		const Vec3& max = box.max();
+
+		// go through all dimensions
+		for (unsigned char dimension = 0; dimension < 3; dimension++)
+		{
+			// clear sorted keyPoints list for next dimension
+			left.clear();
+			right.clear();
+			leftAndMiddle.clear();
+			rightAndMiddle.clear();
+
+			// sort points of triangle
+			for (size_t i = 0; i < 3; i++)
+			{
+				const Vec3& v = vertices_[i].coord;
+
+				if (v[dimension] <= min[dimension])
+				{
+					// point is to the left from the left plane
+					left.push_back(i);
+					leftAndMiddle.push_back(i);
+				}
+				else if (v[dimension] >= max[dimension])
+				{
+					// point is to the right from the right plane
+					right.push_back(i);
+					rightAndMiddle.push_back(i);
+				}
+				else
+				{
+					// point is in between the planes
+					leftAndMiddle.push_back(i);
+					rightAndMiddle.push_back(i);
+					middleCount[i]++;
+				}
+			}
+
+			// go through all lines that intersect left plane
+			for (size_t il : left)
+			{
+				for (size_t ir : rightAndMiddle)
+				{
+					// line keyPoints
+					const Vec3& a = vertices_[il].coord;
+					const Vec3& b = vertices_[ir].coord;
+
+					// distance from line keyPoints to plane
+					float da = min[dimension] - a[dimension];
+					float db = b[dimension] - min[dimension];
+
+					// intersection factor
+					float s = da / (da + db);
+
+					// intersection point
+					Vec3 p = a + s * (b - a);
+
+					// check if intersection point is onFace the box's face
+					bool onFace = true;
+					for (size_t i = 0; i < 3; i++)
+					{
+						// we check only two other dimesions
+						if (i == dimension)
+						{
+							continue;
+						}
+
+						// check that the intersection point is between the bounding planes
+						if ((p[i] < min[i]) || (p[i] > max[i]))
+						{
+							onFace = false;
+							break;
+						}
+					}
+
+					// add intersection point
+					if (onFace)
+					{
+						keyPoints.push_back(std::move(p));
+					}
+				}
+			}
+
+			// go through all lines that intersect right plane
+			for (size_t ir : right)
+			{
+				for (size_t il : leftAndMiddle)
+				{
+					// line keyPoints
+					const Vec3& a = vertices_[il].coord;
+					const Vec3& b = vertices_[ir].coord;
+
+					// distance from line keyPoints to plane
+					float da = min[dimension] - a[dimension];
+					float db = b[dimension] - min[dimension];
+
+					// intersection factor
+					float s = da / (da + db);
+
+					// intersection point
+					Vec3 p = a + s * (b - a);
+
+					// check if intersection point is onFace the box's face
+					bool onFace = true;
+					for (unsigned char i = 0; i < 3; i++)
+					{
+						// we check only two other dimesions
+						if (i == dimension)
+						{
+							continue;
+						}
+
+						// check that the intersection point is between the bounding planes
+						if ((p[i] < min[i]) || (p[i] > max[i]))
+						{
+							onFace = false;
+							break;
+						}
+					}
+
+					// add intersection point
+					if (onFace)
+					{
+						keyPoints.push_back(std::move(p));
+					}
+				}
+			}
+		}
+
+		// add all keyPoints inside the box to key keyPoints
+		for (size_t i = 0; i < 3; i++)
+		{
+			if (middleCount[i] == 3)
+			{
+				keyPoints.push_back(vertices_[i].coord);
+			}
+		}
+
+		// split candidates for each dimension
+		std::vector<float> splitCandidates;
+
+		// the maximum possible number of split candidates is the number of key keyPoints
+		splitCandidates.reserve(keyPoints.size());
+
+		// find perfect perfect splits for all dimensions
+		for (unsigned char dimension = 0; dimension < 3; dimension++)
+		{
+			// clear split candidates for next dimension
+			splitCandidates.clear();
+
+			// go through all key keyPoints and find perfect perfectSplits
+			for (const auto& p : keyPoints)
+			{
+				// add split candidate
+				splitCandidates.push_back(p[dimension]);
+			}
+
+			// choose perfect perfect splits and set clipped box
+			if (splitCandidates.size() == 1)
+			{
+				// planar clipped box
+				clippedMin[dimension] = splitCandidates[0];
+				clippedMax[dimension] = splitCandidates[0];
+			}
+			else if (splitCandidates.size() > 1)
+			{
+				// use maximum and minimum values of potential split candidates,
+				// so that triangle will not be splitted in two parts
+				auto result = std::minmax_element(splitCandidates.begin(), splitCandidates.end());
+				clippedMin[dimension] = *result.first;
+				clippedMax[dimension] = *result.second;
+			}
+		}
+
+		return Box(std::move(clippedMin), std::move(clippedMax));
 	}
 
 }

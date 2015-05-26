@@ -18,15 +18,15 @@ namespace SPTracer
 
 	void Scene::BuildKdTree()
 	{
-		// move primitoves vector, because it will not be used in the future
-		kdTree_ = std::make_unique<KdTree>(std::move(primitives_));
+		// move primitives vector, because it will not be used in the future
+		//kdTree_ = std::make_unique<KdTree>(std::move(primitives_));
 	}
 
 	bool Scene::Intersect(const Ray& ray, Intersection& intersection) const
 	{
 		// set initial intersection distance to max possible,
 		// so that any intersection will be closer than that
-		intersection.distance = std::numeric_limits<float>::infinity();
+		intersection.distance = std::numeric_limits<float>::max();
 
 		Intersection newIntersection;
 
@@ -43,7 +43,7 @@ namespace SPTracer
 			}
 		}
 
-		return intersection.distance < std::numeric_limits<float>::infinity();
+		return intersection.distance < std::numeric_limits<float>::max();
 	}
 
 }

@@ -21,7 +21,7 @@ namespace SPTracer
 		friend class TraceTask;
 
 	public:
-		Tracer(std::unique_ptr<Scene> model, Camera camera,
+		Tracer(std::unique_ptr<Scene> scene, Camera camera,
 			unsigned int width, unsigned int height, unsigned int numThreads,
 			Spectrum spectrum);
 		virtual ~Tracer();
@@ -40,7 +40,7 @@ namespace SPTracer
 		unsigned long completedPasses_ = 0;
 		Spectrum spectrum_;
 		Camera camera_;
-		std::unique_ptr<Scene> model_;
+		std::unique_ptr<Scene> scene_;
 		std::unique_ptr<TaskScheduler> taskScheduler_;
 		std::unique_ptr<XYZConverter> xyzConverter_;
 		std::unique_ptr<RGBConverter> rgbConverter_;
