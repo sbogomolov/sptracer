@@ -3,6 +3,7 @@
 
 #include "../stdafx.h"
 #include "../Primitive/Box.h"
+#include "SplitPlane.h"
 
 namespace SPTracer
 {
@@ -10,20 +11,29 @@ namespace SPTracer
 
 	class KdTreeNode
 	{
+		friend class KdTree;
+
 	public:
 		KdTreeNode(Box box, std::vector<std::shared_ptr<Primitive>> primitives);
-		KdTreeNode(Box box, std::unique_ptr<KdTreeNode> left, std::unique_ptr<KdTreeNode> right);
+		KdTreeNode(Box box, SplitPlane plane, std::shared_ptr<KdTreeNode> left, std::shared_ptr<KdTreeNode> right);
 		virtual ~KdTreeNode();
 
+		const Box& box() const;
+		const std::vector<std::shared_ptr<Primitive>>& primitives() const;
+		const SplitPlane& plane() const;
 		const KdTreeNode& left() const;
 		const KdTreeNode& right() const;
-		const Box& box() const;
+		const bool isLeaf() const;
+		const std::array<std::vector<std::shared_ptr<KdTreeNode>>, 6>& neighbours() const;
 
 	private:
-		std::vector<std::shared_ptr<Primitive>> primitives_;
-		std::unique_ptr<KdTreeNode> left_;
-		std::unique_ptr<KdTreeNode> right_;
 		Box box_;
+		std::vector<std::shared_ptr<Primitive>> primitives_;
+		SplitPlane plane_;
+		std::shared_ptr<KdTreeNode> left_;
+		std::shared_ptr<KdTreeNode> right_;
+		bool isLeaf_;
+		std::array<std::vector<std::shared_ptr<KdTreeNode>>, 6> neighbours_;
 	};
 
 }

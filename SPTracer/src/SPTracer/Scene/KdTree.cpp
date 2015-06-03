@@ -34,6 +34,13 @@ namespace SPTracer
 
 		// build kd-Tree
 		rootNode_ = Build(Box(std::move(min), std::move(max)), std::move(primitives));
+
+		// find neighbours
+		if (!rootNode_->isLeaf())
+		{
+			FindNeighbours(*rootNode_->left_);
+			FindNeighbours(*rootNode_->right_);
+		}
 	}
 
 	KdTree::~KdTree()
@@ -45,12 +52,12 @@ namespace SPTracer
 		return *rootNode_;
 	}
 
-	std::unique_ptr<KdTreeNode> KdTree::Build(Box box, std::vector<std::shared_ptr<Primitive>> primitives)
+	std::shared_ptr<KdTreeNode> KdTree::Build(Box box, std::vector<std::shared_ptr<Primitive>> primitives)
 	{
 		// return node if there are no primitives
 		if (primitives.size() == 0)
 		{
-			return std::make_unique<KdTreeNode>(std::move(box), std::move(primitives));
+			return std::make_shared<KdTreeNode>(std::move(box), std::move(primitives));
 		}
 
 		// find best plane
@@ -63,7 +70,7 @@ namespace SPTracer
 		if (bestCost > (IntersectionCost * primitives.size()))
 		{
 			// cost is too high, no more splitting
-			return std::make_unique<KdTreeNode>(std::move(box), std::move(primitives));
+			return std::make_shared<KdTreeNode>(std::move(box), std::move(primitives));
 		}
 
 		// split the box
@@ -107,7 +114,7 @@ namespace SPTracer
 		}
 
 		// return node with two recursively built child nodes
-		return std::make_unique<KdTreeNode>(std::move(box), Build(left, leftPrimitives), Build(right, rightPrimitives));
+		return std::make_shared<KdTreeNode>(std::move(box), std::move(bestPlane), Build(left, leftPrimitives), Build(right, rightPrimitives));
 	}
 
 	std::tuple<SplitPlane, float, bool> KdTree::FindPlane(const Box& box, const std::vector<std::shared_ptr<Primitive>>& primitives)
@@ -274,4 +281,151 @@ namespace SPTracer
 		float k = (leftCount == 0) || (rightCount == 0) ? 0.8f : 1.0f;
 		return k * (TraverseStepCost + IntersectionCost * (leftProb * leftCount + rightProb * rightCount));
 	}
+
+	void KdTree::FindNeighbours(KdTreeNode& node)
+	{
+		// check if node is leaf
+		if (node.isLeaf())
+		{
+			// iterate over all faces
+			for (unsigned char i = 0; i < 6; i++)
+			{
+				// flag indicating that the current face is "left"
+				// (corresponding coordinate is smaller)
+				bool left = (i % 2) == 0;
+				
+				// current dimension
+				unsigned char dimension = i / 2;
+
+				// face position
+				float pos = (left ? node.box().min() : node.box().max())[dimension];
+
+				// current neighbour candidate node
+				std::shared_ptr<KdTreeNode> candidate = rootNode_;
+
+				// find neighbour in the tree
+				while (true)
+				{
+					// check if node is leaf
+					if (candidate->isLeaf())
+					{
+						// position of candidate neighbour node face
+						float candidatePos = (left ? candidate->box().max() : candidate->box().min())[dimension];
+
+						// check if the node is neighbour
+						if (std::abs(pos - candidatePos) < Util::Eps)
+						{
+							// add neighbour
+							node.neighbours_[i].push_back(candidate);
+						}
+
+						// there are no more nodes to check
+						break;
+					}
+					else
+					{
+						// split plane
+						const SplitPlane& plane = candidate->plane();
+
+						// check the dimension of split plane
+						if (plane.dimension != dimension)
+						{
+							// check if it splits the face
+							if ((plane.position > (node.box().min()[plane.dimension] + Util::Eps)) &&
+								(plane.position < (node.box().max()[plane.dimension] - Util::Eps)))
+							{
+								// plane splits the face
+								// search the tree to find indirect neighbours
+								FindIndirectNeighbours(node, rootNode_, i);
+								
+								// no need to check other nodes
+								break;
+							}
+						}
+						else
+						{
+							// check if face is in the split plane
+							if (std::abs(pos - plane.position) < Util::Eps)
+							{
+								// face is in the split plane, both sub-trees contain the face
+								// select the subtree that does not contain current node
+								candidate = left ? candidate->left_ : candidate->right_;
+								continue;
+							}
+						}
+
+						// select the subtree that contains the whole face
+						candidate = plane.position > candidate->box().max()[plane.dimension] ? candidate->left_ : candidate->right_;
+						continue;
+					}
+				}
+			}
+
+		}
+		else
+		{
+			// find neighbours for left and right child nodes
+			FindNeighbours(*node.left_);
+			FindNeighbours(*node.right_);
+		}
+	}
+
+	void KdTree::FindIndirectNeighbours(KdTreeNode& node, std::shared_ptr<KdTreeNode> searchNode, unsigned char face)
+	{
+		// flag indicating that the current face is "left"
+		// (corresponding coordinate is smaller)
+		bool left = (face % 2) == 0;
+
+		// current dimension
+		unsigned char dimension = face / 2;
+
+		// face position
+		float pos = (left ? node.box().min() : node.box().max())[dimension];
+
+		if (searchNode->isLeaf())
+		{
+			// position of candidate neighbour node face
+			float candidatePos = (left ? searchNode->box().max() : searchNode->box().min())[dimension];
+
+			// check if node is a neighbour
+			if (std::abs(pos - candidatePos) < Util::Eps)
+			{
+				// add neighbour node
+				node.neighbours_[face].push_back(searchNode);
+			}
+		}
+		else
+		{
+			// split plane
+			const SplitPlane& plane = searchNode->plane();
+
+			// check split plane dimension
+			if (dimension != plane.dimension)
+			{
+				// select corresponding sub-tree
+				FindIndirectNeighbours(node, plane.position > pos ? searchNode->left_ : searchNode->right_, face);
+			}
+			else
+			{
+				// analyze the position of split plane
+				if (plane.position < (node.box().min()[dimension] + Util::Eps))
+				{
+					// split plane is on the left, so we select the right sub-tree
+					FindIndirectNeighbours(node, searchNode->right_, face);
+				}
+				else if (plane.position > (node.box().max()[dimension] - Util::Eps))
+				{
+					// split plane is on the right, so we select the left sub-tree
+					FindIndirectNeighbours(node, searchNode->left_, face);
+				}
+				else
+				{
+					// split plane splits the face, we need both sub-trees
+					FindIndirectNeighbours(node, searchNode->left_, face);
+					FindIndirectNeighbours(node, searchNode->right_, face);
+				}
+			}
+		}
+	}
+
 }

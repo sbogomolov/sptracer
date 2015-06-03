@@ -5,17 +5,32 @@
 namespace SPTracer
 {
 	KdTreeNode::KdTreeNode(Box box, std::vector<std::shared_ptr<Primitive>> primitives)
-		: box_(std::move(box)), primitives_(std::move(primitives))
+		: box_(std::move(box)), primitives_(std::move(primitives)), isLeaf_(true)
 	{
 	}
 
-	KdTreeNode::KdTreeNode(Box box, std::unique_ptr<KdTreeNode> left, std::unique_ptr<KdTreeNode> right)
-		: box_(std::move(box)), left_(std::move(left)), right_(std::move(right))
+	KdTreeNode::KdTreeNode(Box box, SplitPlane plane, std::shared_ptr<KdTreeNode> left, std::shared_ptr<KdTreeNode> right)
+		: box_(std::move(box)), plane_(std::move(plane)), left_(std::move(left)), right_(std::move(right)), isLeaf_(false)
 	{
 	}
 
 	KdTreeNode::~KdTreeNode()
 	{
+	}
+
+	const Box& KdTreeNode::box() const
+	{
+		return box_;
+	}
+
+	const std::vector<std::shared_ptr<Primitive>>& KdTreeNode::primitives() const
+	{
+		return primitives_;
+	}
+
+	const SplitPlane & KdTreeNode::plane() const
+	{
+		return plane_;
 	}
 
 	const KdTreeNode& KdTreeNode::left() const
@@ -28,9 +43,14 @@ namespace SPTracer
 		return *right_;
 	}
 
-	const Box& KdTreeNode::box() const
+	const bool KdTreeNode::isLeaf() const
 	{
-		return box_;
+		return isLeaf_;
+	}
+
+	const std::array<std::vector<std::shared_ptr<KdTreeNode>>, 6>& KdTreeNode::neighbours() const
+	{
+		return neighbours_;
 	}
 
 }

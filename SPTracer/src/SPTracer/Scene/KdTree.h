@@ -29,10 +29,10 @@ namespace SPTracer
 		static const float TraverseStepCost;
 		static const float IntersectionCost;
 
-		std::unique_ptr<KdTreeNode> rootNode_;
+		std::shared_ptr<KdTreeNode> rootNode_;
 
 		// recurent tree building procedure
-		static std::unique_ptr<KdTreeNode> Build(Box box, std::vector<std::shared_ptr<Primitive>> primitives);
+		static std::shared_ptr<KdTreeNode> Build(Box box, std::vector<std::shared_ptr<Primitive>> primitives);
 
 		// finds the best split plane
 		static std::tuple<SplitPlane, float, bool> FindPlane(const Box& box, const std::vector<std::shared_ptr<Primitive>>& primitives);
@@ -47,6 +47,12 @@ namespace SPTracer
 
 		// gets the split cost
 		static float GetCost(float leftProb, float rightProb, size_t leftCount, size_t rightCount);
+
+		// finds neighbours for node and its child nodes
+		void FindNeighbours(KdTreeNode& node);
+
+		// find indirect neighbours of node
+		void FindIndirectNeighbours(KdTreeNode& node, std::shared_ptr<KdTreeNode> searchNode, unsigned char face);
 	};
 
 }
