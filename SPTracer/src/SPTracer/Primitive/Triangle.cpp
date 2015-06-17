@@ -172,7 +172,6 @@ namespace SPTracer
 
 		// sorted keyPoints of triangle
 		std::vector<size_t> left;
-		std::vector<size_t> middle;
 		std::vector<size_t> right;
 		std::vector<size_t> leftAndMiddle;
 		std::vector<size_t> rightAndMiddle;
@@ -228,10 +227,12 @@ namespace SPTracer
 			// go through all lines that intersect left plane
 			for (size_t il : left)
 			{
+				// line start point
+				const Vec3& a = vertices_[il].coord;
+
 				for (size_t ir : rightAndMiddle)
 				{
-					// line keyPoints
-					const Vec3& a = vertices_[il].coord;
+					// line end point
 					const Vec3& b = vertices_[ir].coord;
 
 					// distance from line keyPoints to plane
@@ -271,17 +272,19 @@ namespace SPTracer
 			}
 
 			// go through all lines that intersect right plane
-			for (size_t ir : right)
+			for (size_t il : leftAndMiddle)
 			{
-				for (size_t il : leftAndMiddle)
+				// line start point
+				const Vec3& a = vertices_[il].coord;
+
+				for (size_t ir : right)
 				{
-					// line keyPoints
-					const Vec3& a = vertices_[il].coord;
+					// line end point
 					const Vec3& b = vertices_[ir].coord;
 
 					// distance from line keyPoints to plane
-					float da = min[dimension] - a[dimension];
-					float db = b[dimension] - min[dimension];
+					float da = max[dimension] - a[dimension];
+					float db = b[dimension] - max[dimension];
 
 					// intersection factor
 					float s = da / (da + db);

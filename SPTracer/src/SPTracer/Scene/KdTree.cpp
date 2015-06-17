@@ -355,7 +355,7 @@ namespace SPTracer
 						}
 
 						// select the subtree that contains the whole face
-						candidate = plane.position > candidate->box().max()[plane.dimension] ? candidate->left_ : candidate->right_;
+						candidate = plane.position > node.box().max()[plane.dimension] ? candidate->left_ : candidate->right_;
 						continue;
 					}
 				}
@@ -400,20 +400,30 @@ namespace SPTracer
 			const SplitPlane& plane = searchNode->plane();
 
 			// check split plane dimension
-			if (dimension != plane.dimension)
+			if (dimension == plane.dimension)
 			{
-				// select corresponding sub-tree
-				FindIndirectNeighbours(node, plane.position > pos ? searchNode->left_ : searchNode->right_, face);
+				// analyze the position of split plane
+				if (std::abs(pos - plane.position) < Util::Eps)
+				{
+					// face is in the split plane, both sub-trees contain the face
+					// select the subtree that does not contain current node
+					FindIndirectNeighbours(node, left ? searchNode->left_ : searchNode->right_, face);
+				}
+				else
+				{
+					// plane is outside the node, select the right sub-tree
+					FindIndirectNeighbours(node, plane.position > pos ? searchNode->left_ : searchNode->right_, face);
+				}
 			}
 			else
 			{
 				// analyze the position of split plane
-				if (plane.position < (node.box().min()[dimension] + Util::Eps))
+				if (plane.position < (node.box().min()[plane.dimension] + Util::Eps))
 				{
 					// split plane is on the left, so we select the right sub-tree
 					FindIndirectNeighbours(node, searchNode->right_, face);
 				}
-				else if (plane.position > (node.box().max()[dimension] - Util::Eps))
+				else if (plane.position > (node.box().max()[plane.dimension] - Util::Eps))
 				{
 					// split plane is on the right, so we select the left sub-tree
 					FindIndirectNeighbours(node, searchNode->left_, face);

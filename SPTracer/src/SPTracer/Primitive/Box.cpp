@@ -31,14 +31,14 @@ namespace SPTracer
 		return 2.0f * (d[0] * d[1] + d[1] * d[2] + d[2] * d[0]);
 	}
 
-	bool Box::Intersect(const Ray& ray, const Vec3& invDirection, Vec3& near, Vec3& far)
+	bool Box::Intersect(const Ray& ray, const Vec3& invDirection, float& tnear, float& tfar) const
 	{
 		//
 		// Kay and Kayjia "slabs" method
 		//
 
-		float tnear = std::numeric_limits<float>::min();
-		float tfar = std::numeric_limits<float>::max();
+		tnear = std::numeric_limits<float>::min();
+		tfar = std::numeric_limits<float>::max();
 
 		for (size_t i = 0; i < 3; i++)
 		{
@@ -78,10 +78,6 @@ namespace SPTracer
 				return false;
 			}
 		}
-
-		// we have intersection, let's compute the intersection points
-		near = ray.origin + ray.direction * tnear;
-		far = ray.origin + ray.direction * tfar;
 
 		return true;
 	}

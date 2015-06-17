@@ -20,7 +20,7 @@ namespace SPTracer
 		const Vec3& max() const;
 
 		const float GetSurfaceArea() const;
-		bool Intersect(const Ray& ray, const Vec3& invDirection, Vec3& near, Vec3& far);
+		bool Intersect(const Ray& ray, const Vec3& invDirection, float& tnear, float& tfar) const;
 		bool IsPlanar(unsigned char dimension) const;
 
 	private:

@@ -10,6 +10,7 @@ namespace SPTracer
 	struct Intersection;
 	struct Ray;
 	class KdTree;
+	class KdTreeNode;
 	class Primitive;
 
 	class Scene
@@ -24,10 +25,13 @@ namespace SPTracer
 		void BuildKdTree();
 		bool Intersect(const Ray& ray, Intersection& intersection) const;
 
-	protected:
+	private:
 		std::unordered_map<std::string, std::shared_ptr<Material>> materials_;
 		std::vector<std::shared_ptr<Primitive>> primitives_;
 		std::unique_ptr<KdTree> kdTree_;
+
+		const KdTreeNode* FindFirstIntersection(const Ray& ray, const Vec3& invDirection, float& tnear, float& tfar) const;
+		const KdTreeNode* FindNextIntersection(const KdTreeNode* node, const Ray& ray, const Vec3& invDirection, float& tnear, float& tfar) const;
 	};
 
 }
