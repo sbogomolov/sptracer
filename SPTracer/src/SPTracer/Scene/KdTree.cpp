@@ -54,6 +54,8 @@ namespace SPTracer
 
 	std::shared_ptr<KdTreeNode> KdTree::Build(Box box, std::vector<std::shared_ptr<Primitive>> primitives)
 	{
+		auto bbb = box;
+
 		// return node if there are no primitives
 		if (primitives.size() == 0)
 		{
@@ -82,7 +84,8 @@ namespace SPTracer
 		std::vector<std::shared_ptr<Primitive>> rightPrimitives;
 		for (const auto& p : primitives)
 		{
-			Box b = p->GetBox();
+			// clipped primitive box
+			Box b = p->Clip(box);
 
 			// check if primitive lies in split plane
 			if (b.IsPlanar(bestPlane.dimension) && (std::abs(b.min()[bestPlane.dimension] - bestPlane.position) < Util::Eps))
@@ -165,7 +168,6 @@ namespace SPTracer
 
 			// start with all triangles on the right
 			size_t leftCount = 0;
-			size_t planarCount = 0;
 			size_t rightCount = primitives.size();
 
 			// "sweep" plane over all split candidates
@@ -201,14 +203,12 @@ namespace SPTracer
 				}
 
 				// update triangles counts
-				planarCount = planar;
+				size_t planarCount = planar;
 				rightCount -= planar + end;
 
-				// check that the plane is not one if the bounding planes
-				if (((plane.position - box.min()[plane.dimension]) > Util::Eps) &&
-					((box.max()[plane.dimension] - plane.position) > Util::Eps))
+				// check that the plane is not one of the bounding planes
+				if (((plane.position - box.min()[plane.dimension]) > Util::Eps) && ((box.max()[plane.dimension] - plane.position) > Util::Eps))
 				{
-
 					// split volume by plane
 					Box left, right;
 					std::tie(left, right) = SplitBox(box, plane);
@@ -230,7 +230,6 @@ namespace SPTracer
 				leftCount += start;
 				leftCount += planar;
 				rightCount -= planar;
-				planarCount = 0;
 			}
 		}
 
@@ -263,7 +262,10 @@ namespace SPTracer
 
 		// get costs
 		float costLeft = GetCost(leftProb, rightProb, leftCount + planarCount, rightCount);
-		float costRight = GetCost(leftProb, rightProb, leftCount, rightCount + planarCount);
+		float costRight =
+			planarCount == 0
+			? costLeft
+			: GetCost(leftProb, rightProb, leftCount, rightCount + planarCount);
 		
 		// return the best cost
 		if (costLeft < costRight)
@@ -331,8 +333,7 @@ namespace SPTracer
 						if (plane.dimension != dimension)
 						{
 							// check if it splits the face
-							if ((plane.position > (node.box().min()[plane.dimension] + Util::Eps)) &&
-								(plane.position < (node.box().max()[plane.dimension] - Util::Eps)))
+							if ((plane.position > node.box().min()[plane.dimension]) && (plane.position < node.box().max()[plane.dimension]))
 							{
 								// plane splits the face
 								// search the tree to find indirect neighbours
@@ -418,12 +419,12 @@ namespace SPTracer
 			else
 			{
 				// analyze the position of split plane
-				if (plane.position < (node.box().min()[plane.dimension] + Util::Eps))
+				if (plane.position < node.box().min()[plane.dimension])
 				{
 					// split plane is on the left, so we select the right sub-tree
 					FindIndirectNeighbours(node, searchNode->right_, face);
 				}
-				else if (plane.position > (node.box().max()[plane.dimension] - Util::Eps))
+				else if (plane.position > node.box().max()[plane.dimension])
 				{
 					// split plane is on the right, so we select the left sub-tree
 					FindIndirectNeighbours(node, searchNode->left_, face);
