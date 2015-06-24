@@ -120,34 +120,27 @@ namespace SPTracer
 					if (tfarLeft > tfarRight)
 					{
 						// select left sub-box
-						node = &node->left();
-						tnear = tnearLeft;
-						tfar = tfarLeft;
+						right = false;
 					}
 					else
 					{
 						// select right sub-box
-						node = &node->right();
-						tnear = tnearRight;
-						tfar = tfarRight;
+						left = false;
 					}
 				}
 				else if (tnearLeft < tnearRight)
 				{
 					// select left sub-box
-					node = &node->left();
-					tnear = tnearLeft;
-					tfar = tfarLeft;
+					right = false;
 				}
 				else
 				{
 					// select right sub-box
-					node = &node->right();
-					tnear = tnearRight;
-					tfar = tfarRight;
+					left = false;
 				}
 			}
-			else if (left)
+			
+			if (left)
 			{
 				// select left sub-box
 				node = &node->left();
@@ -225,21 +218,23 @@ namespace SPTracer
 				if (found)
 				{
 					// intersect ray with neigbour
-					float tn, tf;
-					if (!n->box().Intersect(ray, invDirection, tn, tf))
+					float tnearCandidate, tfarCandidate;
+					if (!n->box().Intersect(ray, invDirection, tnearCandidate, tfarCandidate))
 					{
 						// some mistake, no intersection
 						continue;
 					}
 
-					// this check is needed to select the right neighbour if ray hits
+					// the first check is needed to select the right neighbour if ray hits
 					// exactly in between two neighbours
-					if (((tf - tn) > (tfar - tnear)) && (std::abs(tn - tfarOriginal) < Util::Eps))
+					// the second check is needed to ensure that the selected neighbour near
+					// intersection matches the original box far intersection
+					if (((tfarCandidate - tnearCandidate) > (tfar - tnear)) && (std::abs(tnearCandidate - tfarOriginal) < Util::Eps))
 					{
 						// store found neighbour
 						nextNode = n.get();
-						tnear = tn;
-						tfar = tf;
+						tnear = tnearCandidate;
+						tfar = tfarCandidate;
 					}
 				}
 			}
