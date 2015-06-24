@@ -61,7 +61,7 @@ namespace SPTracer
 	std::vector<std::string> MDLAModel::GetTokens(std::string text)
 	{
 		TokensList tokens;
-		size_t start = -1;
+		size_t start = std::string::npos;
 		bool inStrToken = false;
 		bool inComment = false;
 		bool inAnnotation = false;
@@ -121,7 +121,7 @@ namespace SPTracer
 			case '%':
 			case '[':
 				// continue if we're not inside a token
-				if (start == -1)
+				if (start == std::string::npos)
 				{
 					break;
 				}
@@ -130,7 +130,7 @@ namespace SPTracer
 				tokens.push_back(text.substr(start, i - start));
 
 				// reset token start
-				start = -1;
+				start = std::string::npos;
 				break;
 
 			case '\"':
@@ -141,7 +141,7 @@ namespace SPTracer
 
 			default:
 				// set new token start
-				if (start == -1)
+				if (start == std::string::npos)
 				{
 					start = i;
 				}

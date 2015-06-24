@@ -33,14 +33,14 @@ namespace SPTracer
 
 	private:
 		std::mutex mutex_;
-		unsigned int numThreads_;
-		unsigned int width_;
-		unsigned int height_;
 		unsigned long pixelsCount_;
 		unsigned long completedPasses_ = 0;
-		Spectrum spectrum_;
-		Camera camera_;
 		std::unique_ptr<Scene> scene_;
+		Camera camera_;
+		unsigned int width_;
+		unsigned int height_;
+		unsigned int numThreads_;
+		Spectrum spectrum_;
 		std::unique_ptr<TaskScheduler> taskScheduler_;
 		std::unique_ptr<XYZConverter> xyzConverter_;
 		std::unique_ptr<RGBConverter> rgbConverter_;

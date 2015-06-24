@@ -4,8 +4,6 @@
 #include "SPTracer/Exception.h"
 #include "SPTracer/Log.h"
 #include "SPTracer/StringUtil.h"
-#include "SPTracer/Vec3.h"
-#include "SPTracer/Scene/Camera.h"
 #include "SPTracer/Scene/MDLAModel.h"
 #include "SPTracer/Scene/OBJModel.h"
 #include "SPTracer/Scene/Scene.h"
@@ -44,7 +42,7 @@ App::App(std::string configFile)
 			// camera data must be present in config file
 			if (!config.cameraLoaded)
 			{
-				throw std::exception("Camera data was not found in config file");
+				throw std::runtime_error("Camera data was not found in config file");
 			}
 		}
 
@@ -85,7 +83,7 @@ int App::Run()
 	{
 		std::string s = "Trying to run not initialized application";
 		SPTracer::Log::Error(s);
-		throw std::exception(s.c_str());
+		throw std::runtime_error(s.c_str());
 	}
 
 	// run tracer
@@ -118,7 +116,7 @@ Config App::ReadConfig(std::string configFile) const
 	{
 		std::string msg = "Cannot open configuration file: " + configFile;
 		SPTracer::Log::Error(msg);
-		throw std::exception(msg.c_str());
+		throw std::runtime_error(msg.c_str());
 	}
 	
 	try
@@ -150,7 +148,7 @@ Config App::ReadConfig(std::string configFile) const
 			pos = line.find('=');
 			if (pos == originalLine.npos)
 			{
-				throw std::exception(("Error in configuration file: " + originalLine).c_str());
+				throw std::runtime_error(("Error in configuration file: " + originalLine).c_str());
 			}
 
 			std::string parameter = line.substr(0, pos);
@@ -163,7 +161,7 @@ Config App::ReadConfig(std::string configFile) const
 			// check that parameter and value are not an empty string
 			if ((parameter.length() == 0) || (value.length() == 0))
 			{
-				throw std::exception(("Error in configuration file: " + originalLine).c_str());
+				throw std::runtime_error(("Error in configuration file: " + originalLine).c_str());
 			}
 
 			// convert parameter name to lower
@@ -187,7 +185,7 @@ Config App::ReadConfig(std::string configFile) const
 				else
 				{
 					// unknown model type
-					throw std::exception(("Error in configuration file: Unknown scene type: " + originalLine).c_str());
+					throw std::runtime_error(("Error in configuration file: Unknown scene type: " + originalLine).c_str());
 				}
 			}
 			else if (parameter == "modelfile")

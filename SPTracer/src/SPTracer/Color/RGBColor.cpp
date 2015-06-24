@@ -10,8 +10,6 @@ namespace SPTracer
 
 	float RGBColor::GetAmplitude(float waveLength) const
 	{
-		static const float WaveLengthAccuracy = 1e-2f;
-
 		// ultra-violet
 		if (waveLength < 400.0f)
 		{

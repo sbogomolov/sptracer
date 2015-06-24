@@ -199,7 +199,7 @@ namespace SPTracer
 			for (const auto& n : node->neighbours()[face])
 			{
 				bool found = true;
-				for (size_t j = 0; j < 3; ++j)
+				for (int j = 0; j < 3; ++j)
 				{
 					// skip current dimension
 					if (i == j)

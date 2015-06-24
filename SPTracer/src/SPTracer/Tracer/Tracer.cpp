@@ -6,7 +6,6 @@
 #include "../Task/TaskScheduler.h"
 #include "../Task/TraceTask.h"
 #include "../ImageUpdater.h"
-#include "Ray.h"
 #include "Tracer.h"
 
 namespace SPTracer {
