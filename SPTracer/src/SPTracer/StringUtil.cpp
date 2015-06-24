@@ -107,7 +107,7 @@ namespace SPTracer
 		std::vector<float> values;
 		size_t prev = 0;
 		size_t pos = 0;
-		while (pos = str.find(delim, pos + 1))
+		while ((pos = str.find(delim, pos + 1)))
 		{
 			std::string token = str.substr(prev, pos - prev);
 

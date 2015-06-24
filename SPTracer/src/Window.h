@@ -6,6 +6,8 @@
 #include <mutex>
 #include <string>
 
+class WindowImageUpdater;
+
 class Window
 {
 	friend class WindowImageUpdater;

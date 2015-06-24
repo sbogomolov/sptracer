@@ -1,3 +1,4 @@
+#include <exception>
 #include "Window.h"
 #include "WindowImageUpdater.h"
 #include "SPTracer/Log.h"
@@ -29,7 +30,7 @@ Window::Window(unsigned int width, unsigned int height, std::string title)
 	if (!RegisterClassEx(&wc))
 	{
 		SPTracer::Log::Error("Could not register window class");
-		throw std::exception("Could not register window class");
+		throw std::runtime_error("Could not register window class");
 	}
 
 	DWORD style = WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX;
@@ -53,7 +54,7 @@ Window::Window(unsigned int width, unsigned int height, std::string title)
 	if (hwnd_ == nullptr)
 	{
 		SPTracer::Log::Error("Could not create window");
-		throw std::exception("Could not create window");
+		throw std::runtime_error("Could not create window");
 	}
 
 	// show window

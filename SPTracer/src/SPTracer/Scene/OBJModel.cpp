@@ -65,10 +65,12 @@ namespace SPTracer
 		}
 
 		// get lowercase keyword
-		keyword = StringUtil::ToLower(line.substr(0, pos));
+		keyword = line.substr(0, pos);
+		StringUtil::ToLower(keyword);
 
 		// get value and trim all white spaces and tab characters
-		value = StringUtil::Trim(line.substr(pos + 1), " \t");
+		value = line.substr(pos + 1);
+		StringUtil::Trim(value, " \t");
 
 		// replace tab characters with spaces in value
 		StringUtil::Replace(value, "\t", " ");
