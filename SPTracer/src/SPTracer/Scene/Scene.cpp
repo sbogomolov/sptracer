@@ -175,7 +175,7 @@ namespace SPTracer
 		KdTreeNode* nextNode = nullptr;
 
 		// check all dimensions
-		for (size_t i = 0; i < 3; ++i)
+		for (int i = 0; i < 3; ++i)
 		{
 			int face = -1;
 			if (std::abs(far[i] - node->box().min()[i]) < Util::Eps)
