@@ -33,4 +33,9 @@ namespace SPTracer
 		GetDiffuseReflectance(ray, intersection, newRay, reflectance);
 	}
 
+	void Material::GetNewRayRefraction(const Ray & ray, const Intersection & intersection, Ray & newRay) const
+	{
+
+	}
+
 }

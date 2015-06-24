@@ -160,6 +160,36 @@ namespace SPTracer
 
 					float diffuseReflectionProbability = material.GetDiffuseReflectionProbability(ray.waveIndex);
 					float specularReflectionProbability = material.GetSpecularReflectionProbability(ray.waveIndex);
+					float refractionProbability = 0.0f;
+					float transparency = 0.0f;
+					int waveIndex = 0;
+
+					// check if material is transparent
+					if (material.IsTransparent())
+					{
+						// choose random wave index if ray is not already monochromatic
+						waveIndex = ray.waveIndex != -1 ? ray.waveIndex : Util::RandInt(0, spectrum.count - 1);
+
+						float sinTheta = 0.0f;
+
+						// get transmittance
+						float transmittance = material.GetTransmittance(waveIndex, ray, sinTheta);
+						if (transmittance > Util::Eps)
+						{
+							// transparency
+							transparency = material.GetTransparency(waveIndex);
+
+							// set refraction probability
+							refractionProbability = transmittance * transparency;
+
+							// reflectance
+							float reflectance = 1.0f - transmittance;
+							
+							// scale the reflection probabilities according to reflectance
+							diffuseReflectionProbability *= reflectance;
+							specularReflectionProbability *= reflectance;
+						}
+					}
 
 					/////////////////////////////////////////////////////////////////////////////////////
 					// 
@@ -194,6 +224,18 @@ namespace SPTracer
 						
 						// ray was not absorped, increase its weight by decreasing reflection probability
 						reflectionProbability *= specularReflectionProbability;
+					}
+					else if (next < (diffuseReflectionProbability + specularReflectionProbability + refractionProbability))
+					{
+						// refraction
+						material.GetNewRayRefraction(ray, intersection, newRay);
+
+						// ray was not absorped, increase its weight by decreasing reflection probability
+						reflectionProbability *= refractionProbability;
+
+						// set new ray parameters
+						newRay.refracted = !ray.refracted;
+						newRay.waveIndex = waveIndex;
 					}
 					else
 					{

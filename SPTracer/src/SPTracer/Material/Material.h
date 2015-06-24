@@ -17,13 +17,22 @@ namespace SPTracer
 
 		virtual bool IsEmissive() const = 0;
 		virtual bool IsReflective() const = 0;
+		virtual bool IsTransparent() const = 0;
+
 		virtual void GetNewRayDiffuse(const Ray& ray, const Intersection& intersection, Ray& newRay, std::vector<float>& reflectance) const;
 		virtual bool GetNewRaySpecular(const Ray& ray, const Intersection& intersection, Ray& newRay, std::vector<float>& reflectance) const = 0;
+		virtual void GetNewRayRefraction(const Ray& ray, const Intersection& intersection, Ray& newRay) const;
+
 		virtual void GetDiffuseReflectance(const Ray& ray, const Intersection& intersection, const Ray& newRay, std::vector<float>& reflectance) const = 0;
 		virtual void GetSpecularReflectance(const Ray& ray, const Intersection& intersection, const Ray& newRay, std::vector<float>& reflectance) const = 0;
+		virtual float GetTransparency(size_t waveIndex) const = 0;
 		virtual void GetRadiance(const Ray& ray, const Intersection& intersection, std::vector<float>& radiance) const = 0;
+
 		virtual float GetDiffuseReflectionProbability(int waveIndex) const = 0;			// use index -1 for average reflectivity
 		virtual float GetSpecularReflectionProbability(int waveIndex) const = 0;		// use index -1 for average reflectivity
+		virtual float GetTransmittance(size_t waveIndex, const Ray& ray, float sinTheta) const = 0;
+
+		virtual float GetRefractionIndex(size_t waveIndex) const = 0;
 
 	protected:
 		Material() { };
