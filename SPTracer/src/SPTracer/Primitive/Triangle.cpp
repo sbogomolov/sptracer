@@ -163,10 +163,6 @@ namespace SPTracer
 
 	Box Triangle::Clip(const Box& box) const
 	{
-		// clipped box sizes
-		Vec3 clippedMin;
-		Vec3 clippedMax;
-
 		// key keyPoints (intersections and keyPoints inside the box)
 		std::vector<Vec3> keyPoints;
 
@@ -185,10 +181,6 @@ namespace SPTracer
 		// is onFace the box and should be added to keyPoints list
 		std::array<unsigned char, 3> middleCount{ 0, 0, 0 };
 
-		// box max and min
-		const Vec3& min = box.min();
-		const Vec3& max = box.max();
-
 		// go through all dimensions
 		for (unsigned char dimension = 0; dimension < 3; dimension++)
 		{
@@ -203,13 +195,13 @@ namespace SPTracer
 			{
 				const Vec3& v = vertices_[i].coord;
 
-				if (v[dimension] <= min[dimension])
+				if (v[dimension] < box.min()[dimension])
 				{
 					// point is to the left from the left plane
 					left.push_back(i);
 					leftAndMiddle.push_back(i);
 				}
-				else if (v[dimension] >= max[dimension])
+				else if (v[dimension] > box.max()[dimension])
 				{
 					// point is to the right from the right plane
 					right.push_back(i);
@@ -236,8 +228,8 @@ namespace SPTracer
 					const Vec3& b = vertices_[ir].coord;
 
 					// distance from line keyPoints to plane
-					float da = min[dimension] - a[dimension];
-					float db = b[dimension] - min[dimension];
+					float da = box.min()[dimension] - a[dimension];
+					float db = b[dimension] - box.min()[dimension];
 
 					// intersection factor
 					float s = da / (da + db);
@@ -246,7 +238,6 @@ namespace SPTracer
 					Vec3 p = a + s * (b - a);
 
 					// check if intersection point is onFace the box's face
-					bool onFace = true;
 					for (size_t i = 0; i < 3; i++)
 					{
 						// we check only two other dimesions
@@ -256,18 +247,21 @@ namespace SPTracer
 						}
 
 						// check that the intersection point is between the bounding planes
-						if ((p[i] < min[i]) || (p[i] > max[i]))
+						if (p[i] < box.min()[i])
 						{
-							onFace = false;
-							break;
+							// intersection point is not on the box faces
+							// change the corresponding dimension to be on the box
+							p[i] = box.min()[i];
+						}
+						else if (p[i] > box.max()[i])
+						{
+							// intersection point is not on the box faces
+							// change the corresponding dimension to be on the box
+							p[i] = box.max()[i];
 						}
 					}
 
-					// add intersection point
-					if (onFace)
-					{
-						keyPoints.push_back(std::move(p));
-					}
+					keyPoints.push_back(std::move(p));
 				}
 			}
 
@@ -283,8 +277,8 @@ namespace SPTracer
 					const Vec3& b = vertices_[ir].coord;
 
 					// distance from line keyPoints to plane
-					float da = max[dimension] - a[dimension];
-					float db = b[dimension] - max[dimension];
+					float da = box.max()[dimension] - a[dimension];
+					float db = b[dimension] - box.max()[dimension];
 
 					// intersection factor
 					float s = da / (da + db);
@@ -293,7 +287,6 @@ namespace SPTracer
 					Vec3 p = a + s * (b - a);
 
 					// check if intersection point is onFace the box's face
-					bool onFace = true;
 					for (unsigned char i = 0; i < 3; i++)
 					{
 						// we check only two other dimesions
@@ -303,23 +296,27 @@ namespace SPTracer
 						}
 
 						// check that the intersection point is between the bounding planes
-						if ((p[i] < min[i]) || (p[i] > max[i]))
+						if (p[i] < box.min()[i])
 						{
-							onFace = false;
-							break;
+							// intersection point is not on the box faces
+							// change the corresponding dimension to be on the box
+							p[i] = box.min()[i];
+						}
+						else if (p[i] > box.max()[i])
+						{
+							// intersection point is not on the box faces
+							// change the corresponding dimension to be on the box
+							p[i] = box.max()[i];
 						}
 					}
 
 					// add intersection point
-					if (onFace)
-					{
-						keyPoints.push_back(std::move(p));
-					}
+					keyPoints.push_back(std::move(p));
 				}
 			}
 		}
 
-		// add all keyPoints inside the box to key keyPoints
+		// add all points inside the box to key points
 		for (size_t i = 0; i < 3; i++)
 		{
 			if (middleCount[i] == 3)
@@ -331,8 +328,15 @@ namespace SPTracer
 		// split candidates for each dimension
 		std::vector<float> splitCandidates;
 
-		// the maximum possible number of split candidates is the number of key keyPoints
+		// the maximum possible number of split candidates is the number of key points
 		splitCandidates.reserve(keyPoints.size());
+
+		// clipped box sizes
+		Vec3 clippedMin;
+		Vec3 clippedMax;
+
+		// get AABB box for triangle
+		const auto aabb = GetBox();
 
 		// find perfect perfect splits for all dimensions
 		for (unsigned char dimension = 0; dimension < 3; dimension++)
@@ -340,7 +344,7 @@ namespace SPTracer
 			// clear split candidates for next dimension
 			splitCandidates.clear();
 
-			// go through all key keyPoints and find perfect perfectSplits
+			// go through all key keyPoints and find perfect splits
 			for (const auto& p : keyPoints)
 			{
 				// add split candidate
@@ -348,13 +352,13 @@ namespace SPTracer
 			}
 
 			// choose perfect perfect splits and set clipped box
-			if (splitCandidates.size() == 1)
+			if (splitCandidates.size() == 0)
 			{
-				// planar clipped box
-				clippedMin[dimension] = splitCandidates[0];
-				clippedMax[dimension] = splitCandidates[0];
+				// no split candidates, use original box dimensions
+				clippedMin[dimension] = std::max(box.min()[dimension], aabb.min()[dimension]);
+				clippedMax[dimension] = std::min(box.max()[dimension], aabb.max()[dimension]);
 			}
-			else if (splitCandidates.size() > 1)
+			else
 			{
 				// use maximum and minimum values of potential split candidates,
 				// so that triangle will not be splitted in two parts

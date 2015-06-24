@@ -26,27 +26,6 @@ namespace SPTracer
 
 	bool Scene::Intersect(const Ray& ray, Intersection& intersection) const
 	{
-		//// set initial intersection distance to max possible,
-		//// so that any intersection will be closer than that
-		//intersection.distance = std::numeric_limits<float>::max();
-
-		//Intersection newIntersection;
-
-		//for (const auto& p : primitives_)
-		//{
-		//	// find new intersection
-		//	bool success = p->Intersect(ray, newIntersection);
-		//	
-		//	// check if new intersection is closer
-		//	if (success && (newIntersection.distance < intersection.distance))
-		//	{
-		//		intersection = newIntersection;
-		//		intersection.primitive = p;
-		//	}
-		//}
-
-		//return intersection.distance < std::numeric_limits<float>::max();
-
 		// ray inverted direction
 		const Vec3 invDirection = 1 / ray.direction;
 
@@ -75,7 +54,7 @@ namespace SPTracer
 				bool success = p->Intersect(ray, newIntersection);
 
 				// check if new intersection is closer
-				if (success && (newIntersection.distance < intersection.distance))
+				if (success && (newIntersection.distance < intersection.distance) && (newIntersection.distance <= tfar))
 				{
 					intersection = newIntersection;
 					intersection.primitive = p;
@@ -235,7 +214,7 @@ namespace SPTracer
 						continue;
 					}
 
-					if ((far[j] < node->box().min()[j]) || ((far[j] > node->box().max()[j])))
+					if ((far[j] < node->box().min()[j]) || (far[j] > node->box().max()[j]))
 					{
 						found = false;
 						break;
@@ -254,8 +233,8 @@ namespace SPTracer
 					}
 
 					// this check is needed to select the right neighbour if ray hits
-					// exactly in the border between two neighbours
-					if (((tf - tn) > (tfar - tnear)) && (tn > (tfarOriginal - Util::Eps)))
+					// exactly in between two neighbours
+					if (((tf - tn) > (tfar - tnear)) && (std::abs(tn - tfarOriginal) < Util::Eps))
 					{
 						// store found neighbour
 						nextNode = n.get();

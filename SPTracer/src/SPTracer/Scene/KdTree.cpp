@@ -54,8 +54,6 @@ namespace SPTracer
 
 	std::shared_ptr<KdTreeNode> KdTree::Build(Box box, std::vector<std::shared_ptr<Primitive>> primitives)
 	{
-		auto bbb = box;
-
 		// return node if there are no primitives
 		if (primitives.size() == 0)
 		{
@@ -67,7 +65,7 @@ namespace SPTracer
 		float bestCost;
 		bool bestSide;
 		std::tie(bestPlane, bestCost, bestSide) = FindPlane(box, primitives);
-		
+
 		// check if it makes sense to split
 		if (bestCost > (IntersectionCost * primitives.size()))
 		{
@@ -133,6 +131,13 @@ namespace SPTracer
 		bool bestSide;
 		SplitPlane bestPlane;
 
+		// clipped boxes
+		std::vector<Box> clippedBoxes;
+		for (const auto& p : primitives)
+		{
+			clippedBoxes.push_back(p->Clip(box));
+		}
+
 		// for all dimensions
 		for (unsigned char dimension = 0; dimension < 3; dimension++)
 		{
@@ -140,10 +145,13 @@ namespace SPTracer
 			events.clear();
 
 			// for all primitives
-			for (const auto& p : primitives)
+			for (size_t i = 0; i < primitives.size(); i++)
 			{
-				// get clipped box
-				Box clippedBox = p->Clip(box);
+				// primitive
+				const auto& p = primitives[i];
+
+				// clipped box
+				const auto& clippedBox = clippedBoxes[i];
 
 				if (clippedBox.IsPlanar(dimension))
 				{
@@ -356,7 +364,7 @@ namespace SPTracer
 						}
 
 						// select the subtree that contains the whole face
-						candidate = plane.position > node.box().max()[plane.dimension] ? candidate->left_ : candidate->right_;
+						candidate = plane.position > node.box().min()[plane.dimension] ? candidate->left_ : candidate->right_;
 						continue;
 					}
 				}
