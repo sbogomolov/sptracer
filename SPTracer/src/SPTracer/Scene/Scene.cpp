@@ -57,7 +57,7 @@ namespace SPTracer
 				if (success && (newIntersection.distance < intersection.distance) && (newIntersection.distance <= tfar))
 				{
 					intersection = newIntersection;
-					intersection.primitive = p;
+					intersection.primitive = p.get();
 				}
 			}
 

@@ -13,7 +13,7 @@ namespace SPTracer
 		Vec3 point;
 		Vec3 normal;
 		float distance;
-		std::shared_ptr<Primitive> primitive;
+		Primitive* primitive;
 	};
 
 }
